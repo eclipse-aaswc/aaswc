@@ -314,6 +314,10 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       var childObjs = object.childObjs;
 
       var content = [];
+
+      var img = this.createImage("local_icons/Breeze/actions/22/link.svg", "", 22, 22);
+      content.push(img);
+
       if (!this.elementExists(object.hints, "noName") ||
           object.hints.noName == false)
          content.push(document.createTextNode(name));
@@ -347,7 +351,10 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
 
       content.push(dataElement);
 
-      this.createRowWithContent(HTMLElement, 2, content, true);
+      this.createRowWithContent(HTMLElement, 
+                                new Array("col-auto", "col-2", "col-2", "col-2", "col"),
+                                content,
+                                true);
    }
 
    printLocalityInformation(local) {
@@ -361,6 +368,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       var childObjs = object.childObjs;
       var link = false;
       var node = null;
+      var img = this.createImage("local_icons/Breeze/actions/22/favorite-genres-amarok.svg", "", 22, 22);
 
       var eclass_check = childObjs.id.tData.substr(0, 4);
       if (eclass_check == "0173") {
@@ -374,11 +382,15 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       if (!link)
          node = document.createTextNode(childObjs.id.tData);
       var content = [
+         img,
          document.createTextNode(name),
          document.createTextNode("ID Type: " + childObjs.idType.tData),
          node
          ];
-      this.createRowWithContent(HTMLElement, 2, content, true);
+      this.createRowWithContent(HTMLElement,
+                                new Array("col-auto", "col-2", "col-2", "col"),
+                                content,
+                                true);
    }
 
    printAdministrativeInformation(HTMLElement, object, name) {
@@ -396,11 +408,16 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       var childObjs = object.childObjs;
       var language = this.createValueElement(childObjs.language, name);
       var text = this.createValueElement(childObjs.description, name);
+      var img = this.createImage("local_icons/Breeze/actions/22/amarok_change_language.svg", "", 22, 22);
       var content = [
+         img,
          language,
          text,
          ];
-      this.createRowWithContent(HTMLElement, 2, content, true);
+      this.createRowWithContent(HTMLElement, 
+                                new Array("col-auto", "col-2", "col"),
+                                content,
+                                true);
    }
 
    printEntity(HTMLElement, object, name) {
@@ -442,11 +459,15 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
          // TODO: Fix the placeholderName
          var bodyElement = this.createHTMLLink(fileURL,
             document.createTextNode(fileURL), "_blank");
+         var img = this.createImage("local_icons/Breeze/mimetypes/22/application-x-zerosize.svg", "File", 22, 22);
          var content = [
-            document.createTextNode("File Link"),
+            img,
             bodyElement,
             ];
-         this.createRowWithContent(HTMLElement, 2, content, true);
+         this.createRowWithContent(HTMLElement,
+                                   new Array("col-auto", "col"),
+                                   content,
+                                   true);
       }
       this.print(HTMLElement, object);
    }
@@ -457,11 +478,15 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
          // TODO: Fix the placeholderName
          var placeHolderName = "Image: " + object.childObjs.idShort.tData;
          var bodyElement = this.createImage(imageURL, placeHolderName);
+         var img = this.createImage("local_icons/Breeze/mimetypes/22/image-jpeg.svg", "Image file", 22, 22);
          var content = [
-            document.createTextNode("Image"),
+            img,
             bodyElement,
             ];
-         this.createRowWithContent(HTMLElement, 2, content, true);
+         this.createRowWithContent(HTMLElement,
+                                   new Array("col-auto", "col"),
+                                   content,
+                                   true);
       }
 
       this.print(HTMLElement, object);
@@ -677,11 +702,16 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
 
    printValue(HTMLElement, object, valueName) {
       var bodyElement = this.createValueElement(object, valueName);
+      var img = this.createImage("local_icons/Breeze/actions/22/tag.svg", "", 22, 22);
       var content = [
+         img,
          document.createTextNode(valueName),
          bodyElement,
          ];
-      this.createRowWithContent(HTMLElement, 2, content, true);
+      this.createRowWithContent(HTMLElement,
+                                new Array("col-auto","col-2", "col"),
+                                content,
+                                true);
       object.tUpdateMethod = this.updateValue;
    }
 
