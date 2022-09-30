@@ -10,6 +10,7 @@ class PrinterHtmlElements extends Base {
       this.rootElement = rootElement;
       this.AjaxHelper = new AjaxHelper();
 
+      this.iconByType = this.iconByType.bind(this);
       this.createBootstrapColCard = this.createBootstrapColCard.bind(this);
       this.createBootstrapCard = this.createBootstrapCard.bind(this);
       this.createBootstrapCardBody = this.createBootstrapCardBody.bind(this);
@@ -51,6 +52,52 @@ class PrinterHtmlElements extends Base {
       this.tRegistryBrowserURL = tempURL + "registryBrowser.html";
    }
 
+   iconByType(object) {
+      var iconpath = "local_icons/Breeze/";
+      switch (object.tType) {
+         case "AssetAdministrationShell":
+         case "AssetAdministrationShellDescriptor":
+         iconpath = "local_icons/aas.svg";
+         break;
+         case "Entity":
+         case "Asset":
+         iconpath += "devices/22/uav-quadcopter.svg";
+         break;
+         case "Submodel":
+         case "SubmodelDescriptor":
+         iconpath += "places/32/folder-blue.svg";
+         break;
+         case "Array":
+         case "SubmodelElementCollection":
+         iconpath += "places/32/folder-green.svg";
+         break;
+         case "LangStringSet":
+         iconpath += "places/32/folder-language.svg";
+         break;
+         case "MultiLanguageProperty":
+         case "Property":
+         iconpath += "actions/22/code-variable.svg";
+         break;
+         case "RelationshipElement":
+         case "Keys":
+         iconpath += "actions/22/link.svg";
+         break;
+         case "File":
+         iconpath += "mimetypes/32/application-x-m4.svg";
+         break;
+         case "Operation":
+         iconpath += "actions/22/run-build.svg";
+         break;
+         case "Endpoint":
+         iconpath += "actions/22/network-connect.svg";
+         break;
+         default:
+         iconpath += "mimetypes/32/application-x-zerosize.svg";
+         break;
+      }
+      return this.createImage(iconpath,"", 22, 22);
+   }
+
    createBootstrapColCard(extraClasses = null) {
       var card = this.createBootstrapCard(extraClasses);
       card.classList.add("col");
@@ -82,16 +129,16 @@ class PrinterHtmlElements extends Base {
       return cardBody;
    }
 
-   insertBootstrapCardTitle(cardBody, containedElement, bgcolor, textcolor,
+   insertBootstrapCardTitle(cardBody, content, bgcolor, textcolor,
          collapseTarget, expanded = true, titlesize = 3) {
       var img = null;
       if (!expanded) {
-         img = this.createImage("local_icons/Breeze/emblem-added.svg", "+", 22,
+         img = this.createImage("local_icons/Breeze/emblems/22/emblem-added.svg", "+", 22,
             22);
          img.classList.add("tplus");
       }
       else {
-         img = this.createImage("local_icons/Breeze/emblem-remove.svg", "-",
+         img = this.createImage("local_icons/Breeze/emblems/22/emblem-remove.svg", "-",
             22, 22);
          img.classList.add("tminus");
       }
@@ -99,22 +146,14 @@ class PrinterHtmlElements extends Base {
       img.id = "img-" + this.idAddition + "-" + this.IDCounter;
       this.IDCounter++;
 
-      var row = this.createBootstrapContainerRow();
+      var icontent = [];
+      icontent.push(img);
+      icontent = icontent.concat(content);
 
-      var div_img = document.createElement("div");
-      div_img.appendChild(img);
-
-      div_img.classList.add("col-auto");
-      div_img.classList.add("d-flex");
-      div_img.classList.add("flex-wrap");
-      div_img.classList.add("align-items-center");
-
-      var div_content = document.createElement("div");
-      div_content.appendChild(containedElement);
-      div_content.classList.add("col");
-
-      row.appendChild(div_img);
-      row.appendChild(div_content);
+      var row = this.createRowWithContent(HTMLElement,
+                                new Array("col-auto", "col-auto",  "col"),
+                                icontent,
+                                false, false, bgcolor);
 
       var h = document.createElement("h" + titlesize);
       h.classList.add("card-title");
@@ -136,13 +175,13 @@ class PrinterHtmlElements extends Base {
          if (img.className.includes("tplus")) {
             img.classList.remove("tplus");
             img.classList.add("tminus");
-            img.setAttribute("src", "local_icons/Breeze/emblem-remove.svg");
+            img.setAttribute("src", "local_icons/Breeze/emblems/22/emblem-remove.svg");
             img.setAttribute("alt", "-");
          }
          else {
             img.classList.remove("tminus");
             img.classList.add("tplus");
-            img.setAttribute("src", "local_icons/Breeze/emblem-added.svg");
+            img.setAttribute("src", "local_icons/Breeze/emblems/22/emblem-added.svg");
             img.setAttribute("alt", "+");
          }
       };
@@ -294,6 +333,7 @@ class PrinterHtmlElements extends Base {
       var img = document.createElement("img");
       img.setAttribute("src", URL);
       img.setAttribute("alt", placeHolderText);
+      img.classList.add("align-baseline");
       if (width)
          img.width = width;
       if (height)
@@ -301,11 +341,12 @@ class PrinterHtmlElements extends Base {
       return img;
    }
 
-   createRowWithContent(parent, colwidth, content, attachToParent = false, flat = false) {
+   createRowWithContent(parent, colwidth, content, attachToParent = false,
+                        flat = false, bgcolor ="bg-white") {
       var row = this.createBootstrapContainerRow();
       if (!flat) {
          var card = this.createBootstrapColCard(Array("p-0"));
-         var cardBody = this.createBootstrapCardBody(0, 0, true);
+         var cardBody = this.createBootstrapCardBody(0, 0, true, bgcolor);
 
          card.appendChild(cardBody);
          row.appendChild(card);
@@ -367,6 +408,8 @@ class PrinterHtmlElements extends Base {
 
       printNode(HTMLElement, object, name, titlename, bgColor,
          expanded = true, textColor = "text-white", titlesize = 3) {
+
+      var icon = this.iconByType(object);
       var HTMLObject = this.prepareContainer(HTMLElement, bgColor);
       var collapsable = this.insertBootstrapCardElement(HTMLObject.cardBody,
             HTMLObject.container, "bg-light", "text-black", expanded);
@@ -378,10 +421,15 @@ class PrinterHtmlElements extends Base {
          title = name;
       if (titlename != "" && name == "")
          title = titlename;
+         
+      var content = [];
+      var titlenode = document.createTextNode(title);
+      content.push(icon);
+      content.push(titlenode);
+
 
       HTMLObject.title = this.insertBootstrapCardTitle(HTMLObject.cardBody,
-            document.createTextNode(title),
-            bgColor, textColor, collapsable.id, expanded, titlesize);
+            content, bgColor, textColor, collapsable.id, expanded, titlesize);
       return HTMLObject;
    }
 }
