@@ -97,26 +97,11 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.treeRoot = object;
       var childObjs = object.childObjs;
 
-/*
-      var card = this.createBootstrapColCard(Array("p-0"));
-      var cardBody = this.createBootstrapCardBody(0, 0, false,
-         this.colors.AASColor);
-      var container = this.aasContainer;
+      var HTMLObject = this.printNode(HTMLElement, object, 
+            childObjs.idShort.tData, "Asset Administration Shell",
+             this.colors.AASColor, true, "text-white", 3, this.aasContainer);
 
-      card.appendChild(cardBody);
-      HTMLElement.appendChild(card);
-
-      var collapsable = this.insertBootstrapCardElement(cardBody, container,
-            "bg-light", "text-black");
-
-      this.insertBootstrapCardTitle(cardBody,
-            document.createTextNode("Asset Administration Shell"),
-            this.colors.AASColor, "text-white", collapsable.id);
-            */
-      var HTMLObject = this.printNode(HTMLElement, object, childObjs.idShort.tData,
-            "Asset Administration Shell", this.colors.AASColor, true);
       this.print(HTMLObject.container, object);
-      //this.print(container, object);
    }
 
    printSubmodel(HTMLElement, object, expand = false) {

@@ -239,11 +239,15 @@ class PrinterHtmlElements extends Base {
       return p;
    }
 
-   prepareContainer(HTMLElement, bgColor) {
+   prepareContainer(HTMLElement, bgColor, extContainer = null) {
       var row = this.createBootstrapContainerRow();
       var card = this.createBootstrapColCard(Array("p-0", "my-1", "ms-1"));
       var cardBody = this.createBootstrapCardBody(0, 0, false, bgColor);
-      var container = this.createBootstrapContainerFluid();
+      var container = null;
+      if (extContainer != null)
+         container = extContainer;
+      else
+         container = this.createBootstrapContainerFluid();
 
       card.appendChild(cardBody);
       row.appendChild(card);
@@ -434,10 +438,11 @@ class PrinterHtmlElements extends Base {
    }
 
       printNode(HTMLElement, object, name, titlename, bgColor,
-         expanded = true, textColor = "text-white", titlesize = 3) {
+         expanded = true, textColor = "text-white", titlesize = 3, 
+         extContainer = null) {
 
       var icon = this.iconByType(object);
-      var HTMLObject = this.prepareContainer(HTMLElement, bgColor);
+      var HTMLObject = this.prepareContainer(HTMLElement, bgColor, extContainer);
       var collapsable = this.insertBootstrapCardElement(HTMLObject.cardBody,
             HTMLObject.container, "bg-light", "text-black", expanded);
 
