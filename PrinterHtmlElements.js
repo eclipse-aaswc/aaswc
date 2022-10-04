@@ -62,6 +62,7 @@ class PrinterHtmlElements extends Base {
          case "String":
          iconpath += "actions/22/tag.svg";
          break;
+         case "AssetAdministrationShellRegistry":
          case "AssetAdministrationShell":
          iconpath = "local_icons/aas-alternative.svg";
          break;

@@ -94,10 +94,11 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
    }
 
    printAAS(HTMLElement, object) {
-      this.treeRoot = object;
+      if (this.treeRoot == null)
+         this.treeRoot = object;
       var childObjs = object.childObjs;
 
-      var HTMLObject = this.printNode(HTMLElement, object, 
+      var HTMLObject = this.printNode(HTMLElement, object,
             childObjs.idShort.tData, "Asset Administration Shell",
              this.colors.AASColor, true, "text-white", 3, this.aasContainer);
 
@@ -705,25 +706,14 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
    }
 
    printRegistry(HTMLElement, object) {
-      this.treeRoot = object;
+      if (this.treeRoot == null)
+         this.treeRoot = object;
       var childObjs = object.childObjs;
 
-      var card = this.createBootstrapColCard(Array("p-0"));
-      var cardBody = this.createBootstrapCardBody(0, 0, false,
-         this.colors.AASColor);
-      var container = this.aasContainer;
+      var HTMLObject = this.printNode(HTMLElement, object, "",
+            "Asset Administration Shell Registry", this.colors.AASColor, true);
 
-      card.appendChild(cardBody);
-      HTMLElement.appendChild(card);
-
-      var collapsable = this.insertBootstrapCardElement(cardBody, container,
-            "bg-light", "text-black");
-
-      this.insertBootstrapCardTitle(cardBody,
-            document.createTextNode("Asset Administration Shell Registry"),
-            this.colors.AASColor, "text-white", collapsable.id);
-
-      this.print(container, object);
+      this.print(HTMLObject.container, object);
    }
 
    printAssetAdministrationShellDescriptor(HTMLElement, element, key) {
