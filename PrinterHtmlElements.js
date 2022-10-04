@@ -53,6 +53,8 @@ class PrinterHtmlElements extends Base {
    }
 
    iconByType(object, mimeType = "") {
+      if (object == null)
+         return null;
       var iconpath = "local_icons/Breeze/";
       switch (object.tType) {
          case "ModelingKind":
@@ -449,7 +451,8 @@ class PrinterHtmlElements extends Base {
          
       var content = [];
       var titlenode = document.createTextNode(title);
-      content.push(icon);
+      if (icon != null)
+         content.push(icon);
       content.push(titlenode);
 
 
