@@ -97,6 +97,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.treeRoot = object;
       var childObjs = object.childObjs;
 
+/*
       var card = this.createBootstrapColCard(Array("p-0"));
       var cardBody = this.createBootstrapCardBody(0, 0, false,
          this.colors.AASColor);
@@ -111,8 +112,11 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.insertBootstrapCardTitle(cardBody,
             document.createTextNode("Asset Administration Shell"),
             this.colors.AASColor, "text-white", collapsable.id);
-
-      this.print(container, object);
+            */
+      var HTMLObject = this.printNode(HTMLElement, object, childObjs.idShort.tData,
+            "Asset Administration Shell", this.colors.AASColor, true);
+      this.print(HTMLObject.container, object);
+      //this.print(container, object);
    }
 
    printSubmodel(HTMLElement, object, expand = false) {
@@ -315,7 +319,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
 
       var content = [];
 
-      var img = this.createImage("local_icons/Breeze/actions/22/link.svg", "", 22, 22);
+      var img = this.iconByType(object);
       content.push(img);
 
       if (!this.elementExists(object.hints, "noName") ||
@@ -368,7 +372,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       var childObjs = object.childObjs;
       var link = false;
       var node = null;
-      var img = this.createImage("local_icons/Breeze/actions/22/favorite-genres-amarok.svg", "", 22, 22);
+      var img = this.iconByType(object);
 
       var eclass_check = childObjs.id.tData.substr(0, 4);
       if (eclass_check == "0173") {
@@ -408,7 +412,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       var childObjs = object.childObjs;
       var language = this.createValueElement(childObjs.language, name);
       var text = this.createValueElement(childObjs.description, name);
-      var img = this.createImage("local_icons/Breeze/actions/22/amarok_change_language.svg", "", 22, 22);
+      var img = this.iconByType(object);
       var content = [
          img,
          language,
@@ -459,7 +463,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
          // TODO: Fix the placeholderName
          var bodyElement = this.createHTMLLink(fileURL,
             document.createTextNode(fileURL), "_blank");
-         var img = this.createImage("local_icons/Breeze/mimetypes/22/application-x-zerosize.svg", "File", 22, 22);
+         var img = this.iconByType(object);
          var content = [
             img,
             bodyElement,
@@ -478,7 +482,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
          // TODO: Fix the placeholderName
          var placeHolderName = "Image: " + object.childObjs.idShort.tData;
          var bodyElement = this.createImage(imageURL, placeHolderName);
-         var img = this.createImage("local_icons/Breeze/mimetypes/22/image-jpeg.svg", "Image file", 22, 22);
+         var img = this.iconByType(object, object.childObjs.mimeType.tData);
          var content = [
             img,
             bodyElement,
@@ -702,7 +706,7 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
 
    printValue(HTMLElement, object, valueName) {
       var bodyElement = this.createValueElement(object, valueName);
-      var img = this.createImage("local_icons/Breeze/actions/22/tag.svg", "", 22, 22);
+      var img = this.iconByType(object);
       var content = [
          img,
          document.createTextNode(valueName),

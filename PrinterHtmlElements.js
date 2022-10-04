@@ -52,10 +52,17 @@ class PrinterHtmlElements extends Base {
       this.tRegistryBrowserURL = tempURL + "registryBrowser.html";
    }
 
-   iconByType(object) {
+   iconByType(object, mimeType = "") {
       var iconpath = "local_icons/Breeze/";
       switch (object.tType) {
+         case "ModelingKind":
+         case "AssetKind":
+         case "String":
+         iconpath += "actions/22/tag.svg";
+         break;
          case "AssetAdministrationShell":
+         iconpath = "local_icons/aas-alternative.svg";
+         break;
          case "AssetAdministrationShellDescriptor":
          iconpath = "local_icons/aas.svg";
          break;
@@ -78,12 +85,29 @@ class PrinterHtmlElements extends Base {
          case "Property":
          iconpath += "actions/22/code-variable.svg";
          break;
+         case "Identifier":
+         iconpath += "actions/22/favorite-genres-amarok.svg";
+         break;
+         case "LangString":
+         iconpath += "actions/22/amarok_change_language.svg";
+         break;
          case "RelationshipElement":
          case "Keys":
+         case "Key":
          iconpath += "actions/22/link.svg";
          break;
-         case "File":
-         iconpath += "mimetypes/32/application-x-m4.svg";
+         case "File": {
+            switch (mimeType) {
+               case "image/png":
+               case "image/jpeg":
+               iconpath += "mimetypes/22/image-jpeg.svg";
+               break;
+               default:
+               iconpath += "mimetypes/32/application-x-m4.svg";
+               break;
+            }
+         
+         }
          break;
          case "Operation":
          iconpath += "actions/22/run-build.svg";
@@ -91,6 +115,7 @@ class PrinterHtmlElements extends Base {
          case "Endpoint":
          iconpath += "actions/22/network-connect.svg";
          break;
+         
          default:
          iconpath += "mimetypes/32/application-x-zerosize.svg";
          break;
@@ -151,9 +176,9 @@ class PrinterHtmlElements extends Base {
       icontent = icontent.concat(content);
 
       var row = this.createRowWithContent(HTMLElement,
-                                new Array("col-auto", "col-auto",  "col"),
+                                new Array("col-auto", "col-auto", "col"),
                                 icontent,
-                                false, false, bgcolor);
+                                false, true, bgcolor);
 
       var h = document.createElement("h" + titlesize);
       h.classList.add("card-title");
