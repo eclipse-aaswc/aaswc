@@ -57,6 +57,7 @@ class PrinterHtmlElements extends Base {
          return null;
       var iconpath = "local_icons/Breeze/";
       switch (object.tType) {
+         case "EntityType":
          case "ModelingKind":
          case "AssetKind":
          case "String":
@@ -94,6 +95,7 @@ class PrinterHtmlElements extends Base {
          case "LangString":
          iconpath += "actions/22/amarok_change_language.svg";
          break;
+         case "ReferenceElement":
          case "RelationshipElement":
          case "Keys":
          case "Key":
