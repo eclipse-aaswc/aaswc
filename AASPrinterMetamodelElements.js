@@ -304,31 +304,62 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       var childObjs = object.childObjs;
 
       var content = [];
+      var content2 = [];
+
 
       var img = this.iconByType(object);
       content.push(img);
 
+      var img2 = this.iconByType(object);
+      content2.push(img2);
+
+
       if (!this.elementExists(object.hints, "noName") ||
-          object.hints.noName == false)
+          object.hints.noName == false) {
          content.push(document.createTextNode(name));
+         content2.push(document.createTextNode(name));
+      }
 
       content.push(document.createTextNode("ID Type: " + childObjs.idType.tData));
       content.push(document.createTextNode(this.printLocalityInformation(childObjs.local.tData)));
       content.push(document.createTextNode("Referenced Type: " + childObjs.type.tData));
 
+//      content2.push(document.createTextNode("ID Type: " + childObjs.idType.tData));
+//      content2.push(document.createTextNode(this.printLocalityInformation(childObjs.local.tData)));
+//      content2.push(document.createTextNode("Referenced Type: " + childObjs.type.tData));
+
+      content2.push(document.createTextNode(""));
+      content2.push(document.createTextNode(""));
+      content2.push(document.createTextNode(""));
+
       var dataElement = null;
+      var dataElement2 = null;
       if (childObjs.local.tData) {
          if (childObjs.type.tData == "AssetAdministrationShell") {
             var url = this.makeURLFromAASID(object, childObjs.value.tData);
             var completeURL = this.addAASBrowserURL(object, url);
             dataElement = this.createHTMLLink(completeURL,
                   document.createTextNode(childObjs.value.tData));
+
+            var url2 = this.makeURLFromAASID(object, 
+            btoa(childObjs.value.tData));
+            var completeURL2 = this.addAASBrowserURL(object, url2);
+            dataElement2 = this.createHTMLLink(completeURL2,
+                  document.createTextNode(
+                     btoa(childObjs.value.tData)));
          }
          if (childObjs.type.tData == "Submodel") {
             var url = this.makeURLFromSubmodelID(object, childObjs.value.tData);
             var completeURL = this.addSubmodelBrowserURL(object, url);
             dataElement = this.createHTMLLink(completeURL,
                   document.createTextNode(childObjs.value.tData));
+
+            var url2 = this.makeURLFromSubmodelID(object, 
+            btoa(childObjs.value.tData));
+            var completeURL2 = this.addSubmodelBrowserURL(object, url2);
+            dataElement2 = this.createHTMLLink(completeURL2,
+                  document.createTextNode(
+                     btoa(childObjs.value.tData)));
          }
       }
       else {
@@ -336,14 +367,23 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
          console.log("Non-local reference as URL");
       }
       // default
-      if (this.isNull(dataElement))
+      if (this.isNull(dataElement)) {
          dataElement = document.createTextNode(childObjs.value.tData);
+         dataElement2 = document.createTextNode(
+            btoa(childObjs.value.tData));
+      }
 
       content.push(dataElement);
+      content2.push(dataElement2);
 
       this.createRowWithContent(HTMLElement, 
                                 new Array("col-auto", "col-2", "col-2", "col-2", "col"),
                                 content,
+                                true);
+                                
+      this.createRowWithContent(HTMLElement, 
+                                new Array("col-auto", "col-2", "col-2", "col-2", "col"),
+                                content2,
                                 true);
    }
 
@@ -360,15 +400,10 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
       var node = null;
       var img = this.iconByType(object);
 
-      var eclass_check = childObjs.id.tData.substr(0, 4);
-      if (eclass_check == "0173") {
-         link = true;
-         node = this.createHTMLLink(
-               "https://www.eclasscontent.com/index.php?action=cc2prdet&language=en&version=10.1&pridatt="
-               + encodeURIComponent(childObjs.id.tData),
-               document.createTextNode(childObjs.id.tData));
-         node.target = "_blank";
-      }
+      var node2 = null;
+      var img2 = this.iconByType(object);
+
+
       if (!link)
          node = document.createTextNode(childObjs.id.tData);
       var content = [
@@ -381,6 +416,20 @@ class AASPrinterMetamodelElements extends PrinterHtmlElements {
                                 new Array("col-auto", "col-2", "col-2", "col"),
                                 content,
                                 true);
+
+    if (!link)
+         node2 = document.createTextNode(btoa(childObjs.id.tData));
+      var content2 = [
+         img2,
+         document.createTextNode(""),
+         document.createTextNode(""),
+         node2
+         ];
+      this.createRowWithContent(HTMLElement,
+                                new Array("col-auto", "col-2", "col-2", "col"),
+                                content2,
+                                true);
+
    }
 
    printAdministrativeInformation(HTMLElement, object, name) {
