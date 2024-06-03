@@ -401,7 +401,8 @@ export class PrinterHtmlElements extends Base {
       return a;
    }
 
-   createImage(URL, placeHolderText = "", width = null, height = null) {
+   createImage(URL:string, placeHolderText:string = "", width:number = 0,
+               height:number = 0) {
       var img = document.createElement("img");
       img.setAttribute("src", URL);
       img.setAttribute("alt", placeHolderText);

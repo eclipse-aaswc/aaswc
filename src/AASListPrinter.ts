@@ -104,6 +104,9 @@ export class AASListPrinter extends PrinterHtmlElements {
    printHeader(parentElement) {
       var divHeader = document.createElement("div");
       divHeader.classList.add('modal-header');
+      divHeader.classList.add('d-flex');
+      divHeader.classList.add('justify-content-between');
+
       divHeader.id = "aasModalHeader";
 
       var h = document.createElement("h3");
@@ -114,7 +117,6 @@ export class AASListPrinter extends PrinterHtmlElements {
 
       var img = this.createImage(
          "local_icons/Breeze/actions/22/window-close.svg", "X", 22, 22);
-      img.classList.add("float-right");
 
       var a = this.createHTMLLink("#", img, "");
       a.classList.add("close");
