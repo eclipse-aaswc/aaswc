@@ -1,0 +1,292 @@
+/*
+ * Copyright (c) 2021 Lenze SE
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { AASColors, AASWebStorageHandler, PrinterHtmlElements } from "./imports.js";
+
+import * as bootstrap from "./libraries/bootstrap/5.3.3/js/bootstrap.bundle.js";
+
+//import * as bootstrap from "./../node_modules/bootstrap/dist/js/bootstrap.js";
+//import { Modal } from "./libraries/bootstrap/5.3.3/js/bootstrap.bundle.js";
+//import {Modal} from "./../node_modules/bootstrap/js/dist/modal.js";
+
+class ListBodys {
+   aasListBody: HTMLElement;
+   registryListBody: HTMLElement;
+}
+export class AASListPrinter extends PrinterHtmlElements {
+   storageHandler: AASWebStorageHandler;
+   
+   htmlParent: HTMLElement;
+   toggleElement: HTMLElement;
+   baseContainer: HTMLElement;
+   modalBody: HTMLElement;
+
+   listBodys: ListBodys;
+
+   colors: AASColors;
+
+   constructor(toggleElement, htmlParent) {
+      super(null);
+      this.run = this.run.bind(this);
+      this.show = this.show.bind(this);
+      this.cleanModal = this.cleanModal.bind(this);
+      this.printBaseElements = this.printBaseElements.bind(this);
+      this.printHeader = this.printHeader.bind(this);
+      this.printBody = this.printBody.bind(this);
+      this.printDialogs = this.printDialogs.bind(this);
+      this.printListBodys = this.printListBodys.bind(this);
+      this.getHostEntriesByType = this.getHostEntriesByType.bind(this);
+      this.printHostEntries = this.printHostEntries.bind(this);
+      this.printURLEntry = this.printURLEntry.bind(this);
+      this.removeAASEntry = this.removeAASEntry.bind(this);
+      this.removeRegistryEntry = this.removeRegistryEntry.bind(this);
+      this.removeEntry = this.removeEntry.bind(this);
+
+      this.htmlParent = htmlParent;
+      this.toggleElement = toggleElement;
+      this.baseContainer = null;
+      this.modalBody = null;
+      this.listBodys = new ListBodys();
+
+      this.storageHandler = new AASWebStorageHandler();
+
+      this.colors = new AASColors();
+
+   }
+
+   run() {
+      this.cleanModal(this.htmlParent);
+      this.baseContainer = this.printBaseElements(this.htmlParent);
+      this.printHeader(this.baseContainer);
+      this.modalBody = this.printBody(this.baseContainer);
+      this.printDialogs(this.modalBody);
+      this.listBodys = this.printListBodys(this.modalBody, this.listBodys);
+
+      var aasEntries = this.getHostEntriesByType("AAS");
+      this.printHostEntries(this.listBodys.aasListBody, aasEntries, "AAS");
+      var registryEntries = this.getHostEntriesByType("Registry");
+      this.printHostEntries(this.listBodys.registryListBody, registryEntries,
+         "Registry");
+
+      var modal = new window.bootstrap.Modal(this.toggleElement);
+      modal.show();
+
+      //this.show(modal);
+   }
+
+   show(element: any) {
+      element.show();
+   }
+
+   cleanModal(modalElement) {
+      if (!this.isNull(modalElement))
+         modalElement.replaceChildren();
+   }
+
+   printBaseElements(parentElement) {
+      var divDialog = document.createElement("div");
+      divDialog.classList.add('modal-dialog');
+      divDialog.classList.add('modal-xl');
+      divDialog.id = "aasModalDialog";
+
+      var divContent = document.createElement("div");
+      divContent.classList.add('modal-content');
+      divContent.id = "aasModalContent";
+
+      divDialog.appendChild(divContent);
+      parentElement.appendChild(divDialog);
+      
+      return divContent;
+   }
+
+   printHeader(parentElement) {
+      var divHeader = document.createElement("div");
+      divHeader.classList.add('modal-header');
+      divHeader.id = "aasModalHeader";
+
+      var h = document.createElement("h3");
+      h.classList.add('modal-title');
+      h.id = "aasModalHeaderTitle";
+      var text = document.createTextNode("Asset Administration Shell List");
+      h.appendChild(text);
+
+      var img = this.createImage(
+         "local_icons/Breeze/actions/22/window-close.svg", "X", 22, 22);
+      img.classList.add("float-right");
+
+      var a = this.createHTMLLink("#", img, "");
+      a.classList.add("close");
+      a.setAttribute("data-bs-dismiss", "modal"); 
+
+      divHeader.appendChild(h);
+      divHeader.appendChild(a);
+      parentElement.appendChild(divHeader);
+   }
+
+   printBody(parentElement) {
+      var divBody = document.createElement("div");
+      divBody.classList.add('modal-body');
+      divBody.id = "aasModalBody";
+
+      parentElement.appendChild(divBody);
+      return divBody;
+   }
+
+   printDialogs(parentElement) {
+      var aasDialogCtn = this.printNode(parentElement, null, "",
+         "New AAS", "bg-white", false, "text-black", 3).container;
+      var registryDialogCtn =this.printNode(parentElement, null, "",
+         "New Registry", "bg-white", false, "text-black", 3).container;
+         
+      aasDialogCtn.appendChild(document.createTextNode("Placeholder"));
+      registryDialogCtn.appendChild(document.createTextNode("Placeholder"));
+   }
+
+   printListBodys(parentElement, listBodys) {
+      listBodys.aasListBody = this.printNode(parentElement, null, "",
+         "AAS List", "bg-white", false, "text-black", 3).container;
+      listBodys.registryListBody = this.printNode(parentElement, null, "",
+         "Registry List", "bg-white", false, "text-black", 3).container;
+      return listBodys;
+   }
+   
+   getHostEntriesByType(type) {
+      if (type == "AAS")
+         return this.storageHandler.getAASMap();
+      else
+         return this.storageHandler.getRegistryMap();
+   }
+
+   printHostEntries(parentElement, aasMap, type) {
+      for (var [key, urlMap] of aasMap) {
+         var node = this.printNode(parentElement, null, key, "Host", 
+                                        this.colors.AASColor, false);
+         var img = this.createImage(
+           "local_icons/Breeze/actions/22/edit-delete.svg", "X", 22, 22);
+         img.classList.add("align-middle");
+         img.classList.add("float-right");
+         img.setAttribute("data-html-target", "#" + node.contentRow.id);
+
+         node.contentRow.setAttribute("data-bs-target", key);
+         if (type == "AAS") {
+            img.onclick = this.removeAASEntry;
+            node.contentRow.setAttribute("data-type", "AASHostURL");
+         }
+         else {
+            img.onclick = this.removeRegistryEntry;
+            node.contentRow.setAttribute("data-type", "RegistryHostURL");
+         }
+         var div_img = document.createElement("div");
+         div_img.appendChild(img);
+
+         div_img.classList.add("col-auto");
+         div_img.classList.add("d-flex");
+         div_img.classList.add("flex-wrap");
+         div_img.classList.add("align-items-center");
+         div_img.classList.add("p-0");
+         
+         // TODO: Content row
+         //node.title.contentRow.appendChild(div_img);
+         
+         for (var [key2, entry] of urlMap) {
+            this.printURLEntry(node.container, node.contentRow, entry, "URL", 
+               type);
+         }
+      }
+   }
+
+   printURLEntry(HTMLElement, parentElement, url, valueName, type) {
+      var browserURL = null;
+      if (type == "AAS")
+         browserURL = this.tAASBrowserURL;
+      else
+         browserURL = this.tRegistryBrowserURL;
+      var fullUrl = browserURL + "?endpoint=" + encodeURIComponent(url);
+      var bodyElement = this.createHTMLLink(fullUrl, 
+         document.createTextNode(url), "_blank");
+
+      var imgLink = this.createImage(
+         "local_icons/Breeze/actions/22/link.svg", valueName, 22, 22);
+      imgLink.classList.add("align-middle");
+      imgLink.classList.add("float-left");
+
+      var img = this.createImage(
+         "local_icons/Breeze/actions/22/edit-delete.svg", "X", 22, 22);
+      img.classList.add("align-middle");
+      img.classList.add("float-right");
+
+      var div_img = document.createElement("div");
+      div_img.appendChild(img);
+
+      div_img.classList.add("col-auto");
+      div_img.classList.add("d-flex");
+      div_img.classList.add("flex-wrap");
+      div_img.classList.add("align-items-center");
+      var content = [
+         imgLink,
+         bodyElement,
+         img,
+         ];
+      var row = this.createRowWithContent(HTMLElement, 
+         Array("col-auto", "col", "col-auto"), content, true);
+         row.setAttribute("data-bs-target", url);
+         if (type == "AAS") {
+            img.onclick = this.removeAASEntry;
+            row.setAttribute("data-type", "AASURL");
+         }
+         else {
+            img.onclick = this.removeRegistryEntry;
+            row.setAttribute("data-type", "RegistryURL");
+         }
+
+      img.setAttribute("data-html-target", "#" + row.id);
+      img.setAttribute("data-html-parent-target", "#" + parentElement.id);
+   }
+
+   removeAASEntry(target) {
+      this.removeEntry(target, "AAS");
+   }
+
+   removeRegistryEntry(target) {
+      this.removeEntry(target, "Registry");
+   }
+
+   removeEntry(target, targetType) {
+      var elementId = target.target.getAttribute("data-html-target");
+      var element = null;
+      if (targetType == "AAS")
+         element = this.listBodys.aasListBody.querySelector(elementId);
+      else
+         element = this.listBodys.registryListBody.querySelector(elementId);
+      var url = element.getAttribute("data-bs-target");
+      var type = element.getAttribute("data-type");
+      switch (type) {
+      case "AASURL":
+         this.storageHandler.removeAASURL(url);
+         if (!this.storageHandler.AASHostExists(url)) {
+            elementId = target.target.getAttribute("data-html-parent-target");
+            element = this.listBodys.aasListBody.querySelector(elementId);
+         }
+         break;
+     case "RegistryURL":
+         this.storageHandler.removeRegistryURL(url);
+         if (!this.storageHandler.registryHostExists(url)) {
+            elementId = target.target.getAttribute("data-html-parent-target");
+            element = this.listBodys.registryListBody.querySelector(elementId);
+         }
+         break;
+      case "AASHostURL":
+         this.storageHandler.removeAASHost(url);
+         break;
+      case "RegistryHostURL":
+         this.storageHandler.removeRegistryHost(url);
+         break;
+      default:
+         return;
+      }
+      element.remove();
+   }
+}
+
