@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ParserBase, TreeObject } from "./ParserBase.js"
+import { ParserBase, TreeObject, metamodelType } from "./ParserBase.js"
 import { Ajax } from "./AjaxHelper.js";
 import { AASWebStorageHandler } from "./AASWebStorageHandler.js"
 
@@ -41,7 +41,7 @@ export class AASParser extends ParserBase {
       this.submodelsURL  = "";
 
       this.AASRoot = this.newTreeObject("AASRoot", null,
-                                        "AssetAdministrationShellRoot");
+                                        metamodelType.AssetAdministrationShellRoot);
       this.treeRoot = this.AASRoot;
    }
 
@@ -98,7 +98,7 @@ export class AASParser extends ParserBase {
       }
 
       var error = that.newTreeObject("AASError", object,
-         "tError");
+         metamodelType.Error);
       that.parseString("Could not retrieve AAS","Description", error);
       that.parseString(URL, "URL", error);
       if (status.status != 0)
@@ -121,7 +121,7 @@ export class AASParser extends ParserBase {
       var object = this.object;
       var that = this.parentObj;
       var error = that.newTreeObject("SubmodelError" + URL, object,
-         "tError");
+         metamodelType.Error);
       that.parseString("Could not retrieve Submodel","Description", error);
       that.parseString(URL, "URL", error);
       if (status.status != 0)

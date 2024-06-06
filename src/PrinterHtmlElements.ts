@@ -39,7 +39,8 @@ export class PrinterHtmlElements extends Base {
 
    tAASBrowserURL: string;
    tSubmodelBrowserURL: string;
-   tRegistryBrowserURL: string;
+   tAASRegistryBrowserURL: string;
+   tSubmodelRegistryBrowserURL: string;
    constructor(rootElement) {
       super();
       /* bind this pointer */
@@ -85,7 +86,8 @@ export class PrinterHtmlElements extends Base {
       tempURL = tempURL.substring(0, tempURL.lastIndexOf("/") + 1);
       this.tAASBrowserURL = tempURL + "aasBrowser.html";
       this.tSubmodelBrowserURL = tempURL + "submodelBrowser.html";
-      this.tRegistryBrowserURL = tempURL + "registryBrowser.html";
+      this.tAASRegistryBrowserURL = tempURL + "aasRegistryBrowser.html";
+      this.tSubmodelRegistryBrowserURL = tempURL + "submodelRegistryBrowser.html";
    }
 
    iconByType(object, mimeType = "") {

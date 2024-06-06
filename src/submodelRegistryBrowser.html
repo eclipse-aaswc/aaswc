@@ -8,7 +8,7 @@
 <!-- Lenze Specific Styles -->
 <link rel="stylesheet" href="css/lenze/lenze.min.css">
 
-<title>Asset Administration Shell - Browser</title>
+<title>Asset Administration Shell - Registry Viewer</title>
 
 <link rel="icon" type="image/png" sizes="192x192" href="local_icons/IDTA/2022-03-29_IDTA_AAS-Logo_Final_blue_transparent.png">
 
@@ -16,7 +16,7 @@
 <script src="libraries/popper.js/core/2.11.8/popper.min.js"></script>
 <script src="./libraries/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 
-<script type="module" src="AASPrinter.start.js"></script>
+<script type="module" src="SubmodelRegistryPrinter.start.js"></script>
 <script type="module" src="AASListPrinter.start.js"></script>
 
 </head>
@@ -32,16 +32,16 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a class="nav-link active">AAS Viewer</a>
+        <a class="nav-link nav-right" href="aasBrowser.html" onclick="">AAS Viewer</a>
       </li>
-        <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link nav-right" href="submodelBrowser.html" onclick="">Submodel Viewer</a>
       </li>
-        <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link nav-right" href="aasRegistryBrowser.html" onclick="">AAS Registry Viewer</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link nav-right" href="submodelRegistryBrowser.html" onclick="">Submodel Registry Viewer</a>
+        <a class="nav-link active">Submodel Registry Viewer</a>
       </li>
       <li class="nav-item">
         <a class="nav-link nav-right" id="showAASModal" onclick="">Select Endpoint</a>

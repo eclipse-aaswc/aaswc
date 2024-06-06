@@ -5,7 +5,8 @@ export * from "./ParserBase.js"
 
 export * from "./AASParser.js"
 export * from "./SubmodelParser.js"
-export * from "./RegistryParser.js"
+export * from "./AASRegistryParser.js"
+export * from "./SubmodelRegistryParser.js"
 
 export * from "./PrinterHtmlElements.js"
 export * from "./AASPrinterMetamodelElements.js"
@@ -13,7 +14,8 @@ export * from "./AASPrinterMetamodelElements.js"
 export * from "./AASWebStorageHandler.js"
 
 export * from "./AASPrinterGeneric.js"
-export * from "./RegistryPrinterGeneric.js"
+export * from "./AASRegistryPrinterGeneric.js"
+export * from "./SubmodelRegistryPrinterGeneric.js"
 export * from "./SubmodelPrinterGeneric.js"
 
 export * from "./AASListPrinter.js"

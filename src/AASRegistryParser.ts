@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Ajax, ParserBase, TreeObject, AASWebStorageHandler } from "./imports.js";
+import { Ajax, ParserBase, TreeObject, AASWebStorageHandler, metamodelType } from "./imports.js";
 
-export class RegistryParser extends ParserBase {
+export class AASRegistryParser extends ParserBase {
    registryPrinter: any;
    //AjaxHelper: Ajax.AjaxHelper;
 
@@ -30,8 +30,8 @@ export class RegistryParser extends ParserBase {
       /* Variables */
       this.registryURL = "";
 
-      this.RegistryRoot = this.newTreeObject("RegistryRoot", null,
-                                        "AssetAdministrationShellRegistryRoot");
+      this.RegistryRoot = this.newTreeObject("AASRegistryRoot", null,
+                                        metamodelType.AssetAdministrationShellRegistryRoot);
       this.treeRoot = this.RegistryRoot;
 
       this.aasStorageHandler = new AASWebStorageHandler();
@@ -42,7 +42,7 @@ export class RegistryParser extends ParserBase {
       if (regURL) {
          regURL = decodeURIComponent(regURL);
          regURL = this.trimSuffixSlash(regURL);
-         this.aasStorageHandler.setCurrentRegistry(regURL);
+         this.aasStorageHandler.setCurrentAASRegistry(regURL);
       }
 
       // Set extra base URL
@@ -61,7 +61,7 @@ export class RegistryParser extends ParserBase {
    }
 
    addURLToList(URL) {
-      this.aasStorageHandler.addAASURL(URL, true);
+      this.aasStorageHandler.addAASRegistryURL(URL, true);
    }
 
    trimSuffixSlash(URL) {
@@ -77,9 +77,9 @@ export class RegistryParser extends ParserBase {
       var that = this.parentObj;
 
       if (status.status == 401) {
-         var error = that.newTreeObject("RegistryError", object,
-            "tError");
-         that.parseString("Could not retrieve the Registry", "Description", 
+         var error = that.newTreeObject("AASRegistryError", object,
+            metamodelType.Error);
+         that.parseString("Could not retrieve the AAS Registry", "Description", 
             error);
          that.parseString(URL, "URL", error);
          that.parseValue(status.status, "ErrorCode", error);
@@ -97,24 +97,25 @@ export class RegistryParser extends ParserBase {
       }
 
       var error = that.newTreeObject("RegistryError", object,
-         "tError");
-      that.parseString("Could not retrieve the Registry", "Description", error);
+         metamodelType.Error);
+      that.parseString("Could not retrieve the AAS Registry", "Description", error);
       that.parseString(URL, "URL", error);
       if (status.status != 0)
          that.parseValue(status.status, "ErrorCode", error);
       that.registryPrinter.printError(error, "");
    }
 
-   parseRegistryRaw(JSON) {
+   parseRegistryRaw(JSON: any) {
       var RegistryJSON = JSON;
-      if (JSON.hasOwnProperty("entity"))
-         RegistryJSON = RegistryJSON.entity;
-      var registry = this.parseRegistry(RegistryJSON, this.RegistryRoot);
+      if (JSON.hasOwnProperty("result"))
+         RegistryJSON = RegistryJSON.result;
+      var registry = this.parseAASRegistryV3(RegistryJSON, this.RegistryRoot);
       
-      this.aasStorageHandler.writeAASMap();
+      this.aasStorageHandler.writeAASRegistryMap();
 
       console.log(registry);
 
-      this.registryPrinter.printRegistry(this.registryPrinter.rootElement, registry);
+      this.registryPrinter.printAASRegistry(this.registryPrinter.rootElement,
+         registry);
    }
 }

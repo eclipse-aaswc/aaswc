@@ -5,47 +5,80 @@
   
 export class AASWebStorageHandler {
    aasStorageSet: string;
-   registryStorageSet: string;
+   submodelStorageSet: string;
+   aasRegistryStorageSet: string;
+   submodelRegistryStorageSet: string;
    currentAAS: string;
-   currentRegistry: string;
-   
+   currentSubmodel: string;
+   currentAASRegistry: string;
+   currentSubmodelRegistry: string;
+
    aasMap: any;
-   registryMap: any;
-   
+   submodelMap: any;
+   aasRegistryMap: any;
+   submodelRegistryMap: any;
+
    constructor() {
       this.setCurrentAAS = this.setCurrentAAS.bind(this);
-      this.setCurrentRegistry = this.setCurrentRegistry.bind(this);
+      this.setCurrentSubmodel = this.setCurrentSubmodel.bind(this);
+      this.setCurrentAASRegistry = this.setCurrentAASRegistry.bind(this);
+      this.setCurrentSubmodelRegistry =
+         this.setCurrentSubmodelRegistry.bind(this);
       this.getCurrentAAS = this.getCurrentAAS.bind(this);
-      this.getCurrentRegistry = this.getCurrentRegistry.bind(this);
+      this.getCurrentSubmodel = this.getCurrentSubmodel.bind(this);
+      this.getCurrentAASRegistry = this.getCurrentAASRegistry.bind(this);
+      this.getCurrentSubmodelRegistry = this.getCurrentSubmodelRegistry.bind(this);
       this.addAASURL = this.addAASURL.bind(this);
-      this.addRegistryURL = this.addRegistryURL.bind(this);
+      this.addSubmodelURL = this.addSubmodelURL.bind(this);
+      this.addAASRegistryURL = this.addAASRegistryURL.bind(this);
+      this.addSubmodelRegistryURL = this.addSubmodelRegistryURL.bind(this);
       this.addURLToMap = this.addURLToMap.bind(this);
       this.removeAASURL = this.removeAASURL.bind(this);
-      this.removeRegistryURL = this.removeRegistryURL.bind(this);
+      this.removeSubmodelURL = this.removeSubmodelURL.bind(this);
+      this.removeAASRegistryURL = this.removeAASRegistryURL.bind(this);
+      this.removeSubmodelRegistryURL = this.removeSubmodelRegistryURL.bind(this);
       this.removeURLFromMap = this.removeURLFromMap.bind(this);
       this.removeAASHost = this.removeAASHost.bind(this);
-      this.removeRegistryHost = this.removeRegistryHost.bind(this);
+      this.removeSubmodelHost = this.removeSubmodelHost.bind(this);
+      this.removeAASRegistryHost = this.removeAASRegistryHost.bind(this);
+      this.removeSubmodelRegistryHost =
+         this.removeSubmodelRegistryHost.bind(this);
       this.removeHostFromMap = this.removeHostFromMap.bind(this);
       this.AASHostExists = this.AASHostExists.bind(this);
-      this.registryHostExists = this.registryHostExists.bind(this);
+      this.SubmodelHostExists = this.SubmodelHostExists.bind(this);
+      this.aasRegistryHostExists = this.aasRegistryHostExists.bind(this);
+      this.submodelRegistryHostExists =
+         this.submodelRegistryHostExists.bind(this);
       this.hostExists = this.hostExists.bind(this);
       this.getAASMap = this.getAASMap.bind(this);
-      this.getRegistryMap = this.getRegistryMap.bind(this);
+      this.getSubmodelMap = this.getSubmodelMap.bind(this);
+      this.getAASRegistryMap = this.getAASRegistryMap.bind(this);
+      this.getSubmodelRegistryMap = this.getSubmodelRegistryMap.bind(this);
       this.readMapFromStorage = this.readMapFromStorage.bind(this);
       this.writeAASMap = this.writeAASMap.bind(this);
-      this.writeRegistryMap = this.writeRegistryMap.bind(this);
+      this.writeSubmodelMap = this.writeSubmodelMap.bind(this);
+      this.writeAASRegistryMap = this.writeAASRegistryMap.bind(this);
+      this.writeSubmodelRegistryMap = this.writeSubmodelRegistryMap.bind(this);
       this.writeMap = this.writeMap.bind(this);
 
       this.aasStorageSet = "aasMap";
-      this.registryStorageSet = "registryMap";
+      this.submodelStorageSet = "submodelMap";
+      this.aasRegistryStorageSet = "aasRegistryMap";
+      this.submodelRegistryStorageSet = "submodelRegistryMap";
       this.currentAAS = "currentAAS";
-      this.currentRegistry = "currentRegistry";
+      this.currentSubmodel = "currentSubmodel";
+      this.currentAASRegistry = "currentAASRegistry";
+      this.currentSubmodelRegistry = "currentSubmodelRegistry";
 
       this.aasMap = null;
-      this.registryMap = null;
+      this.submodelMap = null;
+      this.aasRegistryMap = null;
+      this.submodelRegistryMap = null;
       
       this.getAASMap();
-      this.getRegistryMap();
+      this.getSubmodelMap();
+      this.getAASRegistryMap();
+      this.getSubmodelRegistryMap();
    }
 
    setCurrentAAS(aasURL) {
@@ -53,9 +86,19 @@ export class AASWebStorageHandler {
       this.addAASURL(aasURL);
    }
 
-   setCurrentRegistry(registryURL) {
-      window.localStorage.setItem(this.currentRegistry, registryURL);
-      this.addRegistryURL(registryURL);
+   setCurrentSubmodel(smURL) {
+      window.localStorage.setItem(this.currentSubmodel, smURL);
+      this.addSubmodelURL(smURL);
+   }
+
+   setCurrentAASRegistry(registryURL) {
+      window.localStorage.setItem(this.currentAASRegistry, registryURL);
+      this.addAASRegistryURL(registryURL);
+   }
+
+   setCurrentSubmodelRegistry(registryURL) {
+      window.localStorage.setItem(this.currentSubmodelRegistry, registryURL);
+      this.addSubmodelRegistryURL(registryURL);
    }
 
    getCurrentAAS() {
@@ -65,8 +108,22 @@ export class AASWebStorageHandler {
       return null;
    }
 
-   getCurrentRegistry() {
-      var storageData = window.localStorage.getItem(this.currentRegistry);
+   getCurrentSubmodel() {
+      var storageData = window.localStorage.getItem(this.currentSubmodel);
+      if (storageData)
+         return storageData;
+      return null;
+   }
+
+   getCurrentAASRegistry() {
+      var storageData = window.localStorage.getItem(this.currentAASRegistry);
+      if (storageData)
+         return storageData;
+      return null;
+   }
+
+   getCurrentSubmodelRegistry() {
+      var storageData = window.localStorage.getItem(this.currentSubmodelRegistry);
       if (storageData)
          return storageData;
       return null;
@@ -83,12 +140,34 @@ export class AASWebStorageHandler {
       return false;
    }
 
-   addRegistryURL(registryURL, skipCommit = false) {
-      var ret = this.addURLToMap(registryURL, this.registryMap);
+   addSubmodelURL(smURL, skipCommit = false) {
+      var ret = this.addURLToMap(smURL, this.submodelMap);
       if (ret)
-         this.registryMap = ret;
+         this.submodelMap = ret;
       if (!skipCommit)
-         this.writeRegistryMap();
+         this.writeSubmodelMap();
+      if (ret)
+         return true;
+      return false;
+   }
+
+   addAASRegistryURL(aasRegistryURL, skipCommit = false) {
+      var ret = this.addURLToMap(aasRegistryURL, this.aasRegistryMap);
+      if (ret)
+         this.aasRegistryMap = ret;
+      if (!skipCommit)
+         this.writeAASRegistryMap();
+      if (ret)
+         return true;
+      return false;
+   }
+
+   addSubmodelRegistryURL(smRegistryURL, skipCommit = false) {
+      var ret = this.addURLToMap(smRegistryURL, this.submodelRegistryMap);
+      if (ret)
+         this.submodelRegistryMap = ret;
+      if (!skipCommit)
+         this.writeSubmodelRegistryMap();
       if (ret)
          return true;
       return false;
@@ -131,12 +210,34 @@ export class AASWebStorageHandler {
       return false;
    }
 
-   removeRegistryURL(registryURL, skipCommit = false) {
-      var ret = this.removeURLFromMap(registryURL, this.registryMap);
+   removeSubmodelURL(smURL, skipCommit = false) {
+      var ret = this.removeURLFromMap(smURL, this.submodelMap);
       if (ret)
-         this.registryMap = ret;
+         this.submodelMap = ret;
       if (!skipCommit)
-         this.writeRegistryMap();
+         this.writeSubmodelMap();
+      if (ret)
+         return true;
+      return false;
+   }
+
+   removeAASRegistryURL(aasRegistryURL, skipCommit = false) {
+      var ret = this.removeURLFromMap(aasRegistryURL, this.aasRegistryMap);
+      if (ret)
+         this.aasRegistryMap = ret;
+      if (!skipCommit)
+         this.writeAASRegistryMap();
+      if (ret)
+         return true;
+      return false;
+   }
+
+   removeSubmodelRegistryURL(smRegistryURL, skipCommit = false) {
+      var ret = this.removeURLFromMap(smRegistryURL, this.submodelRegistryMap);
+      if (ret)
+         this.submodelRegistryMap = ret;
+      if (!skipCommit)
+         this.writeSubmodelRegistryMap();
       if (ret)
          return true;
       return false;
@@ -159,7 +260,7 @@ export class AASWebStorageHandler {
    removeAASHost(hostURL, skipCommit = false) {
       var ret = this.removeHostFromMap(hostURL, this.aasMap);
       if (ret)
-         this.registryMap = ret;
+         this.aasMap = ret;
       if (!skipCommit)
          this.writeAASMap();
       if (ret)
@@ -167,12 +268,35 @@ export class AASWebStorageHandler {
       return false;
    }
 
-   removeRegistryHost(registryURL, skipCommit = false) {
-      var ret = this.removeHostFromMap(registryURL, this.registryMap);
+   removeSubmodelHost(hostURL, skipCommit = false) {
+      var ret = this.removeHostFromMap(hostURL, this.submodelMap);
       if (ret)
-         this.registryMap = ret;
+         this.submodelMap = ret;
       if (!skipCommit)
-         this.writeRegistryMap();
+         this.writeSubmodelMap();
+      if (ret)
+         return true;
+      return false;
+   }
+
+   removeAASRegistryHost(aasRegistryURL, skipCommit = false) {
+      var ret = this.removeHostFromMap(aasRegistryURL, this.aasRegistryMap);
+      if (ret)
+         this.aasRegistryMap = ret;
+      if (!skipCommit)
+         this.writeAASRegistryMap();
+      if (ret)
+         return true;
+      return false;
+   }
+
+   removeSubmodelRegistryHost(submodelRegistryURL, skipCommit = false) {
+      var ret = this.removeHostFromMap(submodelRegistryURL,
+         this.submodelRegistryMap);
+      if (ret)
+         this.submodelRegistryMap = ret;
+      if (!skipCommit)
+         this.writeSubmodelRegistryMap();
       if (ret)
          return true;
       return false;
@@ -190,8 +314,16 @@ export class AASWebStorageHandler {
       return this.hostExists(hostURL, this.aasMap);
    }
 
-   registryHostExists(hostURL, map = null) {
-      return this.hostExists(hostURL, this.registryMap);
+   SubmodelHostExists(hostURL, map = null) {
+      return this.hostExists(hostURL, this.submodelMap);
+   }
+
+   aasRegistryHostExists(hostURL, map = null) {
+      return this.hostExists(hostURL, this.aasRegistryMap);
+   }
+
+   submodelRegistryHostExists(hostURL, map = null) {
+      return this.hostExists(hostURL, this.submodelRegistryMap);
    }
 
    hostExists(hostURL, map) {
@@ -208,12 +340,27 @@ export class AASWebStorageHandler {
       return this.aasMap;
    }
 
-   getRegistryMap() {
-      if (this.registryMap)
-         return this.registryMap;
-      this.registryMap = 
-         this.readMapFromStorage(this.registryStorageSet);
-      return this.registryMap;
+   getSubmodelMap() {
+      if (this.submodelMap)
+         return this.submodelMap;
+      this.submodelMap = this.readMapFromStorage(this.submodelStorageSet);
+      return this.submodelMap;
+   }
+
+   getAASRegistryMap() {
+      if (this.aasRegistryMap)
+         return this.aasRegistryMap;
+      this.aasRegistryMap = 
+         this.readMapFromStorage(this.aasRegistryStorageSet);
+      return this.aasRegistryMap;
+   }
+
+   getSubmodelRegistryMap() {
+      if (this.submodelRegistryMap)
+         return this.submodelRegistryMap;
+      this.submodelRegistryMap = 
+         this.readMapFromStorage(this.submodelRegistryStorageSet);
+      return this.submodelRegistryMap;
    }
 
    readMapFromStorage(storageIndicator) {
@@ -236,8 +383,16 @@ export class AASWebStorageHandler {
       this.writeMap(this.aasMap, this.aasStorageSet);
    }
 
-   writeRegistryMap() {
-      this.writeMap(this.registryMap, this.registryStorageSet);
+   writeSubmodelMap() {
+      this.writeMap(this.submodelMap, this.submodelStorageSet);
+   }
+
+   writeAASRegistryMap() {
+      this.writeMap(this.aasRegistryMap, this.aasRegistryStorageSet);
+   }
+
+   writeSubmodelRegistryMap() {
+      this.writeMap(this.submodelRegistryMap, this.submodelRegistryStorageSet);
    }
 
    writeMap(map, storageIndicator) {

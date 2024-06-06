@@ -7,14 +7,32 @@ import { AASColors, AASWebStorageHandler, PrinterHtmlElements } from "./imports.
 
 import * as bootstrap from "./libraries/bootstrap/5.3.3/js/bootstrap.bundle.js";
 
-//import * as bootstrap from "./../node_modules/bootstrap/dist/js/bootstrap.js";
-//import { Modal } from "./libraries/bootstrap/5.3.3/js/bootstrap.bundle.js";
-//import {Modal} from "./../node_modules/bootstrap/js/dist/modal.js";
+
+enum listTypes {
+   AAS = "AAS",
+   Submodel = "Submodel",
+   AASRegistry = "AASRegistry",
+   SubmodelRegistry= "SubmodelRegistry",
+}
+
+enum dataTypes {
+   AASURL = "AASURL",
+   SubmodelURL = "SubmodelURL",
+   AASRegistryURL = "AASRegistryURL",
+   SubmodelRegistryURL = "SubmodelRegistryURL",
+   AASHostURL = "AASHostURL",
+   SubmodelHostURL = "SubmodelHostURL",
+   AASRegistryHostURL = "AASRegistryHostURL",
+   SubmodelRegistryHostURL = "SubmodelRegistryHostURL",
+}
 
 class ListBodys {
    aasListBody: HTMLElement;
-   registryListBody: HTMLElement;
+   submodelListBody: HTMLElement;
+   aasRegistryListBody: HTMLElement;
+   submodelRegistryListBody: HTMLElement;
 }
+
 export class AASListPrinter extends PrinterHtmlElements {
    storageHandler: AASWebStorageHandler;
    
@@ -41,7 +59,9 @@ export class AASListPrinter extends PrinterHtmlElements {
       this.printHostEntries = this.printHostEntries.bind(this);
       this.printURLEntry = this.printURLEntry.bind(this);
       this.removeAASEntry = this.removeAASEntry.bind(this);
-      this.removeRegistryEntry = this.removeRegistryEntry.bind(this);
+      this.removeSubmodelEntry = this.removeSubmodelEntry.bind(this);
+      this.removeAASRegistryEntry = this.removeAASRegistryEntry.bind(this);
+      this.removeSubmodelRegistryEntry = this.removeSubmodelRegistryEntry.bind(this);
       this.removeEntry = this.removeEntry.bind(this);
 
       this.htmlParent = htmlParent;
@@ -64,11 +84,20 @@ export class AASListPrinter extends PrinterHtmlElements {
       this.printDialogs(this.modalBody);
       this.listBodys = this.printListBodys(this.modalBody, this.listBodys);
 
-      var aasEntries = this.getHostEntriesByType("AAS");
-      this.printHostEntries(this.listBodys.aasListBody, aasEntries, "AAS");
-      var registryEntries = this.getHostEntriesByType("Registry");
-      this.printHostEntries(this.listBodys.registryListBody, registryEntries,
-         "Registry");
+      var aasEntries = this.getHostEntriesByType(listTypes.AAS);
+      this.printHostEntries(this.listBodys.aasListBody, aasEntries,
+         listTypes.AAS);
+      var smEntries = this.getHostEntriesByType(listTypes.Submodel);
+      this.printHostEntries(this.listBodys.submodelListBody, smEntries,
+         listTypes.Submodel);
+      var aasRegistryEntries =
+         this.getHostEntriesByType(listTypes.AASRegistry);
+      this.printHostEntries(this.listBodys.aasRegistryListBody,
+         aasRegistryEntries, listTypes.AASRegistry);
+      var submodelRegistryEntries =
+         this.getHostEntriesByType(listTypes.SubmodelRegistry);
+      this.printHostEntries(this.listBodys.submodelRegistryListBody,
+         submodelRegistryEntries, listTypes.SubmodelRegistry);
 
       var modal = new window.bootstrap.Modal(this.toggleElement);
       modal.show();
@@ -137,31 +166,49 @@ export class AASListPrinter extends PrinterHtmlElements {
    }
 
    printDialogs(parentElement) {
+      var aasRegistryDialogCtn =this.printNode(parentElement, null, "",
+         "New AAS Registry", "bg-white", false, "text-black", 3).container;
+      var submodelRegistryDialogCtn =this.printNode(parentElement, null, "",
+         "New Submodel Registry", "bg-white", false, "text-black", 3).container;
       var aasDialogCtn = this.printNode(parentElement, null, "",
          "New AAS", "bg-white", false, "text-black", 3).container;
-      var registryDialogCtn =this.printNode(parentElement, null, "",
-         "New Registry", "bg-white", false, "text-black", 3).container;
-         
+      var submodelDialogCtn = this.printNode(parentElement, null, "",
+         "New Submodel", "bg-white", false, "text-black", 3).container;
+
+      aasRegistryDialogCtn.appendChild(document.createTextNode("Placeholder"));
+      submodelRegistryDialogCtn.appendChild(document.createTextNode("Placeholder"));
       aasDialogCtn.appendChild(document.createTextNode("Placeholder"));
-      registryDialogCtn.appendChild(document.createTextNode("Placeholder"));
+      submodelDialogCtn.appendChild(document.createTextNode("Placeholder"));
+
    }
 
    printListBodys(parentElement, listBodys) {
+      listBodys.aasRegistryListBody = this.printNode(parentElement, null, "",
+         "AAS Registry List", "bg-white", false, "text-black", 3).container;
+      listBodys.submodelRegistryListBody = this.printNode(parentElement, null, "",
+         "Submodel Registry List", "bg-white", false, "text-black", 3).container;
       listBodys.aasListBody = this.printNode(parentElement, null, "",
          "AAS List", "bg-white", false, "text-black", 3).container;
-      listBodys.registryListBody = this.printNode(parentElement, null, "",
-         "Registry List", "bg-white", false, "text-black", 3).container;
+      listBodys.submodelListBody = this.printNode(parentElement, null, "",
+         "Submodel List", "bg-white", false, "text-black", 3).container;
+
       return listBodys;
    }
    
-   getHostEntriesByType(type) {
-      if (type == "AAS")
+   getHostEntriesByType(type: listTypes) {
+      switch (type) {
+      case listTypes.AAS:
          return this.storageHandler.getAASMap();
-      else
-         return this.storageHandler.getRegistryMap();
+      case listTypes.Submodel:
+         return this.storageHandler.getSubmodelMap();
+      case listTypes.AASRegistry:
+         return this.storageHandler.getAASRegistryMap();
+      case listTypes.SubmodelRegistry:
+         return this.storageHandler.getSubmodelRegistryMap();
+      }
    }
 
-   printHostEntries(parentElement, aasMap, type) {
+   printHostEntries(parentElement, aasMap, type: listTypes) {
       for (var [key, urlMap] of aasMap) {
          var node = this.printNode(parentElement, null, key, "Host", 
                                         this.colors.AASColor, false);
@@ -172,14 +219,25 @@ export class AASListPrinter extends PrinterHtmlElements {
          img.setAttribute("data-html-target", "#" + node.contentRow.id);
 
          node.contentRow.setAttribute("data-bs-target", key);
-         if (type == "AAS") {
+         switch (type) {
+         case listTypes.AAS:
             img.onclick = this.removeAASEntry;
-            node.contentRow.setAttribute("data-type", "AASHostURL");
+            node.contentRow.setAttribute("data-type", dataTypes.AASHostURL);
+            break;
+         case listTypes.Submodel:
+            img.onclick = this.removeSubmodelEntry;
+            node.contentRow.setAttribute("data-type", dataTypes.SubmodelHostURL);
+            break;
+         case listTypes.AASRegistry:
+            img.onclick = this.removeAASRegistryEntry;
+            node.contentRow.setAttribute("data-type", dataTypes.AASRegistryHostURL);
+            break;
+         case listTypes.SubmodelRegistry:
+            img.onclick = this.removeSubmodelRegistryEntry;
+            node.contentRow.setAttribute("data-type", dataTypes.SubmodelRegistryHostURL);
+            break;
          }
-         else {
-            img.onclick = this.removeRegistryEntry;
-            node.contentRow.setAttribute("data-type", "RegistryHostURL");
-         }
+
          var div_img = document.createElement("div");
          div_img.appendChild(img);
 
@@ -188,10 +246,10 @@ export class AASListPrinter extends PrinterHtmlElements {
          div_img.classList.add("flex-wrap");
          div_img.classList.add("align-items-center");
          div_img.classList.add("p-0");
-         
+
          // TODO: Content row
          //node.title.contentRow.appendChild(div_img);
-         
+
          for (var [key2, entry] of urlMap) {
             this.printURLEntry(node.container, node.contentRow, entry, "URL", 
                type);
@@ -199,12 +257,23 @@ export class AASListPrinter extends PrinterHtmlElements {
       }
    }
 
-   printURLEntry(HTMLElement, parentElement, url, valueName, type) {
+   printURLEntry(HTMLElement, parentElement, url, valueName, type: listTypes) {
       var browserURL = null;
-      if (type == "AAS")
+      switch (type) {
+      case listTypes.AAS:
          browserURL = this.tAASBrowserURL;
-      else
-         browserURL = this.tRegistryBrowserURL;
+         break;
+      case listTypes.Submodel:
+         browserURL = this.tSubmodelBrowserURL;
+         break;
+      case listTypes.AASRegistry:
+         browserURL = this.tAASRegistryBrowserURL;
+         break;
+      case listTypes.SubmodelRegistry:
+         browserURL = this.tSubmodelRegistryBrowserURL;
+         break;
+      }
+
       var fullUrl = browserURL + "?endpoint=" + encodeURIComponent(url);
       var bodyElement = this.createHTMLLink(fullUrl, 
          document.createTextNode(url), "_blank");
@@ -234,13 +303,23 @@ export class AASListPrinter extends PrinterHtmlElements {
       var row = this.createRowWithContent(HTMLElement, 
          Array("col-auto", "col", "col-auto"), content, true);
          row.setAttribute("data-bs-target", url);
-         if (type == "AAS") {
+         switch (type) {
+         case listTypes.AAS:
             img.onclick = this.removeAASEntry;
-            row.setAttribute("data-type", "AASURL");
-         }
-         else {
-            img.onclick = this.removeRegistryEntry;
-            row.setAttribute("data-type", "RegistryURL");
+            row.setAttribute("data-type", dataTypes.AASURL);
+            break;
+         case listTypes.Submodel:
+            img.onclick = this.removeSubmodelEntry;
+            row.setAttribute("data-type", dataTypes.SubmodelURL);
+            break;
+         case listTypes.AASRegistry:
+            img.onclick = this.removeAASRegistryEntry;
+            row.setAttribute("data-type", dataTypes.AASRegistryURL);
+            break;
+         case listTypes.SubmodelRegistry:
+            img.onclick = this.removeSubmodelRegistryEntry;
+            row.setAttribute("data-type", dataTypes.SubmodelRegistryURL);
+            break;
          }
 
       img.setAttribute("data-html-target", "#" + row.id);
@@ -248,42 +327,82 @@ export class AASListPrinter extends PrinterHtmlElements {
    }
 
    removeAASEntry(target) {
-      this.removeEntry(target, "AAS");
+      this.removeEntry(target, listTypes.AAS);
    }
 
-   removeRegistryEntry(target) {
-      this.removeEntry(target, "Registry");
+   removeSubmodelEntry(target) {
+      this.removeEntry(target, listTypes.Submodel);
    }
 
-   removeEntry(target, targetType) {
+   removeAASRegistryEntry(target) {
+      this.removeEntry(target, listTypes.AASRegistry);
+   }
+
+   removeSubmodelRegistryEntry(target) {
+      this.removeEntry(target, listTypes.SubmodelRegistry);
+   }
+
+   removeEntry(target, targetType: listTypes) {
       var elementId = target.target.getAttribute("data-html-target");
       var element = null;
-      if (targetType == "AAS")
+      
+      switch (targetType) {
+      case listTypes.AAS:
          element = this.listBodys.aasListBody.querySelector(elementId);
-      else
-         element = this.listBodys.registryListBody.querySelector(elementId);
+         break;
+      case listTypes.Submodel:
+         element = this.listBodys.submodelListBody.querySelector(elementId);
+         break;
+      case listTypes.AASRegistry:
+         element = this.listBodys.aasRegistryListBody.querySelector(elementId);
+         break;
+      case listTypes.SubmodelRegistry:
+         element = this.listBodys.submodelRegistryListBody.querySelector(elementId);
+         break;
+      }
+
       var url = element.getAttribute("data-bs-target");
       var type = element.getAttribute("data-type");
       switch (type) {
-      case "AASURL":
+      case dataTypes.AASURL:
          this.storageHandler.removeAASURL(url);
          if (!this.storageHandler.AASHostExists(url)) {
             elementId = target.target.getAttribute("data-html-parent-target");
             element = this.listBodys.aasListBody.querySelector(elementId);
          }
          break;
-     case "RegistryURL":
-         this.storageHandler.removeRegistryURL(url);
-         if (!this.storageHandler.registryHostExists(url)) {
+      case dataTypes.SubmodelURL:
+         this.storageHandler.removeSubmodelURL(url);
+         if (!this.storageHandler.SubmodelHostExists(url)) {
             elementId = target.target.getAttribute("data-html-parent-target");
-            element = this.listBodys.registryListBody.querySelector(elementId);
+            element = this.listBodys.submodelListBody.querySelector(elementId);
          }
          break;
-      case "AASHostURL":
-         this.storageHandler.removeAASHost(url);
+     case dataTypes.AASRegistryURL:
+         this.storageHandler.removeAASRegistryURL(url);
+         if (!this.storageHandler.aasRegistryHostExists(url)) {
+            elementId = target.target.getAttribute("data-html-parent-target");
+            element = this.listBodys.aasRegistryListBody.querySelector(elementId);
+         }
          break;
-      case "RegistryHostURL":
-         this.storageHandler.removeRegistryHost(url);
+     case dataTypes.SubmodelRegistryURL:
+         this.storageHandler.removeSubmodelRegistryURL(url);
+         if (!this.storageHandler.submodelRegistryHostExists(url)) {
+            elementId = target.target.getAttribute("data-html-parent-target");
+            element =
+               this.listBodys.submodelRegistryListBody.querySelector(elementId);
+         }
+         break;
+      case dataTypes.AASHostURL:
+         this.storageHandler.removeAASHost(url);
+      case dataTypes.SubmodelHostURL:
+         this.storageHandler.removeSubmodelHost(url);
+         break;
+      case dataTypes.AASRegistryHostURL:
+         this.storageHandler.removeAASRegistryHost(url);
+         break;
+      case dataTypes.SubmodelRegistryURL:
+         this.storageHandler.removeSubmodelRegistryHost(url);
          break;
       default:
          return;

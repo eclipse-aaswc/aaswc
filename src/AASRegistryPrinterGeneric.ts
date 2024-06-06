@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AASPrinterMetamodelElements, RegistryParser } from "./imports.js";
+import { AASPrinterMetamodelElements, AASRegistryParser } from "./imports.js";
 
 
-export class RegistryPrinterGeneric extends AASPrinterMetamodelElements {
-   registryParser: RegistryParser;
+export class AASRegistryPrinterGeneric extends AASPrinterMetamodelElements {
+   registryParser: AASRegistryParser;
 
    constructor() {
       super(document.getElementById("rootElement"));
@@ -18,7 +18,7 @@ export class RegistryPrinterGeneric extends AASPrinterMetamodelElements {
       //this.findElement = this.findElement.bind(this);
       /* variables */
       this.treeRoot = null;
-      this.registryParser = new RegistryParser(this);
+      this.registryParser = new AASRegistryParser(this);
 
       /*
        * We need to make sure the container for our async submodels is ready
@@ -33,10 +33,5 @@ export class RegistryPrinterGeneric extends AASPrinterMetamodelElements {
       // load: /api/v1/registry
    }
 
-}
-
-//export function onLoadRegistryPrinter() {
-export const onLoadRegistryPrinter = (): void => {
-   var registryPrinter = new RegistryPrinterGeneric();
 }
 

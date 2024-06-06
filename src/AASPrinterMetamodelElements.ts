@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AASColors, PrinterHtmlElements } from "./imports.js"
+import { AASColors, PrinterHtmlElements, TreeObject, metamodelType } from "./imports.js"
 
 class AjaxCallContext {
    context: any;
@@ -45,6 +45,7 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.printError = this.printError.bind(this);
       this.print = this.print.bind(this);
       this.printAsset = this.printAsset.bind(this);
+      this.printSpecifcAssetId = this.printSpecifcAssetId.bind(this);
       this.printArray = this.printArray.bind(this);
       this.printKeys = this.printKeys.bind(this);
       this.printKey = this.printKey.bind(this);
@@ -84,11 +85,15 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.printString = this.printString.bind(this);
       this.printValue = this.printValue.bind(this);
       /* AAS Part 2 */
-      this.printRegistry = this.printRegistry.bind(this);
+      this.printAASRegistry = this.printAASRegistry.bind(this);
+      this.printSubmodelRegistry = this.printSubmodelRegistry.bind(this);
       this.printAssetAdministrationShellDescriptor =
          this.printAssetAdministrationShellDescriptor.bind(this);
       this.printSubmodelDescriptor = this.printSubmodelDescriptor.bind(this);
       this.printEndpoint = this.printEndpoint.bind(this);
+      this.printProtocolInformation = this.printProtocolInformation.bind(this);
+      this.printSecurityAttributeObject =
+         this.printSecurityAttributeObject.bind(this);
       /* Helper */
       this.handleLinkTypes = this.handleLinkTypes.bind(this);
       this.isLink = this.isLink.bind(this);
@@ -154,7 +159,7 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       //this.rootElement.appendChild(HTMLObject);
    }
 
-   print(HTMLElement, object) {
+   print(HTMLElement: HTMLElement, object: TreeObject) {
       var childObjs = object.childObjs;
       for(var key in childObjs) {
          var element = childObjs[key];
@@ -164,13 +169,13 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
             continue;
          }
          switch (element.tType) {
-         case "String":
+         case metamodelType.String:
             this.printString(HTMLElement, element, key);
             break;
-         case "Value":
+         case metamodelType.value:
             this.printValue(HTMLElement, element, key);
             break;
-         case "Array":
+         case metamodelType.Array:
             this.printArray(HTMLElement, element, key);
             break;
          case "Keys":
@@ -197,7 +202,7 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
          case "IdentifierType":
             this.printString(HTMLElement, element, key);
             break;
-         case "AssetKind":
+         case metamodelType.AssetKind:
             this.printString(HTMLElement, element, key);
             break;
          case "ModelingKind":
@@ -205,6 +210,9 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
             break;
          case "Asset":
             this.printAsset(HTMLElement, element, key);
+            break;
+         case metamodelType.SpecificAssetId:
+            this.printSpecifcAssetId(HTMLElement, element, key);
             break;
          case "LangStringSet":
             this.printLangStringSet(HTMLElement, element, key);
@@ -272,7 +280,7 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
             /* fallthrough - handled seperately */
             break;
          /* Extra Elements from AAS Part 2 */
-         case "AssetAdministrationShellDescriptor":
+         case metamodelType.AssetAdministrationShellDescriptor:
             this.printAssetAdministrationShellDescriptor(HTMLElement, element, key);
             break;
          case "SubmodelDescriptor":
@@ -281,11 +289,18 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
          case "SubmodelDescriptor":
             this.printSubmodelDescriptor(HTMLElement, element, key);
             break;
-         case "Endpoint":
+         case metamodelType.Endpoint:
             this.printEndpoint(HTMLElement, element, key);
             break;
+         case metamodelType.ProtocolInformation:
+            this.printProtocolInformation(HTMLElement, element, key);
+            break;
+         case metamodelType.SecurityAttributeObject:
+            this.printSecurityAttributeObject(HTMLElement, element, key);
+         case metamodelType.SecurityType:
+            this.printString(HTMLElement, element, key);
          // Generic error to show the user something went wrong
-         case "tError":
+         case metamodelType.Error:
             this.printError(HTMLElement, element, key);
          default:
             console.log("Unhandled Type in print: " + element.tType, element);
@@ -299,6 +314,14 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
             this.colors.assetColor, true);
 
       this.print(HTMLObject.container, object);
+   }
+
+   printSpecifcAssetId(HTMLElement: HTMLElement, element: TreeObject,
+      key: string) {
+      var HTMLObject = this.printNode(HTMLElement, element, name, "",
+            this.colors.assetColor, true);
+
+      this.print(HTMLObject.container, element);
    }
 
    printArray(HTMLElement, object, name) {
@@ -780,13 +803,24 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       object.tUpdateMethod = this.updateValue;
    }
 
-   printRegistry(HTMLElement, object) {
+   printAASRegistry(HTMLElement: HTMLElement, object: TreeObject) {
       if (this.treeRoot == null)
          this.treeRoot = object;
       var childObjs = object.childObjs;
 
       var HTMLObject = this.printNode(HTMLElement, object, "",
             "Asset Administration Shell Registry", this.colors.AASColor, true);
+
+      this.print(HTMLObject.container, object);
+   }
+
+   printSubmodelRegistry(HTMLElement: HTMLElement, object: TreeObject) {
+      if (this.treeRoot == null)
+         this.treeRoot = object;
+      var childObjs = object.childObjs;
+
+      var HTMLObject = this.printNode(HTMLElement, object, "",
+            "Submodel Registry", this.colors.AASColor, true);
 
       this.print(HTMLObject.container, object);
    }
@@ -805,17 +839,33 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, element);
    }
 
-   printEndpoint(HTMLElement, element, key) {
+   printEndpoint(HTMLElement: HTMLElement, element: TreeObject, key: string) {
       var name = null;
-      if (this.elementExists(element.childObjs, "address"))
-         name = new URL (element.childObjs.address.tData).origin;
+      if (this.elementExists(element.childObjs, "interface"))
+         name ="[" + key + "] : " +  element.childObjs.interface.tData;
       else
-         name = "No Address set";
+         name = key;
       var HTMLObject = this.printNode(HTMLElement, element, name, "",
           this.colors.referenceColor, false);
 
       this.print(HTMLObject.container, element);
    }
+   
+   printProtocolInformation(HTMLElement: HTMLElement, element: TreeObject, 
+      key: string) {
+      var HTMLObject = this.printNode(HTMLElement, element, key, "",
+          this.colors.submodelElementColor, false);
+
+      this.print(HTMLObject.container, element);
+   }
+
+   printSecurityAttributeObject(HTMLElement: HTMLElement, element: TreeObject,
+      key: string) {
+      var HTMLObject = this.printNode(HTMLElement, element, key, "",
+          this.colors.qualifierColor, false);
+
+      this.print(HTMLObject.container, element);
+}
 
    handleLinkTypes(object) {
       if (this.elementExists(object.childObjs, "value")) {
