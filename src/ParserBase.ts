@@ -23,9 +23,9 @@ export class TreeObject {
    constructor() {}
 
    tURL: string;
-   parentObj;
+   parentObj: TreeObject;
    childObjs;
-   tType;
+   tType: metamodelType;
    tHints: hints;
    tData;
    tName: string;
@@ -71,6 +71,10 @@ export enum metamodelType {
    AdministrativeInformation,
    AssetKind,
    SpecificAssetId,
+   Reference,
+   ReferenceType,
+   Key,
+   KeyType,
    /* extra Part 1 */
    value,
    String,
@@ -110,6 +114,38 @@ export enum SecurityTypeEnum {
    NONE = "NONE",
    RFC_TLSA = "RFC_TLSA",
    W3C_DID = "W3C_DID",
+}
+
+export enum ReferenceTypes {
+   ExternalReference = "ExternalReference",
+   ModelReference = "ModelReference",
+}
+
+export enum KeyTypes {
+   AnnotationRelationshipElement ="AnnotationRelationshipElement",
+   AssetAdministrationShell = "AssetAdministrationShell",
+   BasicEventElement = "BasicEventElement",
+   Blob = "Blob",
+   Capability = "Capability",
+   ConceptDescription = "ConceptDescription",
+   DataElement = "DataElement",
+   Entity = "Entity",
+   EventElement = "EventElement",
+   File = "File",
+   FragmentReference = "FragmentReference",
+   GlobalReference = "GlobalReference",
+   Identifiable = "Identifiable",
+   MultiLanguageProperty = "MultiLanguageProperty",
+   Operation = "Operation",
+   Property = "Property",
+   Range = "Range",
+   Referable = "Referable",
+   ReferenceElement = "ReferenceElement",
+   RelationshipElement = "RelationshipElement",
+   Submodel = "Submodel",
+   SubmodelElement = "SubmodelElement",
+   SubmodelElementCollection = "SubmodelElementCollection",
+   SubmodelElementList = "SubmodelElementList",
 }
 
 export class ParserBase extends Base {
@@ -153,6 +189,8 @@ export class ParserBase extends Base {
       this.parseSecurity = this.parseSecurity.bind(this);
       this.parseSemantics = this.parseSemantics.bind(this);
       this.parseReference = this.parseReference.bind(this);
+      this.parseReferenceV3 = this.parseReferenceV3.bind(this);
+      this.parseReferenceTypesV3 = this.parseReferenceTypesV3.bind(this);
       this.parseDataSpecification = this.parseDataSpecification.bind(this);
       this.parseAdministrativeInformation =
          this.parseAdministrativeInformation.bind(this);
@@ -171,6 +209,8 @@ export class ParserBase extends Base {
       this.parseArrayV3 = this.parseArrayV3.bind(this);
       this.parseKeys = this.parseKeys.bind(this);
       this.parseKey = this.parseKey.bind(this);
+      this.parseKeyV3 = this.parseKeyV3.bind(this);
+      this.parseKeyTypesV3 = this.parseKeyTypesV3.bind(this);
       this.parseModelType = this.parseModelType.bind(this);
       this.parseAASRegistryV3 = this.parseAASRegistryV3.bind(this);
       this.parseSubmodelRegistryV3 = this.parseSubmodelRegistryV3.bind(this);
@@ -861,8 +901,29 @@ export class ParserBase extends Base {
    }
    
    parseReferenceV3(JSON: string, name: string, obj: TreeObject) {
-      // TODO: Reference
-      console.log("TODO: Reference");
+      var jsonObj: any = JSON;
+      var ref = this.newTreeObject(name, obj, metamodelType.Reference);
+
+      // type - ReferenceType - (0-1)
+      this.parseReferenceTypesV3(jsonObj.type, "type", ref);
+
+      // referredSemanticId - Reference (0-1)
+      if (this.elementExists(jsonObj, "referredSemanticId"))
+         this.parseReferenceV3(jsonObj.referredSemanticId,
+            "referredSemanticId", ref);
+
+      // key <<ordered>>  [Key] - (1-n)
+      if (this.elementExists(jsonObj, "key"))
+         this.parseArrayV3(jsonObj.key, "key", ref, this.parseKeyV3);
+      // Bug: keys
+      if (this.elementExists(jsonObj, "keys"))
+         this.parseArrayV3(jsonObj.keys, "key", ref, this.parseKeyV3);
+   }
+
+   parseReferenceTypesV3(JSON: string, name: string, obj: TreeObject) {
+      var rt = this.newTreeObject(name, obj, metamodelType.ReferenceType);
+      var r: ReferenceTypes = JSON as ReferenceTypes;
+      rt.tData = r;
    }
 
    parseAdministrativeInformation(JSON, name, obj) {
@@ -1089,20 +1150,7 @@ export class ParserBase extends Base {
    }
 
    parseAssetKindV3(JSON: string, name: string, obj: TreeObject) {
-      var t: AssetKind;
-      switch (JSON) {
-      case "Type":
-         t = AssetKind.Type;
-         break;
-      case "Instance":
-         t = AssetKind.Instance;
-         break;
-      default:
-         /* fallthrough */
-      case "NotApplicable":
-         t = AssetKind.NotApplicable;
-         break;
-      }
+      var t: AssetKind = JSON as AssetKind;
       var assetkind = this.newTreeObject(name, obj, metamodelType.AssetKind);
       assetkind.tData = t;
    }
@@ -1172,6 +1220,25 @@ export class ParserBase extends Base {
       this.parseString(JSON.local, "local", key);
       this.parseString(JSON.value, "value", key);
       this.parseModelType(JSON.type, "type", key);
+   }
+
+   parseKeyV3(JSON: string, name: string, obj: TreeObject,
+      hints_: hints = new hints()) {
+
+      var jsonObj: any = JSON;
+      var k = this.newTreeObject(name, obj, metamodelType.Key);
+
+      // type - KeyTypes - (1)
+      this.parseKeyTypesV3(jsonObj.type, "type", k);
+
+      // value - Identifier - (1)
+      this.parseIdentifierV3(jsonObj.value, "value", k);
+   }
+
+   parseKeyTypesV3(JSON: string, name: string, obj: TreeObject) {
+      var kt: TreeObject = this.newTreeObject(name, obj, metamodelType.KeyType);
+      var k: KeyTypes = JSON as KeyTypes;
+      kt.tData = k;
    }
 
    parseModelType(JSON, name, obj) {
@@ -1359,8 +1426,52 @@ export class ParserBase extends Base {
    }
 
    parseSubmodelDescriptorV3(JSON: string, name: string, obj: TreeObject) {
-      // TODO: parseSubmodelDescriptor
-      console.log("TODO: parseSubmodelDescriptor");
+      var name: string;
+      var jsonObj: any = JSON;
+
+      if (this.elementExists(jsonObj, "idShort"))
+          name = jsonObj.idShort;
+      else
+          name = jsonObj.id;
+
+      var smDescriptor = this.newTreeObject(name, obj,
+         metamodelType.SubmodelDescriptor);
+
+      this.parseDescriptorV3(JSON, name, smDescriptor);
+
+      // administration [AdministrativeInformation] - (0-1)
+      if (this.elementExists(jsonObj, "administration"))
+         this.parseAdministrativeInformationV3(jsonObj.administration,
+            "adminstration", smDescriptor);
+
+      // idShort [NameType -> String] - (0-1)
+      if (this.elementExists(jsonObj, "idShort"))
+         this.parseIdentifierV3(jsonObj.idShort, "idShort", smDescriptor);
+
+      // id [Identifier] - (1)
+         this.parseIdentifierV3(jsonObj.id, "id", smDescriptor);
+
+      // semanticId [Reference] - (0-1)
+      if (this.elementExists(jsonObj, "semanticId"))
+         this.parseReferenceV3(jsonObj.semanticId, "semanticId", smDescriptor);
+
+      // supplementalSemanticId [Reference] - (0-n)
+      if (this.elementExists(jsonObj, "supplementalSemanticId"))
+         this.parseArrayV3(jsonObj.supplementalSemanticId,
+            "supplementalSemanticId", smDescriptor, this.parseReferenceV3);
+
+      // endpoint [Endpoint] - (0-n)
+      if (this.elementExists(jsonObj, "endpoint"))
+         this.parseArrayV3(jsonObj.endpoint,
+               "endpoint",
+               smDescriptor,
+               this.parseEndpointV3);
+      // BUG: endpoints [Endpoint] - (0-n)
+      if (this.elementExists(jsonObj, "endpoints"))
+         this.parseArrayV3(jsonObj.endpoints,
+               "endpoint",
+               smDescriptor,
+               this.parseEndpointV3);
    }
 
 
@@ -1433,20 +1544,7 @@ export class ParserBase extends Base {
    }
 
    parseSecurityTypeEnumV3(JSON: string, name: string, obj: TreeObject) {
-      var t: SecurityTypeEnum;
-      switch (JSON) {
-      case "W3C_DID":
-         t = SecurityTypeEnum.W3C_DID;
-         break;
-      case "RFC_TLSA":
-         t = SecurityTypeEnum.RFC_TLSA;
-         break;
-      default:
-         /* fallthrough */
-      case "NONE":
-         t = SecurityTypeEnum.NONE;
-         break;
-      }
+      var t: SecurityTypeEnum = JSON as SecurityTypeEnum;
       var st = this.newTreeObject(name, obj, metamodelType.SecurityType);
       st.tData = t;
    }
