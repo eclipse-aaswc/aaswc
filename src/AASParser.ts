@@ -133,23 +133,15 @@ export class AASParser extends ParserBase {
       console.log(errObj);
    }
 
-   parseAASRaw(JSON) {
-      var AAS = JSON;
-      if (JSON.hasOwnProperty("AAS"))
-         AAS = JSON.AAS;
-      if (JSON.hasOwnProperty("entity"))
-         AAS = JSON.entity;
-      var aas = this.parseAAS(AAS, this.AASRoot, true, this.parseSubmodelsRaw,
-                    this.setErrorSubmodels);
-      this.printer.printAAS(this.printer.rootElement, aas);
+   parseAASRaw(JSON: string) {
+      var aas: TreeObject = this.parseAASV3(JSON, this.AASRoot, true,
+         this.parseSubmodelsRaw, this.setErrorSubmodels);
+      this.printer.printAASV3(this.printer.rootElement, aas);
    }
 
    /* unbound for compound -> this */
-   parseSubmodelsRaw(JSON) {
-      var submodels = JSON;
-      if (JSON.hasOwnProperty("entity"))
-         submodels = JSON.entity;
-      this.parentObj.parseSubmodels(submodels, this.object, true, 
+   parseSubmodelsRaw(JSON: string) {
+      this.parentObj.parseSubmodels(JSON, this.object, true, 
                                     this.parentObj.parseSubmodelRaw,
                                     this.parentObj.setErrorSubmodel);
    }

@@ -78,9 +78,9 @@ export class SubmodelParser extends ParserBase {
       if(this.elementExists(submodelJSON, "entity"))
          submodelJSON = submodelJSON.entity;
       if (this.elementExists(submodelJSON, "idShort"))
-         var submodel = this.parseSubmodel(submodelJSON, this.submodelURLStr,
+         var submodel = this.parseSubmodelV3(submodelJSON, this.submodelURLStr,
          this.parentElement);
-      this.printer.printSubmodel(
+      this.printer.printSubmodelV3(
          this.printer.rootElement, submodel, this.printer.expandedView);
    }
 

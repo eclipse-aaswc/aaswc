@@ -115,7 +115,7 @@ export class SubmodelRegistryParser extends ParserBase {
 
       console.log(registry);
 
-      this.smRegistryPrinter.printSubmodelRegistry(this.smRegistryPrinter.rootElement,
+      this.smRegistryPrinter.printSubmodelRegistryV3(this.smRegistryPrinter.rootElement,
          registry);
    }
 }

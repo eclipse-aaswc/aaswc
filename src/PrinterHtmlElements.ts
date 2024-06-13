@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Ajax, Base } from "./imports.js"
+import { Ajax, Base, TreeObject, metamodelType } from "./imports.js"
 
 
 class AASHTMLElement {
@@ -41,7 +41,7 @@ export class PrinterHtmlElements extends Base {
    tSubmodelBrowserURL: string;
    tAASRegistryBrowserURL: string;
    tSubmodelRegistryBrowserURL: string;
-   constructor(rootElement) {
+   constructor(rootElement: HTMLElement) {
       super();
       /* bind this pointer */
       this.rootElement = rootElement;
@@ -90,57 +90,59 @@ export class PrinterHtmlElements extends Base {
       this.tSubmodelRegistryBrowserURL = tempURL + "submodelRegistryBrowser.html";
    }
 
-   iconByType(object, mimeType = "") {
+   iconByType(object: TreeObject, mimeType = "") {
       if (object == null)
          return null;
       var iconpath = "local_icons/Breeze/";
       switch (object.tType) {
-         case "EntityType":
-         case "ModelingKind":
-         case "AssetKind":
-         case "String":
+         case metamodelType.ModellingKind:
+         case metamodelType.AssetKind:
+         case metamodelType.Key:
+         case metamodelType.ReferenceType:
+         case metamodelType.String:
          iconpath += "actions/22/tag.svg";
          break;
-         case "AssetAdministrationShellRegistry":
-         case "AssetAdministrationShell":
+         case metamodelType.AssetAdministrationShellRegistry:
+         case metamodelType.SubmodelRegistry:
+         case metamodelType.AssetAdministrationShell:
          iconpath = "local_icons/IDTA/2022-03-29_IDTA_AAS-Logo_white transparent.png";
          break;
-         case "AssetAdministrationShellDescriptor":
+         case metamodelType.AssetAdministrationShellDescriptor:
          /*iconpath = "local_icons/aas.svg";*/
          iconpath = "local_icons/IDTA/2022-03-29_IDTA_AAS-Logo_white transparent.png";
          break;
-         case "Entity":
-         case "Asset":
+         case metamodelType.Entity:
          iconpath += "devices/22/uav-quadcopter.svg";
          break;
-         case "Submodel":
-         case "SubmodelDescriptor":
+         case metamodelType.Submodel:
+         case metamodelType.SubmodelDescriptor:
          iconpath += "places/32/folder-blue.svg";
          break;
-         case "Array":
-         case "SubmodelElementCollection":
+         case metamodelType.ProtocolInformation:
+         case metamodelType.Array:
+         case metamodelType.SubmodelElementCollection:
+         case metamodelType.SubmodelElementList:
          iconpath += "places/32/folder-green.svg";
          break;
-         case "LangStringSet":
-         iconpath += "places/32/folder-language.svg";
-         break;
-         case "MultiLanguageProperty":
-         case "Property":
+         //case "LangStringSet":
+         //iconpath += "places/32/folder-language.svg";
+         //break;
+         case metamodelType.MultiLanguageProperty:
+         case metamodelType.Property:
          iconpath += "actions/22/code-variable.svg";
          break;
-         case "Identifier":
+         case metamodelType.Identifier:
          iconpath += "actions/22/favorite-genres-amarok.svg";
          break;
-         case "LangString":
-         iconpath += "actions/22/amarok_change_language.svg";
-         break;
-         case "ReferenceElement":
-         case "RelationshipElement":
-         case "Keys":
-         case "Key":
+         //case "LangString":
+         //iconpath += "actions/22/amarok_change_language.svg";
+         //break;
+         case metamodelType.ReferenceElement:
+         case metamodelType.RelationshipElement:
+         case metamodelType.Reference:
          iconpath += "actions/22/link.svg";
          break;
-         case "File": {
+         case metamodelType.File: {
             switch (mimeType) {
                case "image/png":
                case "image/jpeg":
@@ -150,13 +152,12 @@ export class PrinterHtmlElements extends Base {
                iconpath += "mimetypes/32/application-x-m4.svg";
                break;
             }
-         
          }
          break;
-         case "Operation":
+         case metamodelType.Operation:
          iconpath += "actions/22/run-build.svg";
          break;
-         case "Endpoint":
+         case metamodelType.Endpoint:
          iconpath += "actions/22/network-connect.svg";
          break;
          

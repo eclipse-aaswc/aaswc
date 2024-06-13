@@ -47,7 +47,7 @@ export class Base {
       return (Array.isArray(SubElement));
    }
 
-   elementExists(JSON, elementName) {
+   elementExists(JSON: string, elementName: string) {
       if (JSON.hasOwnProperty(elementName) && (!this.isNull(JSON[elementName])))
          return true;
       return false;

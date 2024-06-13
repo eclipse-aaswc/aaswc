@@ -115,7 +115,7 @@ export class AASRegistryParser extends ParserBase {
 
       console.log(registry);
 
-      this.registryPrinter.printAASRegistry(this.registryPrinter.rootElement,
+      this.registryPrinter.printAASRegistryV3(this.registryPrinter.rootElement,
          registry);
    }
 }
