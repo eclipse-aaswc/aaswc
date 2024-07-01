@@ -42,6 +42,7 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       /* bind this pointer */
       this.printAAS = this.printAAS.bind(this);
       this.printAASV3 = this.printAASV3.bind(this);
+      this.printAssetInformationV3 = this.printAssetInformationV3.bind(this);
       this.printSubmodel = this.printSubmodel.bind(this);
       this.printError = this.printError.bind(this);
       this.print = this.print.bind(this);
@@ -151,6 +152,13 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, object);
    }
 
+   printAssetInformationV3(HTMLElement: HTMLElement, element: TreeObject,
+         key: string) {
+      var HTMLObject = this.printNode(HTMLElement, element, key, "",
+         this.colors.assetColor, false);
+      this.print(HTMLObject.container, element);
+   }
+
    printSubmodel(HTMLElement, object, expand = false) {
       if (this.treeRoot == null)
          this.treeRoot = object;
@@ -205,71 +213,20 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
          case metamodelType.Array:
             this.printArrayV3(HTMLElement, element, key);
             break;
-         case metamodelType.KeysV2:
-            this.printKeys(HTMLElement, element, key);
-            break;
          case metamodelType.Key:
             this.printKeyV3(HTMLElement, element, key);
-            break;
-         case metamodelType.modelTypeV2:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.EntityTypeV2:
-            this.printString(HTMLElement, element, key);
             break;
          case metamodelType.KeyType:
             this.printString(HTMLElement, element, key);
             break;
-         case metamodelType.IdentifierV2:
-            this.printIdentifier(HTMLElement, element, key);
-            break;
-         case metamodelType.AdministrativeInformationV2:
-            this.printAdministrativeInformation(HTMLElement, element, key);
-            break;
-         case metamodelType.IdentifierTypeV2:
-            this.printString(HTMLElement, element, key);
+         case metamodelType.AssetInformation:
+            this.printAssetInformationV3(HTMLElement, element, key);
             break;
          case metamodelType.AssetKind:
             this.printString(HTMLElement, element, key);
             break;
-         case metamodelType.ModelingKindV2:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.AssetV2:
-            this.printAsset(HTMLElement, element, key);
-            break;
          case metamodelType.SpecificAssetId:
             this.printSpecifcAssetIdV3(HTMLElement, element, key);
-            break;
-         case metamodelType.LangStringSetV2:
-            this.printLangStringSet(HTMLElement, element, key);
-            break;
-         case metamodelType.LangStringV2:
-            this.printLangString(HTMLElement, element, key);
-            break;
-         case metamodelType.EntityV2:
-            this.printEntity(HTMLElement, element, key);
-            break;
-         case metamodelType.FileV2:
-            this.printFile(HTMLElement, element, key);
-            break;
-         case metamodelType.BlobV2:
-            this.printBlob(HTMLElement, element, key);
-            break;
-         case metamodelType.PropertyV2:
-            this.printProperty(HTMLElement, element, key);
-            break;
-         case metamodelType.MultiLanguagePropertyV2:
-            this.printMultiLanguageProperty(HTMLElement, element, key);
-            break;
-         case metamodelType.RangeV2:
-            this.printRange(HTMLElement, element, key);
-            break;
-         case metamodelType.DataTypeV2:
-            this.printDataType(HTMLElement, element, key);
-            break;
-         case metamodelType.ReferenceElementV2:
-            this.printReferenceElement(HTMLElement, element, key);
             break;
          case metamodelType.Reference:
             this.printReferenceV3(HTMLElement, element, key);
@@ -277,43 +234,11 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
          case metamodelType.ReferenceType:
             this.printString(HTMLElement, element, key);
             break;
-         case metamodelType.BasicEventV2:
-            this.printBasicEvent(HTMLElement, element, key);
-            break;
-         case metamodelType.SubmodelElementCollectionV2:
-            this.printSubmodelElementCollection(HTMLElement, element, key);
-            break;
-         case metamodelType.RelationshipElementV2:
-            this.printRelationshipElement(HTMLElement, element, key);
-            break;
-         case metamodelType.AnnotatedRelationshipElementV2:
-            this.printAnnotatedRelationshipElement(HTMLElement, element, key);
-            break;
-         case metamodelType.QualifierV2:
-            this.printQualifier(HTMLElement, element, key);
-            break;
-         case metamodelType.FormulaV2:
-            this.printFormula(HTMLElement, element, key);
-            break;
-         case metamodelType.OperationV2:
-            this.printOperation(HTMLElement, element, key);
-            break;
-         case metamodelType.OperationVariableV2:
-            this.printOperationVariable(HTMLElement, element, key);
-            break;
-         case metamodelType.CapabilityV2:
-            this.printCapability(HTMLElement, element, key);
-            break;
          case metamodelType.AssetAdministrationShell:
             this.printAASV3(HTMLElement, element);
             break;
          case metamodelType.Submodel:
             this.printSubmodelV3(HTMLElement, element);
-            break;
-         case metamodelType.AssetAdministrationShellV2:
-         case metamodelType.SubmodelV2:
-         case metamodelType.SubmodelsV2:
-            /* fallthrough - handled seperately */
             break;
          /* Extra Elements from AAS Part 2 */
          case metamodelType.AssetAdministrationShellDescriptor:

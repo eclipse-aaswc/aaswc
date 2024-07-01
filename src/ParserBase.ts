@@ -114,95 +114,80 @@ class hints {
 type parseArrayCallback = (SubElement: string, key: string, subObject: TreeObject, subhints:hints) => void;
 
 export enum metamodelType {
-   /* extra */
-   Error,
-   AssetAdministrationShellRegistry,
-   SubmodelRegistry,
    /* Part 2 */
-   Descriptor,
-   AssetAdministrationShellDescriptor,
-   SubmodelDescriptor,
-   Endpoint,
-   ProtocolInformation,
-   SecurityAttributeObject,
-   SecurityType,
+   Descriptor = "Descriptor",
+   AssetAdministrationShellDescriptor = "AssetAdministrationShellDescriptor",
+   SubmodelDescriptor = "SubmodelDescriptor",
+   Endpoint = "Endpoint",
+   ProtocolInformation = "ProtocolInformation",
+   SecurityAttributeObject = "SecurityAttributeObject",
+   SecurityType = "SecurityType",
    /* Part 1 */
-   Identifier,
-   AssetAdministrationShell,
-   Submodel,
-   AdministrativeInformation,
-   AssetKind,
-   SpecificAssetId,
-   Reference,
-   ReferenceType,
-   Key,
-   KeyType,
-   Extension,
-   DataTypeDefXsd,
-   ValueDataType,
-   AssetInformation,
-   Resource,
-   Operation,
-   File,
-   RelationshipElement,
-   ReferenceElement,
-   SubmodelElementCollection,
-   SubmodelElementList,
-   Property,
-   MultiLanguageProperty,
-   Entity,
-   ModellingKind,
+   Identifier = "Identifier",
+   AssetAdministrationShell = "AssetAdministrationShell",
+   Submodel = "Submodel",
+   AdministrativeInformation = "AdministrativeInformation",
+   AssetKind = "AssetKind",
+   SpecificAssetId = "SpecificAssetId",
+   Reference = "Reference",
+   ReferenceType = "ReferenceType",
+   Key = "Key",
+   KeyType = "KeyType",
+   Extension = "Extension",
+   DataTypeDefXsd = "DataTypeDefXsd",
+   ValueDataType = "ValueDataType",
+   AssetInformation = "AssetInformation",
+   Resource = "Ressource",
+   Operation = "Operation",
+   OperationVariable = "OperationVariable",
+   File = "File",
+   Blob = "Blob",
+   EventElement = "EventElement",
+   BasicEventElement = "BasicEventElement",
+   Direction = "Direction",
+   StateOfEvent = "StateOfEvent",
+   Capability = "Capability",
+   RelationshipElement = "RelationshipElement",
+   AnnotatedRelationshipElement = "AnnotatedRelationshipElement",
+   ReferenceElement = "ReferenceElement",
+   SubmodelElementCollection = "SubmodelElementCollection",
+   SubmodelElementList = "SubmodelElementList",
+   Property = "Property",
+   MultiLanguageProperty = "MultiLanguageProperty",
+   Range = "Range",
+   Entity = "Entity",
+   EntityType = "EntityType",
+   ModellingKind = "ModellingKind",
+   Qualifier = "Qualifier",
+   QualifierKind = "QualifierKind",
+   AasSubmodelElements = "AasSubmodelElements",
    /* extra Part 1 */
-   value,
-   String,
-   Submodels,
-   SubmodelElement,
-   Array,
+   value = "Value",
+   String = "String",
+   SubmodelElement = "SubmodelElement",
+   DataElement = "DataElement",
+   Array = "Array",
    /* extra Infrastructure */
-   AssetAdministrationShellRoot,
-   SubmodelRoot,
-   AssetAdministrationShellRegistryRoot,
-   SubmodelRegistryRoot,
-   /* Legacy V2 - kann weg */
-   AdministrativeInformationV2,
-   IdentifierV2,
-   IdentifierTypeV2,
-   AssetV2,
-   EntityTypeV2,
-   OperationVariableV2,
-   DataTypeV2,
-   KeyTypeV2,
-   LangStringSetV2,
-   LangStringV2,
-   QualifierV2,
-   FormulaV2,
-   AssetKindV2,
-   ModelingKindV2,
-   KeysV2,
-   KeyV2,
-   modelTypeV2,
-   EntityV2,
-   FileV2,
-   BlobV2,
-   PropertyV2,
-   MultiLanguagePropertyV2,
-   RangeV2,
-   ReferenceElementV2,
-   BasicEventV2,
-   SubmodelElementCollectionV2,
-   RelationshipElementV2,
-   AnnotatedRelationshipElementV2,
-   OperationV2,
-   CapabilityV2,
-   AssetAdministrationShellV2,
-   SubmodelV2,
-   SubmodelsV2,
+   Submodels = "Submodels",
+   AssetAdministrationShellRoot = "AssetAdministrationShellRoot",
+   SubmodelRoot = "SubmodelRoot",
+   AssetAdministrationShellRegistryRoot = "AssetAdministrationShellRegistryRoot",
+   SubmodelRegistryRoot  = "SubmodelRegistryRoot",
+   /* extra */
+   Error = "InternalError",
+   AssetAdministrationShellRegistry = "AssetAdministrationShellRegistry",
+   SubmodelRegistry = "SubmodelRegistry",
 }
 
 export enum AssetKind {
    Type = "Type",
    Instance = "Instance",
    NotApplicable = "Not Applicable",
+}
+
+export enum EntityType {
+   CoManagedEntity = "CoManagedEntity",
+   SelfManagedEntity = "SelfManagedEntity",
 }
 
 export enum ModellingKind {
@@ -248,6 +233,12 @@ export enum KeyTypes {
    SubmodelElementList = "SubmodelElementList",
 }
 
+export enum QualifierKind /* experimental V3 */ {
+   ValueQualifier = "ValueQualifier",
+   ConceptQualifier = "ConceptQualifier",
+   TemplateQualifier = "TemplateQualifier",
+}
+
 export enum DataTypeDefXsd {
    anyURI = "xs:anyURI",
    base64Binary = "xs:base64Binary",
@@ -281,6 +272,16 @@ export enum DataTypeDefXsd {
    unsignedShort = "xs:unsignedShort",
 }
 
+export enum Direction {
+   input = "input",
+   output = "output",
+}
+
+export enum StateOfEvent {
+   on = "on",
+   off = "off",
+}
+
 export class ParserBase extends Base {
    printer: any;
    AjaxHelper: Ajax.AjaxHelper;
@@ -298,53 +299,51 @@ export class ParserBase extends Base {
    constructor() {
       super();
 
-      this.parseAAS = this.parseAAS.bind(this);
       this.parseAASV3 = this.parseAASV3.bind(this);
-      this.parseSubmodels = this.parseSubmodels.bind(this);
-      this.addSubmodelURLS = this.addSubmodelURLS.bind(this);
-      this.parseSubmodel = this.parseSubmodel.bind(this);
       this.parseSubmodelV3 = this.parseSubmodelV3.bind(this);
-      this.parseAsset = this.parseAsset.bind(this);
       this.parseAssetInformationV3 = this.parseAssetInformationV3.bind(this);
       this.parseSpecificAssetIdV3 = this.parseSpecificAssetIdV3.bind(this);
-      this.parseIdentifiable = this.parseIdentifiable.bind(this);
       this.parseIdentifiableV3 = this.parseIdentifiableV3.bind(this);
-      this.parseReferable = this.parseReferable.bind(this);
       this.parseReferableV3 = this.parseReferableV3.bind(this);
       this.parseHasExtensionsV3 = this.parseHasExtensionsV3.bind(this);
-      this.parseSubmodelElement = this.parseSubmodelElement.bind(this);
-      this.parseEntity = this.parseEntity.bind(this);
-      this.parseEvent = this.parseEvent.bind(this);
-      this.parseOperation = this.parseOperation.bind(this);
-      this.parseOperationVariable = this.parseOperationVariable.bind(this);
-      this.parseSubmodelElementCollection =
-         this.parseSubmodelElementCollection.bind(this);
-      this.parseCapability = this.parseCapability.bind(this);
-      this.parseDataElement = this.parseDataElement.bind(this);
-      this.parseDataType = this.parseDataType.bind(this);
-      this.parseRelationshipElement = this.parseRelationshipElement.bind(this);
+      this.parseSubmodelElementV3 = this.parseSubmodelElementV3.bind(this);
+      this.parseEntityV3 = this.parseEntityV3.bind(this);
+      this.parseEntityTypeV3 = this.parseEntityTypeV3.bind(this);
+      this.parseEventElementV3 = this.parseEventElementV3.bind(this);
+      this.parseBasicEventElementV3 = this.parseBasicEventElementV3.bind(this);
+      this.parseEventDirectionV3 = this.parseEventDirectionV3.bind(this);
+      this.parseStateOfEventV3 = this.parseStateOfEventV3.bind(this);
+      this.parseMessageTopicTypeV3 = this.parseMessageTopicTypeV3.bind(this);
+      this.parseOperationV3 = this.parseOperationV3.bind(this);
+      this.parseOperationVariableV3 = this.parseOperationVariableV3.bind(this);
+      this.parseSubmodelElementCollectionV3 =
+         this.parseSubmodelElementCollectionV3.bind(this);
+      this.parseSubmodelElementListV3 =
+         this.parseSubmodelElementListV3.bind(this);
+      this.parseAasSubmodelElementsV3 =
+         this.parseAasSubmodelElementsV3.bind(this);
+      this.parseCapabilityV3 = this.parseCapabilityV3.bind(this);
+      this.parseDataElementV3 = this.parseDataElementV3.bind(this);
+      this.parsePropertyV3 = this.parsePropertyV3.bind(this);
+      this.parseMultiLanguagePropertyV3 =
+         this.parseMultiLanguagePropertyV3.bind(this);
+      this.parseRangeV3 = this.parseRangeV3.bind(this);
+      this.parseReferenceElementV3 = this.parseReferenceElementV3.bind(this);
+      this.parseFileV3 = this.parseFileV3.bind(this);
+      this.parseBlobV3 = this.parseBlobV3.bind(this);
+      this.parseRelationShipElementV3 =
+         this.parseRelationShipElementV3.bind(this);
       this.parseString = this.parseString.bind(this);
       this.parseValue = this.parseValue.bind(this);
       this.parseValueDataTypeV3 = this.parseValueDataTypeV3.bind(this);
       this.parseResourceV3 = this.parseResourceV3.bind(this);
-      this.parseSecurity = this.parseSecurity.bind(this);
-      this.parseSemantics = this.parseSemantics.bind(this);
       this.parseHasSemanticsV3 = this.parseHasSemanticsV3.bind(this);
-      this.parseReference = this.parseReference.bind(this);
       this.parseReferenceV3 = this.parseReferenceV3.bind(this);
       this.parseAddResolveSubmodelReferenceV3 =
          this.parseAddResolveSubmodelReferenceV3.bind(this);
       this.parseReferenceTypesV3 = this.parseReferenceTypesV3.bind(this);
-      this.parseDataSpecification = this.parseDataSpecification.bind(this);
       this.parseHasDataSpecificationV3 =
          this.parseHasDataSpecificationV3.bind(this);
-      this.parseAdministrativeInformation =
-         this.parseAdministrativeInformation.bind(this);
-      this.parseIdentifier = this.parseIdentifier.bind(this);
-      this.parseIdentifierType = this.parseIdentifierType.bind(this);
-      this.parseKeyType = this.parseKeyType.bind(this);
-      this.parseLangStringSet = this.parseLangStringSet.bind(this);
-      this.parseLangString = this.parseLangString.bind(this);
       this.parseLabelTypeV3 = this.parseLabelTypeV3.bind(this);
       this.parseNameTypeV3 = this.parseNameTypeV3.bind(this);
       this.parseMultiLanguageTextTypeV3 =
@@ -352,28 +351,21 @@ export class ParserBase extends Base {
       this.parseMultiLanguageNameTypeV3 =
          this.parseMultiLanguageNameTypeV3.bind(this);
       this.parsePathTypeV3 = this.parsePathTypeV3.bind(this);
+      this.parseBlobTypeV3 = this.parseBlobTypeV3.bind(this);
       this.parseExtensionV3 = this.parseExtensionV3.bind(this);
-      this.parseQualifiable = this.parseQualifiable.bind(this);
       this.parseQualifiableV3 = this.parseQualifiableV3.bind(this);
-      this.parseConstraint = this.parseConstraint.bind(this);
-      this.parseQualifier = this.parseQualifier.bind(this);
-      this.parseFormula = this.parseFormula.bind(this);
-      this.parseKind = this.parseKind.bind(this);
+      this.parseQualifierV3 = this.parseQualifierV3.bind(this);
+      this.parseQualifierKindV3 = this.parseQualifierKindV3.bind(this);
+      this.parseQualifierTypeV3 = this.parseQualifierTypeV3.bind(this);
       this.parseHasKindV3 = this.parseHasKindV3.bind(this);
-      this.parseModelingKind = this.parseModelingKind.bind(this);
       this.parseModellingKindV3 = this.parseModellingKindV3.bind(this);
-      this.parseAssetKind = this.parseAssetKind.bind(this);
       this.parseArrayV3 = this.parseArrayV3.bind(this);
-      this.parseKeys = this.parseKeys.bind(this);
-      this.parseKey = this.parseKey.bind(this);
       this.parseKeyV3 = this.parseKeyV3.bind(this);
       this.parseKeyTypesV3 = this.parseKeyTypesV3.bind(this);
-      this.parseModelType = this.parseModelType.bind(this);
       this.parseAASRegistryV3 = this.parseAASRegistryV3.bind(this);
       this.parseSubmodelRegistryV3 = this.parseSubmodelRegistryV3.bind(this);
       this.parseAssetAdministrationShellDescriptorV3 =
          this.parseAssetAdministrationShellDescriptorV3.bind(this);
-      this.parseSubmodelDescriptor = this.parseSubmodelDescriptor.bind(this);
       this.parseSubmodelDescriptorV3 =
          this.parseSubmodelDescriptorV3.bind(this);
       this.parseEndpointV3 = this.parseEndpointV3.bind(this);
@@ -386,52 +378,6 @@ export class ParserBase extends Base {
       this.setRootURLS = this.setRootURLS.bind(this);
 
       this.AjaxHelper = new Ajax.AjaxHelper();
-   }
-
-   parseAAS(JSON, object, fetchSubmodels = false, submodelsCallback = null,
-            submodelsErrorCallback = null) {
-      console.log(JSON);
-       var aas = this.newTreeObject(JSON.idShort, object,
-       metamodelType.AssetAdministrationShell);
-
-       this.copyParentURL(aas);
-
-      if (fetchSubmodels) {
-         this.getByURL(aas,
-                       aas.tURL + "/" + "submodels",
-                       submodelsCallback,
-                       submodelsErrorCallback);
-      }
-
-      // security [Security] - (0-1)
-      if (this.elementExists(JSON, "security"))
-         this.parseSecurity(JSON.security,
-               "security",
-               aas);
-      // derivedFrom [Key(s)] - (0-1)
-      if (this.elementExists(JSON, "derivedFrom"))
-         this.parseKeys(JSON.derivedFrom, "derivedFrom", aas);
-      // dataSpecification
-      this.parseDataSpecification(JSON, name, aas);
-      // Identifiable
-      this.parseIdentifiable(JSON, name, aas);
-      // Referable
-      this.parseReferable(JSON, name, aas);
-      // asset [Asset]
-      if (this.elementExists(JSON, "asset"))
-         this.parseAsset(JSON.asset, aas);
-      // submodels [Array of Key(s)] - (0-n)
-      if (this.elementExists(JSON, "submodels"))
-         this.parseArray(JSON.submodels,
-               "submodelsOverview",
-               aas,
-               this.parseKeys);
-      // views [Array of Key(s)] - (0-n)
-      if (this.elementExists(JSON, "views"))
-         this.parseArray(JSON.views, "views", aas, this.parseKeys);
-
-      console.log(aas);
-      return aas;
    }
 
    parseAASV3(JSON: string, object: TreeObject, fetchSubmodels: boolean = false,
@@ -469,114 +415,6 @@ export class ParserBase extends Base {
       return aas;
    }
 
-   parseSubmodels(JSON, object, fetchSubmodel = false, submodelCallback = null,
-                  submodelErrorCallback = null) {
-      if (!this.isArray(JSON)) {
-         // Error ?
-         return;
-      }
-      
-      var submodelsTree = this.newTreeObject("submodels", object,
-      metamodelType.Submodels);
-
-      var submodels = this.newPropertyObject("submodels", object,
-      "Submodels");
-      //submodels.setURL("submodels");
-
-      for (var i = 0; i < JSON.length; i++) {
-         var SubElement = JSON[i];
-
-         var submodel = this.newTreeObject("Submodel" + i, submodels as any,
-                                           metamodelType.Submodel);
-
-         if (this.elementExists(SubElement, "idShort"))
-            this.parseString(SubElement.idShort, "idShort", submodel);
-         // - endpoint.XYZ?
-
-         this.addSubmodelURLS(submodel);
-         /*
-         if (fetchSubmodel && (submodel.URLArray.data.length > 0)) {
-            var submodelPrinters = this.newPropertyObject("SubmodelPrinters",
-                                                          submodels,
-                                                          "SubmodelPrinters");
-            submodelPrinters.printer = new Array();
-            var nextURL =
-               submodel.URLArray.data[submodel.URLArray.data.length -1];
-            submodel.URLArray.data.pop();
-
-            var printer = new SubmodelPrinterGeneric(
-               object,
-               this.printer.aasContainer,
-               nextURL,
-               false
-               );
-            submodelPrinters.printer.push(printer);
-         }
-         */
-      }
-   }
-
-   addSubmodelURLS(obj) {
-      //ugly
-      var submodels = obj.parentObj;
-      var childObjs = obj.childObjs;
-
-      var arrayObj = this.newPropertyObject("URLArray", obj, "tArray");
-      arrayObj.data = new Array();
-
-      if (this.elementExists(childObjs, "idShort")) {
-         arrayObj.data.push(submodels.tURL + "/" + childObjs.idShort.tData
-         + "/complete");
-         arrayObj.data.push(submodels.tURL + "/" + childObjs.idShort.tData
-         + "/submodel");
-      }
-   }
-
-   parseSubmodel(JSON, URL, object) {
-      var submodel = this.newTreeObject(JSON.idShort, object,
-       metamodelType.Submodel);
-
-      submodel.tURL = URL;
-      this.fixSubmodelURL(submodel);
-
-      // Semanctics
-      this.parseSemantics(JSON, name, submodel);
-      // dataSpecification
-      this.parseDataSpecification(JSON, name, submodel);
-      // Identifiable
-      this.parseIdentifiable(JSON, name, submodel);
-      // Qualifiable
-      this.parseQualifiable(JSON, name, submodel);
-      // Kind
-      this.parseKind(JSON, name, submodel);
-      // Referable
-      this.parseReferable(JSON, name, submodel);
-      // submodelElements [SubmodelElement] - (0-n)
-      if (this.elementExists(JSON, "submodelElement")) { // Missing s in Basyx
-                                                         // JSON
-         console.log("Basyx Bug: submodelElement!");
-
-         var hints_ = new hints();
-         hints_.noPrint = true;
-         this.parseArray(JSON.submodelElement,
-               "submodelElements",
-               submodel,
-               this.parseSubmodelElement,
-               hints_,
-               "submodelElement");
-      }
-      if (this.elementExists(JSON, "submodelElements")) {
-         var hints_ = new hints();
-         hints_.noPrint = true;
-         this.parseArray(JSON.submodelElements,
-               "submodelElements",
-               submodel,
-               this.parseSubmodelElement,
-               hints_);
-      }
-      return submodel;
-   }
-
    parseSubmodelV3(JSON: string, URL: string, object: TreeObject) {
       console.log(JSON);
       var jsonObj: any = JSON;
@@ -595,42 +433,14 @@ export class ParserBase extends Base {
       this.parseHasDataSpecificationV3(JSON, "", submodel);
       // submodelElement - SubmodelElement (0-n)
       if (this.elementExists(jsonObj, "submodelElement"))
-         this.parseAssetKind(jsonObj.submodelElement, "submodelElement",
-            submodel);
+         this.parseArrayV3(jsonObj.submodelElement, "submodelElement", submodel,
+            this.parseSubmodelElementV3);
       // Bug submodelElements
       if (this.elementExists(jsonObj, "submodelElements"))
-         this.parseAssetKind(jsonObj.submodelElements, "submodelElement",
-            submodel);
+         this.parseArrayV3(jsonObj.submodelElements, "submodelElement", submodel,
+            this.parseSubmodelElementV3);
 
       return submodel;
-   }
-
-   parseAsset(JSON, object) {
-      var asset = this.newTreeObject("asset", object, metamodelType.AssetV2);
-      if (this.elementExists(JSON, "keys")) {
-         var hints_: hints = new hints();
-         hints_.noPrint = true;
-         this.parseKeys(JSON, "Asset", asset, hints_);
-      }
-
-      // kind [AssetKind] - (1)
-      if (this.elementExists(JSON, "kind"))
-         this.parseAssetKind(JSON.kind, "kind", asset);
-      // dataSpecification
-      this.parseDataSpecification(JSON, name, asset);
-      // Identifiable
-      this.parseIdentifiable(JSON, name, asset);
-      // Referable
-      this.parseReferable(JSON, name, asset);
-
-      // assetIdentificationModel [Key(s)] - (0-1)
-      if (this.elementExists(JSON, "assetIdentificationModel"))
-         this.parseKeys(JSON.assetIdentificationModel,
-               "assetIdentificationModel",
-               asset);
-      // billOfMaterial [Key(s)] - (0-1)
-      if (this.elementExists(JSON, "billOfMaterial"))
-         this.parseKeys(JSON.billOfMaterial,  "billOfMaterial", asset);
    }
 
    parseAssetInformationV3(JSON: string, name: string, obj: TreeObject) {
@@ -670,17 +480,6 @@ export class ParserBase extends Base {
             sai);
    }
 
-   parseIdentifiable(JSON, name, obj) {
-      // administration [AdministrativeInformation] - (0-1)
-      if (this.elementExists(JSON, "administration"))
-         this.parseAdministrativeInformation(JSON.administration,
-               "administration",
-               obj);
-      // identification [Identifier]
-      if (this.elementExists(JSON, "identification"))
-         this.parseIdentifier(JSON.identification, "identification", obj);
-   }
-
    parseIdentifiableV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
       // administration - AdministrativeInformation - (0-1)
@@ -691,21 +490,6 @@ export class ParserBase extends Base {
       this.parseIdentifierV3(jsonObj.id, "id", obj);
       // Inherited class Referable
       this.parseReferableV3(JSON, name, obj);
-   }
-
-   parseReferable(JSON, name, obj) {
-      // idShort [String]
-      if (this.elementExists(JSON, "idShort"))
-         this.parseString(JSON.idShort, "idShort", obj);
-      // category [String] - (0 -1)
-      if (this.elementExists(JSON, "category"))
-         this.parseString(JSON.category, "category", obj);
-      // description [LangStringSet] - (0-1)
-      if (this.elementExists(JSON, "description"))
-         this.parseLangStringSet(JSON.description, "description", obj);
-      // parent [Referable(Pointer)] - (0-1)
-      if (this.elementExists(JSON, "parent"))
-         this.parseKeys(JSON.parent, "parent", obj);
    }
 
    parseReferableV3(JSON: string, name: string, obj: TreeObject) {
@@ -742,373 +526,387 @@ export class ParserBase extends Base {
             "extension", obj, this.parseExtensionV3);
    }
 
-   parseSubmodelElement(JSON, name, obj) {
-      var subElement = this.newTreeObject(name, obj, metamodelType.SubmodelElement);
+   parseSubmodelElementV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      var sme = this.newTreeObject(name, obj, metamodelType.SubmodelElement);
 
-      // Semanctics
-      this.parseSemantics(JSON, name, subElement);
-      // dataSpecification
-      this.parseDataSpecification(JSON, name, subElement);
-      // Referable
-      this.parseReferable(JSON, name, subElement);
-      // Qualifiable
-      this.parseQualifiable(JSON, name, subElement);
-      // Kind
-      this.parseKind(JSON, name, subElement);
+      // Inherited class Referable
+      this.parseReferableV3(JSON, "", sme);
+      // Inherited class HasSemantics
+      this.parseHasSemanticsV3(JSON, "", sme);
+      // Inherited class Qualifiable
+      this.parseQualifiableV3(JSON, "", sme);
+      // Inherited class HasDataSpecification
+      this.parseHasDataSpecificationV3(JSON, "", sme);
 
-      var ElementType = "";
+      var elementType: metamodelType = metamodelType.SubmodelElement;
+      if (this.elementExists(jsonObj, "modelType"))
+         elementType = jsonObj.modelType;
 
-      if (this.elementExists(JSON, "modelType") &&
-          this.elementExists(JSON.modelType, "name")) {
-         ElementType = JSON.modelType.name;
-      }
-
-      switch (ElementType) {
-      case "Operation":
-         subElement.setURLsOperation();
+      switch (elementType) {
+      case metamodelType.RelationshipElement:
+         this.parseRelationShipElementV3(JSON, name, sme);
+         return;
+      case metamodelType.AnnotatedRelationshipElement:
+         this.parseRelationShipElementV3(JSON, name, sme);
+         return;
+      case metamodelType.Property:
+         this.parseDataElementV3(JSON, name, sme);
+         return;
+      case metamodelType.MultiLanguageProperty:
+         this.parseDataElementV3(JSON, name, sme);
+         return;
+      case metamodelType.Range:
+         this.parseDataElementV3(JSON, name, sme);
+         return;
+      case metamodelType.Blob:
+         this.parseDataElementV3(JSON, name, sme);
+         return;
+      case metamodelType.File:
+         this.parseDataElementV3(JSON, name, sme);
+         return;
+      case metamodelType.ReferenceElement:
+         this.parseDataElementV3(JSON, name, sme);
+         return;
+      case metamodelType.RelationshipElement:
+         this.parseCapabilityV3(JSON, name, sme);
+         return;
+      case metamodelType.SubmodelElementList:
+         this.parseSubmodelElementListV3(JSON, name, sme);
+         return;
+      case metamodelType.SubmodelElementCollection:
+         this.parseSubmodelElementCollectionV3(JSON, name, sme);
+         return;
+      case metamodelType.Entity:
+         this.parseEntityV3(JSON, name, sme);
+         return;
+      case metamodelType.BasicEventElement:
+         this.parseEventElementV3(JSON, name, sme);
+         return;
+      case metamodelType.Operation:
+         this.parseOperationV3(JSON, name, sme);
+         return;
+      default:
+         /* do nothing */
+         console.log("Unknown SubmodelElement found:" + elementType);
          break;
-      default:
-         subElement.setURL();
-         break;
-      }
-
-      switch (ElementType) {
-      case "Entity":
-         this.parseEntity(JSON, name, subElement);
-         return;
-      case "BasicEvent":
-         this.parseEvent(JSON, name, subElement);
-         return;
-      case "Operation":
-         this.parseOperation(JSON, name, subElement);
-         return;
-      case "SubmodelElementCollection":
-         this.parseSubmodelElementCollection(JSON, name, subElement);
-         return;
-      case "Capability":
-         this.parseCapability(JSON, name, subElement);
-         return;
-      case "DataElement":
-         this.parseDataElement(JSON, name, subElement);
-         return;
-      case "ReferenceElement":
-         this.parseDataElement(JSON, name, subElement);
-         return;
-      case "File":
-         this.parseDataElement(JSON, name, subElement);
-         return;
-      case "blob":
-         /* fallthrough */
-      case "Blob":
-         this.parseDataElement(JSON, name, subElement);
-         return;
-      case "Range":
-         this.parseDataElement(JSON, name, subElement);
-         return;
-      case "MultiLanguageProperty":
-         this.parseDataElement(JSON, name, subElement);
-         return;
-      case "Property":
-         this.parseDataElement(JSON, name, subElement);
-         return;
-      case "RelationshipElement":
-         this.parseRelationshipElement(JSON, name, subElement);
-         return;
-      case "AnnotatedRelationshipElement":
-         this.parseRelationshipElement(JSON, name, subElement);
-         return;
-      default:
-         console.log("Unknown SubmodelElement found:" + ElementType);
-         return;
       }
    }
 
-   parseEntity(JSON, name, obj) {
-      // InheritedObject from SubmodelElement:
-      // All inherited elements are already done
-      obj.setTreeObjectType("Entity");
+   parseEntityV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.Entity);
+      // entityType - EntityType (1)
+      this.parseEntityTypeV3(jsonObj.entityType, "entityType", obj);
+      // globalAssetId - Identifier (0-1)
+      if (this.elementExists(jsonObj, "globalAssetId"))
+         this.parseIdentifierV3(jsonObj.globalAssetId, "globalAssetId", obj);
 
-      // statement [SubmodelElement] - (0-n)
-      if (this.elementExists(JSON, "statement")) {
-         var hints_ = new hints();
-         hints_.noPrint = true;
-         this.parseArray(JSON.statement,
-               "statement",
-               obj,
-               this.parseSubmodelElement,
-               hints_);
-      }
-      if (this.elementExists(JSON, "statements")) {
-         console.log("AASX Package Explorer Bug: statements");
-         var hints_ = new hints();
-         hints_.noPrint = true;
-         this.parseArray(JSON.statements,
-               "statement",
-               obj,
-               this.parseSubmodelElement,
-               hints_);
-      }
-      // entityType [EntityType]
-      if (this.elementExists(JSON, "entityType"))
-         this.parseEntityType(JSON.entityType, "entityType", obj);
-      // asset [Asset]
-      if (this.elementExists(JSON, "asset"))
-         this.parseAsset(JSON.asset, obj);
-   }
-
-   parseEntityType(JSON, name, obj) {
-      switch (JSON) {
-      case "CoManagedEntity":
-      case "SelfManagedEntity":
-         break;
-      default:
-         return;
-      }
-      var entity = this.newTreeObject(name, obj, metamodelType.EntityTypeV2);
-      entity.tData = JSON;
-   }
-
-   parseEvent(JSON, name, obj) {
-      // InheritedObject from SubmodelElement:
-      // All inherited elements are already done
-      var ElementType = "";
-
-      if (this.elementExists(JSON, "modelType") &&
-            this.elementExists(JSON.modelType, "name")) {
-         ElementType = JSON.modelType.name;
-      }
-
-      switch (ElementType) {
-      case "BasicEvent":
-         obj.setTreeObjectType("BasicEvent");
-         if (this.elementExists(JSON, "observed"))
-            this.parseKeys(JSON.observed, "observed", obj);
-         return;
-      default:
-         console.log("Unhandled Event (SubmodelElement) found: " + ElementType);
-         return;
-      }
-   }
-
-   parseOperation(JSON, name, obj) {
-      // InheritedObject from SubmodelElement:
-      // All inherited elements are already done
-
-      console.log("operation: ", JSON);
-
-      obj.setTreeObjectType("Operation");
-
-      if (this.elementExists(JSON, "inputVariable")) {
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         this.parseArray(JSON.inputVariable,
-               "inputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_);
-      }
-      if (this.elementExists(JSON, "inputVariables")) { // basyx extra s
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         hints_.writeable = true;
-         this.parseArray(JSON.inputVariables,
-               "inputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_,
-               "inputVariables");
-      }
-      if (this.elementExists(JSON, "inputArguments")) {
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         hints_.writeable = true;
-         this.parseArray(JSON.inputArguments,
-               "inputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_,
-               "inputArguments");
-      }
-      if (this.elementExists(JSON, "inoutputVariable")) {
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         this.parseArray(JSON.inoutputVariable,
-               "inoutputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_);
-      }
-      if (this.elementExists(JSON, "inoutputVariables")) { // basyx extra s
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         this.parseArray(JSON.inoutputVariables,
-               "inoutputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_,
-               "inoutputVariables");
-      }
-      if (this.elementExists(JSON, "inoutputArguments")) {
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         this.parseArray(JSON.inoutputArguments,
-               "inoutputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_,
-               "inoutputArguments");
-      }
-      if (this.elementExists(JSON, "outputVariable")) {
-         var hints_ = new hints();
-         this.parseArray(JSON.outputVariable,
-               "outputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_);
-      }
-      if (this.elementExists(JSON, "outputVariables")) { // basyx extra s
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         this.parseArray(JSON.outputVariables,
-               "outputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_,
-               "outputVariables");
-      }
-      if (this.elementExists(JSON, "outputArguments")) {
-         var hints_ = new hints();
-         hints_.noPrint = false;
-         this.parseArray(JSON.outputArguments,
-               "outputVariable",
-               obj,
-               this.parseOperationVariable,
-               hints_,
-               "outputArguments");
-      }
-   }
-
-   parseOperationVariable(JSON, name, obj) {
       var hints_ = new hints();
       hints_.noPrint = true;
-      var subObj = this.newTreeObject(name, obj, metamodelType.OperationVariableV2);
-      subObj.tHints = hints_;
-      //subObj.tOriginalJSON = JSON;
-
-      // value [SubmodelElement]
-      if (this.elementExists(JSON, "value"))
-         this.parseSubmodelElement(JSON.value, "value", subObj);
+      // specificAssetId - SpecificAssetId (0-n)
+      if (this.elementExists(jsonObj, "specificAssetId"))
+         this.parseArrayV3(jsonObj.specificAssetId,
+            "specificAssetId", obj, this.parseSpecificAssetIdV3, hints_);
+      if (this.elementExists(jsonObj, "specificAssetId"))
+         this.parseArrayV3(jsonObj.specificAssetIds,
+            "specificAssetId", obj, this.parseSpecificAssetIdV3, hints_);
+      // statement - SubmodelElement  (0-n)
+      if (this.elementExists(jsonObj, "statement"))
+         this.parseArrayV3(jsonObj.statement,
+            "statement", obj, this.parseSubmodelElementV3, hints_);
+      if (this.elementExists(jsonObj, "statements"))
+         this.parseArrayV3(jsonObj.statements,
+            "statement", obj, this.parseSubmodelElementV3, hints_);
    }
 
-   parseSubmodelElementCollection(JSON, name, obj) {
-      // InheritedObject from SubmodelElement:
-      // All inherited elements are already done
-      obj.setTreeObjectType("SubmodelElementCollection");
-      // value [SubmodelElement] (0-n)
-
-      // Skip creating one hirachy, we do not want the "value" Element as object
-      if (this.elementExists(JSON, "value")) {
-         var hints_ = new hints();
-         hints_.noPrint = true;
-         this.parseArray(JSON.value,
-               "value",
-               obj,
-               this.parseSubmodelElement,
-               hints_,
-               "",
-               true);
-      }
-      // ordered [Boolean] (0-1)
-      if (this.elementExists(JSON, "ordered"))
-         this.parseString(JSON.ordered, "ordered", obj);
-      // allowDuplicates [Boolean] (0-1)
-      if (this.elementExists(JSON, "allowDuplicates"))
-         this.parseString(JSON.allowDuplicates, "allowDuplicates", obj);
+   parseEntityTypeV3(JSON: string, name: string, obj: TreeObject) {
+      var et = this.newTreeObject(name, obj, metamodelType.EntityType);
+      var ete: EntityType = JSON as EntityType;
+      et.tData = ete;
    }
 
-   parseCapability(JSON, name, obj) {
-      // Nothing TODO, all Capability Attributes are parsed already
-      obj.setTreeObjectType("Capability");
-      return;
-   }
+   parseEventElementV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.EventElement);
 
-   parseDataElement(JSON, name, obj) {
-      // InheritedObject from SubmodelElement:
-      // All inherited elements are already done
-      var ElementType = "";
+      var elementType: metamodelType = metamodelType.SubmodelElement;
+      if (this.elementExists(jsonObj, "modelType"))
+         elementType = jsonObj.modelType;
 
-      if (this.elementExists(JSON, "modelType") &&
-            this.elementExists(JSON.modelType, "name")) {
-         ElementType = JSON.modelType.name;
-      }
-
-      switch (ElementType) {
-      case "ReferenceElement":
-         obj.setTreeObjectType("ReferenceElement");
-         if (this.elementExists(JSON, "value"))
-            this.parseReference(JSON.value, "value", obj);
-         return;
-      case "File":
-         obj.setTreeObjectType("File");
-         if (this.elementExists(JSON, "value"))
-            this.parseString(JSON.value, "value", obj);
-         if (this.elementExists(JSON, "mimeType"))
-            this.parseString(JSON.mimeType, "mimeType", obj);
-         return;
-      case "blob":
-         /* fallthrough */
-      case "Blob":
-         obj.setTreeObjectType("Blob");
-         if (this.elementExists(JSON, "value"))
-            this.parseString(JSON.value, "value", obj);
-         if (this.elementExists(JSON, "mimeType"))
-            this.parseString(JSON.mimeType, "mimeType", obj);
-         return;
-      case "Range":
-         obj.setTreeObjectType("Range");
-         if (this.elementExists(JSON, "min"))
-            this.parseString(JSON.min, "min", obj);
-         if (this.elementExists(JSON, "max"))
-            this.parseString(JSON.max, "max", obj);
-         if (this.elementExists(JSON, "valueType"))
-            this.parseDataType(JSON.valueType, "valueType", obj);
-         return;
-      case "MultiLanguageProperty":
-         obj.setTreeObjectType("MultiLanguageProperty");
-         if (this.elementExists(JSON, "value"))
-            this.parseLangStringSet(JSON.value, "value", obj);
-         if (this.elementExists(JSON, "valueId"))
-            this.parseReference(JSON.valueId, "valueId", obj);
-         return;
-      case "Property":
-         obj.setTreeObjectType("Property");
-         if (this.elementExists(JSON, "value"))
-            this.parseString(JSON.value, "value", obj);
-         if (this.elementExists(JSON, "valueType"))
-            this.parseDataType(JSON.valueType, "valueType", obj);
-         if (this.elementExists(JSON, "valueId"))
-            this.parseReference(JSON.valueId, "valueId", obj);
+      switch (elementType) {
+      case metamodelType.BasicEventElement:
+         this.parseBasicEventElementV3(JSON, name, obj);
          return;
       default:
-         console.log("Unhandled DataElement found: " + ElementType);
+         console.log("Unhandled Event (SubmodelElement) found: " + elementType);
+         break;
+      }
+      // TODO: Rest of parseEventElementV3
+      console.log("TODO: Rest of parseEventElementV3");
+   }
+
+   parseBasicEventElementV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.BasicEventElement);
+
+      // observed - ModelReference<Referable> (1)
+      this.parseReferableV3(jsonObj.observed, "observed", obj);
+      // direction - Direction (1)
+      this.parseEventDirectionV3(jsonObj.direction, "direction", obj);
+      // state - StateOfEvent (1)
+      this.parseStateOfEventV3(jsonObj.direction, "direction", obj);
+      // messageTopic - MessageTopicType (0-1)
+      if (this.elementExists(jsonObj, "messageTopic"))
+         this.parseMessageTopicTypeV3(jsonObj.messageTopic,
+            "messageTopic", obj);
+      // messageBroker - ModelReference<Referable> (0-1)
+      if (this.elementExists(jsonObj, "messageBroker"))
+         this.parseReferableV3(jsonObj.messageBroker, "messageBroker", obj);
+      // lastUpdate - dateTime (0-1)
+      if (this.elementExists(jsonObj, "lastUpdate"))
+         this.parseString(jsonObj.lastUpdate, "lastUpdate", obj);
+      // minInterval - duration (0-1)
+      if (this.elementExists(jsonObj, "minInterval"))
+         this.parseString(jsonObj.minInterval, "minInterval", obj);
+      // maxInterval - duration (0-1)
+      if (this.elementExists(jsonObj, "maxInterval"))
+         this.parseString(jsonObj.maxInterval, "maxInterval", obj);
+   }
+
+   parseEventDirectionV3(JSON: string, name: string, obj: TreeObject) {
+      var d: Direction = JSON as Direction;
+      var dob = this.newTreeObject(name, obj, metamodelType.Direction);
+      dob.tData = d;
+   }
+
+   parseStateOfEventV3(JSON: string, name: string, obj: TreeObject) {
+      var st: StateOfEvent = JSON as StateOfEvent;
+      var stoe = this.newTreeObject(name, obj, metamodelType.StateOfEvent);
+      stoe.tData = st;
+   }
+
+   parseMessageTopicTypeV3(JSON: string, name: string, obj: TreeObject) {
+      this.parseString(JSON, name, obj);
+   }
+
+   parseOperationV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.EventElement);
+
+      var hints_ = new hints();
+      hints_.noPrint = true;
+      // inputVariable - OperationVariable (0-n)
+      if (this.elementExists(jsonObj, "inputVariable"))
+         this.parseArrayV3(jsonObj.inputVariable, "inputVariable", obj,
+            this.parseOperationVariableV3, hints_);
+      if (this.elementExists(jsonObj, "inputVariables"))
+         this.parseArrayV3(jsonObj.inputVariables, "inputVariable", obj,
+            this.parseOperationVariableV3, hints_);
+      // outputVariable - OperationVariable (0-n)
+      if (this.elementExists(jsonObj, "outputVariable"))
+         this.parseArrayV3(jsonObj.outputVariable, "outputVariable", obj,
+            this.parseOperationVariableV3, hints_);
+      if (this.elementExists(jsonObj, "outputVariables"))
+         this.parseArrayV3(jsonObj.outputVariables, "outputVariable", obj,
+            this.parseOperationVariableV3, hints_);
+      // inoutputVariable - OperationVariable (0-n)
+      if (this.elementExists(jsonObj, "inoutputVariable"))
+         this.parseArrayV3(jsonObj.inoutputVariable, "inoutputVariable", obj,
+            this.parseOperationVariableV3, hints_);
+      if (this.elementExists(jsonObj, "inoutputVariables"))
+         this.parseArrayV3(jsonObj.inoutputVariables, "inoutputVariable", obj,
+            this.parseOperationVariableV3, hints_);
+      }
+
+   parseOperationVariableV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      var opv = this.newTreeObject(name, obj, metamodelType.OperationVariable);
+      var hints_ = new hints();
+      hints_.noPrint = true;
+      opv.tHints = hints_;
+      // value - SubmodelElement (1)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseSubmodelElementV3(jsonObj.value, "value", opv);
+   }
+
+   parseSubmodelElementCollectionV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.SubmodelElementCollection);
+
+      var hints_ = new hints();
+      hints_.noPrint = true;
+      // value - SubmodelElement (0-n)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseArrayV3(jsonObj.value,
+            "value", obj, this.parseSubmodelElementV3, hints_);
+      if (this.elementExists(jsonObj, "values"))
+         this.parseArrayV3(jsonObj.values,
+            "value", obj, this.parseSubmodelElementV3, hints_);
+   }
+
+   parseSubmodelElementListV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.SubmodelElementList);
+
+      // orderRelevant - boolean -> String (0-1)
+      if (this.elementExists(jsonObj, "orderRelevant"))
+         this.parseString(jsonObj.orderRelevant, "orderRelevant", obj);
+      // semanticIdListElement - Reference (0-1)
+      if (this.elementExists(jsonObj, "semanticIdListElement"))
+         this.parseReferenceV3(jsonObj.semanticIdListElement,
+            "semanticIdListElement", obj);
+      // typeValueListElement - AasSubmodelElements (0-1)
+      if (this.elementExists(jsonObj, "typeValueListElement"))
+         this.parseAasSubmodelElementsV3(jsonObj.typeValueListElement,
+            "typeValueListElement", obj);
+      // valueTypeListElement - DataTypeDefXsd (0-1)
+      if (this.elementExists(jsonObj, "valueTypeListElement"))
+         this.parseDataTypeDefXsdV3(jsonObj.valueTypeListElement,
+            "valueTypeListElement", obj);
+
+      var hints_ = new hints();
+      hints_.noPrint = true;
+      // value - SubmodelElement (0-n)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseArrayV3(jsonObj.value,
+            "value", obj, this.parseSubmodelElementV3, hints_);
+      if (this.elementExists(jsonObj, "values"))
+         this.parseArrayV3(jsonObj.values,
+            "value", obj, this.parseSubmodelElementV3, hints_);
+   }
+
+   parseAasSubmodelElementsV3(JSON: string, name: string, obj: TreeObject) {
+      var ase = this.newTreeObject(name, obj, metamodelType.AasSubmodelElements);
+      var k: metamodelType = JSON as metamodelType;
+      switch (k) {
+      case metamodelType.AnnotatedRelationshipElement:
+      case metamodelType.BasicEventElement:
+      case metamodelType.Blob:
+      case metamodelType.Capability:
+      case metamodelType.DataElement:
+      case metamodelType.Entity:
+      case metamodelType.EventElement:
+      case metamodelType.File:
+      case metamodelType.MultiLanguageProperty:
+      case metamodelType.Operation:
+      case metamodelType.Property:
+      case metamodelType.Range:
+      case metamodelType.ReferenceElement:
+      case metamodelType.RelationshipElement:
+      case metamodelType.SubmodelElement:
+      case metamodelType.SubmodelElementCollection:
+      case metamodelType.SubmodelElementList:
+      /* Fallthrough for all above */
+        break;
+      default:
+         k = metamodelType.SubmodelElement;
+         break;
+      }
+      ase.tData = k;
+   }
+
+   parseCapabilityV3(JSON: string, name: string, obj: TreeObject) {
+      // Nothing TODO, all Capability Attributes are parsed already
+      obj.setTreeObjectType(metamodelType.Capability);
       return;
+   }
+
+   parseDataElementV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+
+      var elementType: metamodelType = metamodelType.DataElement;
+      if (this.elementExists(jsonObj, "modelType"))
+         elementType = jsonObj.modelType;
+
+      switch (elementType) {
+      case metamodelType.Property:
+         this.parsePropertyV3(JSON, name, obj);
+         return;
+      case metamodelType.MultiLanguageProperty:
+         this.parseMultiLanguagePropertyV3(JSON, name, obj);
+         return;
+      case metamodelType.Range:
+         this.parseRangeV3(JSON, name, obj);
+         return;
+      case metamodelType.ReferenceElement:
+         this.parseReferenceElementV3(JSON, name, obj);
+         return;
+      case metamodelType.File:
+         this.parseFileV3(JSON, name, obj);
+         return;
+      case metamodelType.Blob:
+         this.parseBlobV3(JSON, name, obj);
+         return;
+      default:
+         console.log("Unhandled DataElement found: " + elementType);
+         return;
       }
    }
 
-   parseDataType(JSON, name, obj) {
-      var object = this.newTreeObject(name, obj, metamodelType.DataTypeV2);
+   parsePropertyV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.Property);
+      // valueType - DataTypeDefXsd (1)
+      this.parseDataTypeDefXsdV3(jsonObj.valueType, name, obj);
+      // value - ValueDataType (0-1)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseValueDataTypeV3(jsonObj.value, name, obj);
+      // valueId - Reference (0-1)
+      if (this.elementExists(jsonObj, "valueId"))
+         this.parseReferenceV3(jsonObj.value, name, obj);
+   }
 
-      if (!this.isObject(JSON))
-         this.parseString(JSON, "dataObjectType", object);
+   parseMultiLanguagePropertyV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.MultiLanguageProperty);
+      // value - MultiLanguageTextType (0-1)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseMultiLanguageTextTypeV3(jsonObj.value, name, obj);
+      // valueId - Reference (0-1)
+      if (this.elementExists(jsonObj, "valueId"))
+         this.parseReferenceV3(jsonObj.value, name, obj);
+   }
 
-      if (this.elementExists(JSON, "dataObjectType")) {
-         if (this.isObject(JSON.dataObjectType)) {
-            if (this.elementExists(JSON.dataObjectType, "name"))
-               this.parseString(JSON.dataObjectType.name, "dataObjectType", object);
-         }
-         else
-            this.parseString(JSON.dataObjectType, "dataObjectType", object);
-      }
+   parseRangeV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.Range);
+      // valueType - DataTypeDefXsd (1)
+      this.parseDataTypeDefXsdV3(jsonObj.valueType, name, obj);
+      // min - ValueDataType (0-1)
+      if (this.elementExists(jsonObj, "min"))
+         this.parseValueDataTypeV3(jsonObj.min, name, obj);
+      // max - ValueDataType (0-1)
+      if (this.elementExists(jsonObj, "max"))
+         this.parseValueDataTypeV3(jsonObj.max, name, obj);
+   }
+
+   parseReferenceElementV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.ReferenceElement);
+      // value - Reference (0-1)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseReferenceV3(jsonObj.value, name, obj);
+   }
+
+   parseFileV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.File);
+      // value - PathType (0-1)
+      if (this.elementExists(jsonObj, "value"))
+         this.parsePathTypeV3(jsonObj.value, name, obj);
+      // contentType - ContentType (1)
+      this.parseContentTypeV3(jsonObj.contentType, name, obj);
+   }
+
+   parseBlobV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      obj.setTreeObjectType(metamodelType.Blob);
+      // value - BlobType (0-1)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseBlobTypeV3(jsonObj.value, name, obj);
+      // contentType - ContentType (1)
+      this.parseContentTypeV3(jsonObj.contentType, name, obj);
    }
 
    parseDataTypeDefXsdV3(JSON: string, name: string, obj: TreeObject) {
@@ -1118,45 +916,33 @@ export class ParserBase extends Base {
       dt.tData = d;
    }
 
-   parseRelationshipElement(JSON, name, obj) {
-      // InheritedObject from SubmodelElement:
-      // All inherited elements are already done
-      var ElementType = "";
+   parseRelationShipElementV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      var elementType = metamodelType.SubmodelElement;
 
-      if (this.elementExists(JSON, "modelType") &&
-            this.elementExists(JSON.modelType, "name")) {
-         ElementType = JSON.modelType.name;
-      }
+      this.parseReferenceV3(jsonObj.first, "first", obj);
+      this.parseReferenceV3(jsonObj.second, "second", obj);
 
-      switch (ElementType) {
-      case "RelationshipElement":
-         obj.setTreeObjectType("RelationshipElement");
+      if (this.elementExists(jsonObj, "modelType"))
+         elementType = jsonObj.modelType;
+
+      switch (elementType) {
+      case metamodelType.RelationshipElement:
+         obj.setTreeObjectType(metamodelType.RelationshipElement);
          break;
-      case "AnnotatedRelationshipElement":
-         obj.setTreeObjectType("AnnotatedRelationshipElement");
-         // annotation [DataElement*] (0-n)
-         if (this.elementExists(JSON, "annotation")) {
-            var hints_ = new hints();
-            hints_.noPrint = true;
-            this.parseArray(JSON.annotation,
-                  "annotation",
-                  obj,
-                  this.parseDataElement,
-                  hints_);
-         }
+      case metamodelType.AnnotatedRelationshipElement:
+         obj.setTreeObjectType(metamodelType.AnnotatedRelationshipElement);
+         if (this.elementExists(jsonObj, "annotation"))
+            this.parseArrayV3(jsonObj.annotation,
+               "annotation", obj, this.parseDataElementV3);
+         if (this.elementExists(jsonObj, "annotations"))
+            this.parseArrayV3(jsonObj.annotations,
+               "annotation", obj, this.parseDataElementV3);
          break;
       default:
-         console.log("Unhandled RelationshipElement found: " + ElementType);
-         return;
+         console.log("Unhandled RelationshipElement found: " + elementType);
+         break;
       }
-
-      // common attributes
-      // first [Referable*]
-      if (this.elementExists(JSON, "first"))
-         this.parseKeys(JSON.first, "first", obj);
-      // second [Referable*]
-      if (this.elementExists(JSON, "second"))
-         this.parseKeys(JSON.second, "second", obj);
    }
 
    parseString(JSON: string, name: string, obj: TreeObject) {
@@ -1186,19 +972,6 @@ export class ParserBase extends Base {
          this.parseContentTypeV3(jsonObj.contentType, "contentType", r);
    }
 
-   parseSecurity(JSON, name, obj) {
-      console.log("TODO: Security");
-   }
-
-   parseDataSpecification(JSON, name, obj) {
-      // dataSpecification [Reference] - (0-n)
-      if (this.elementExists(JSON, "dataSpecification"))
-         this.parseArray(JSON.dataSpecification,
-               "dataSpecification",
-               obj,
-               this.parseReference);
-   }
-
    parseHasDataSpecificationV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
       // dataSpecification - Reference - (0-n)
@@ -1209,12 +982,6 @@ export class ParserBase extends Base {
       if (this.elementExists(jsonObj, "dataSpecifications"))
          this.parseArrayV3(jsonObj.dataSpecifications,
             "dataSpecification", obj, this.parseReferenceTypesV3);
-   }
-
-   parseSemantics(JSON, name, obj) {
-      // semanticId [Reference] - (0-1)
-      if (this.elementExists(JSON, "semanticId"))
-         this.parseReference(JSON.semanticId, "semanticId", obj);
    }
 
    parseHasSemanticsV3(JSON: string, name: string, obj: TreeObject) {
@@ -1230,10 +997,6 @@ export class ParserBase extends Base {
       if (this.elementExists(jsonObj, "supplementalSemanticIds"))
          this.parseArrayV3(jsonObj.supplementalSemanticIds,
             "supplementalSemanticId", obj, this.parseReferenceTypesV3);
-   }
-
-   parseReference(JSON, name, obj) {
-      this.parseKeys(JSON, name, obj);
    }
 
    parseReferenceV3(JSON: string, name: string, obj: TreeObject): TreeObject {
@@ -1274,17 +1037,6 @@ export class ParserBase extends Base {
       rt.tData = r;
    }
 
-   parseAdministrativeInformation(JSON, name, obj) {
-      if (!this.elementExists(JSON, "version") &&
-          !this.elementExists(JSON, "revision"))
-         return;
-      var element = this.newTreeObject(name, obj, metamodelType.AdministrativeInformation);
-      if (this.elementExists(JSON, "version"))
-         this.parseString(JSON.version, "version", element);
-      if (this.elementExists(JSON, "revision"))
-         this.parseString(JSON.revision, "revision", element);
-   }
-
    parseAdministrativeInformationV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
       if (!this.elementExists(jsonObj, "version"))
@@ -1305,74 +1057,8 @@ export class ParserBase extends Base {
          this.parseIdentifierV3(jsonObj.templateId, "templateId", element);
    }
 
-   parseIdentifier(JSON, name, obj) {
-      if (!this.elementExists(JSON, "id") && !this.elementExists(JSON, "value"))
-         return;
-      if (!this.elementExists(JSON, "idType"))
-         return;
-      var identifier = this.newTreeObject(name, obj, metamodelType.Identifier);
-      if (this.elementExists(JSON, "id"))
-         this.parseString(JSON.id, "id", identifier);
-      this.parseIdentifierType(JSON.idType, "idType", identifier);
-   }
-
    parseIdentifierV3(JSON: string, name: string, obj: TreeObject) {
       this.parseString(JSON, name, obj);
-   }
-
-   parseIdentifierType(JSON, name, obj) {
-      var id = this.newTreeObject(name, obj, metamodelType.IdentifierTypeV2);
-      switch (JSON) {
-      case "Custom":
-      case "IRDI":
-      case "IRI":
-         id.tData = JSON;
-         break;
-      default:
-         id.tData = "Custom";
-         break;
-      }
-   }
-
-   // Details of the Asset Administration Shell Part 1 V2 - Is really another
-   // type?
-   parseKeyType(JSON, name, obj) {
-      var element = this.newTreeObject(name, obj, metamodelType.KeyTypeV2);
-      switch (JSON) {
-      case "Custom":
-      case "FragmentId":
-      case "IdShort":
-      case "IRDI":
-      case "IRI":
-         element.tData = JSON;
-         break;
-      default:
-         element.tData = "Custom";
-         break;
-      }
-   }
-
-   parseLangStringSet(JSON, name, obj) {
-      if (!this.isArray(JSON) || JSON.length < 1)
-         return;
-      var element = this.newTreeObject(name, obj, metamodelType.LangStringSetV2);
-      for(var key in JSON) {
-         var SubElement = JSON[key];
-         this.parseLangString(SubElement, key, element);
-      }
-   }
-
-   parseLangString(JSON, name, obj) {
-      if (!this.elementExists(JSON, "language"))
-         return;
-      var element = this.newTreeObject(name, obj, metamodelType.LangStringV2);
-      this.parseString(JSON.language, "language", element);
-
-      if (this.elementExists(JSON, "description"))
-        this.parseString(JSON.description, "description", element);
-      // old Basyx:
-      if (this.elementExists(JSON, "text"))
-         this.parseString(JSON.text, "description", element);
    }
 
    parseLabelTypeV3(JSON: string, name: string, obj: TreeObject) {
@@ -1393,6 +1079,10 @@ export class ParserBase extends Base {
 
    parsePathTypeV3(JSON: string, name: string, obj: TreeObject) {
       this.parseIdentifierV3(JSON, name, obj);
+   }
+
+   parseBlobTypeV3(JSON: string, name: string, obj: TreeObject) {
+      this.parseString(JSON, name, obj);
    }
 
    parseContentTypeV3(JSON: string, name: string, obj: TreeObject) {
@@ -1422,82 +1112,48 @@ export class ParserBase extends Base {
       this.parseHasSemanticsV3(JSON, name, ext);
    }
 
-   parseQualifiable(JSON, name, obj) {
-      var hints_ = new hints();
-      hints_.noPrint = true;
-
-      // qualifier [Constraint] - (0-n)
-      if (this.elementExists(JSON, "qualifier"))
-         this.parseArray(JSON.qualifier,
-               "qualifier",
-               obj,
-               this.parseConstraint);
-      // basyx bug, ought to be "qualifier"
-      if (this.elementExists(JSON, "constraints")) {
-         console.log("Basyx Bug: constraints instead of qualifier");
-         this.parseArray(JSON.constraints,
-               "constraints",
-               obj,
-               this.parseConstraint);
-      }
-      // basyx bug, ought to be "qualifier"
-      if (this.elementExists(JSON, "qualifiers")) {
-         console.log("Basyx Bug: qualifiers instead of qualifier");
-         this.parseArray(JSON.qualifiers,
-               "qualifiers",
-               obj,
-               this.parseConstraint,
-               hints_);
-      }
-   }
-
    parseQualifiableV3(JSON: string, name: string, obj: TreeObject) {
-      // TODO rest of parseQualifiableV3
-      console.log("TODO rest of parseQualifiableV3");
+      var jsonObj: any = JSON;
+      // qualifier - Qualifier (0-n)
+      if (this.elementExists(jsonObj, "qualifier"))
+      this.parseArrayV3(jsonObj.qualifier, "qualifier", obj,
+         this.parseQualifierV3);
+      // Bug: qualifiers
+      if (this.elementExists(jsonObj, "qualifier"))
+      this.parseArrayV3(jsonObj.qualifiers, "qualifier", obj,
+         this.parseQualifierV3);
    }
 
-   parseConstraint(JSON, name, obj) {
-      // Indicator: dependsOn [Reference] (0 - n)
-      if (this.elementExists(JSON, "dependsOn"))
-         this.parseFormula(JSON, name, obj);
-      else
-         this.parseQualifier(JSON, name, obj)
+   parseQualifierV3(JSON: string, name: string, obj: TreeObject) {
+      var jsonObj: any = JSON;
+      var q = this.newTreeObject(name, obj, metamodelType.Qualifier);
+
+      // kind - QualifierKind (0-1)
+      if (this.elementExists(jsonObj, "kind"))
+         this.parseQualifierKindV3(jsonObj.kind, "kind", q);
+      // type - QualifierType (1)
+      this.parseQualifierTypeV3(jsonObj.type, "type", q);
+      // valueType - DataTypeDefXsd (1)
+      this.parseDataTypeDefXsdV3(jsonObj.valueType, "valueType", q)
+      // value - ValueDataType (0-1)
+      if (this.elementExists(jsonObj, "value"))
+         this.parseValueDataTypeV3(jsonObj.value, "value", q);
+      // valueId - Reference (0-1)
+      if (this.elementExists(jsonObj, "valueId"))
+         this.parseReferenceV3(jsonObj.valueId, "valueId", q);
+      /* Inherited class HasSemantics */
+      this.parseHasSemanticsV3(jsonObj, name, q);
    }
 
-   parseQualifier(JSON, name, obj) {
-      var element = this.newTreeObject(name, obj, metamodelType.QualifierV2);
-
-      // Semanctics
-      this.parseSemantics(JSON, name, element);
-
-      // type [QualifierType] (String)
-      if (this.elementExists(JSON, "type"))
-         this.parseString(JSON.type, "type", element);
-      // valueType [DataTypeDef]
-      if (this.elementExists(JSON, "valueType"))
-         this.parseDataType(JSON.valueType, "valueType", element);
-      // value [ValueDataType] (0 - 1)
-      if (this.elementExists(JSON, "value"))
-         this.parseString(JSON.value, "value", element);
-      // valueId [Reference] (0 - 1)
-      if (this.elementExists(JSON, "valueId"))
-         this.parseReference(JSON.valueId, "valueId", element);
+   parseQualifierKindV3(JSON: string, name: string, obj: TreeObject) {
+      var qk = this.newTreeObject(name, obj, metamodelType.QualifierKind);
+      var qke: QualifierKind = JSON as QualifierKind;
+      qk.tData = qke;
    }
 
-   parseFormula(JSON, name, obj) {
-      var element = this.newTreeObject(name, obj, metamodelType.FormulaV2);
-      // dependsOn [Reference] - (0-n)
-      if (this.elementExists(JSON, "dependsOn"))
-         this.parseArray(JSON.dependsOn,
-               "dependsOn",
-               element,
-               this.parseReference);
-   }
-
-   parseKind(JSON, name, obj) {
-      // kind [ModelingKind] - (0-1) - Instance
-      if (this.elementExists(JSON, "kind"))
-         this.parseModelingKind(JSON.kind, "kind", obj);
+   parseQualifierTypeV3(JSON: string, name: string, obj: TreeObject) {
+      /* String?! */
+      this.parseString(JSON, name, obj);
    }
 
    parseHasKindV3(JSON: string, name: string, obj: TreeObject) {
@@ -1507,66 +1163,16 @@ export class ParserBase extends Base {
          this.parseModellingKindV3(jsonObj.kind, "kind", obj);
    }
 
-   parseModelingKind(JSON, name, obj) {
-      switch(JSON) {
-      default:
-         /* return here */
-         return;
-      case "Template":
-      case "Instance":
-         break;
-      }
-
-      var modelingkind = this.newTreeObject(name, obj, metamodelType.ModelingKindV2);
-      modelingkind.tData = JSON;
-   }
-
    parseModellingKindV3(JSON: string, name: string, obj: TreeObject) {
       var mk = this.newTreeObject(name, obj, metamodelType.ModellingKind);
       var mke: ModellingKind = JSON as ModellingKind;
       mk.tData = mke;
    }
 
-   parseAssetKind(JSON, name, obj) {
-      switch(JSON) {
-      default:
-         /* return here */
-         return;
-      case "Type":
-      case "Instance":
-         break;
-      }
-      var assetkind = this.newTreeObject(name, obj, metamodelType.AssetKindV2);
-      assetkind.tData = JSON;
-   }
-
    parseAssetKindV3(JSON: string, name: string, obj: TreeObject) {
       var t: AssetKind = JSON as AssetKind;
       var assetkind = this.newTreeObject(name, obj, metamodelType.AssetKind);
       assetkind.tData = t;
-   }
-
-   // callback: The method to call for every array element
-   parseArray(JSON: string, name: string, obj: TreeObject, 
-              callback: parseArrayCallback, hints_: hints = new hints(),
-              URLname: string = name, skipObjHierachy: boolean = false) {
-      if(JSON.length < 1)
-         return;
-      var subobj = null;
-      if (skipObjHierachy)
-         subobj = obj;
-      else {
-         subobj = this.newTreeObject(name, obj, metamodelType.Array);
-         subobj.setURL(URLname);
-         subobj.tHints = hints_;
-      }
-
-      for(var key in JSON as any) {
-            var SubElement = JSON[key];
-            var shints = new hints();
-            shints.noPrint = true;
-            callback(SubElement, key, subobj, shints);
-      }
    }
 
    // callback: The method to call for every array element
@@ -1592,27 +1198,6 @@ export class ParserBase extends Base {
       }
    }
 
-   parseKeys(JSON, name, obj, hints_: hints = new hints()) {
-      var subobj = this.newTreeObject(name, obj, metamodelType.KeysV2);
-      subobj.tHints = hints_;
-      if (this.elementExists(JSON, "keys") && JSON.keys.length > 0)
-         for(var key in JSON.keys) {
-            var SubElement = JSON.keys[key];
-            var ehints = new hints();
-            ehints.noName = true;
-            this.parseKey(SubElement, key, subobj, ehints);
-         }
-   }
-
-   parseKey(JSON, name, obj, hints_: hints = new hints()) {
-      var key = this.newTreeObject(name, obj, metamodelType.KeyV2);
-      key.tHints = hints_;
-      this.parseKeyType(JSON.idType, "idType", key);
-      this.parseString(JSON.local, "local", key);
-      this.parseString(JSON.value, "value", key);
-      this.parseModelType(JSON.type, "type", key);
-   }
-
    parseKeyV3(JSON: string, name: string, obj: TreeObject,
       hints_: hints = new hints()) {
       var jsonObj: any = JSON;
@@ -1627,45 +1212,6 @@ export class ParserBase extends Base {
       var kt: TreeObject = this.newTreeObject(name, obj, metamodelType.KeyType);
       var k: KeyTypes = JSON as KeyTypes;
       kt.tData = k;
-   }
-
-   parseModelType(JSON, name, obj) {
-      var type = this.newTreeObject(name, obj, metamodelType.modelTypeV2);
-      switch (JSON) {
-      case "Asset":
-      case "AssetAdministrationShell":
-      case "ConceptDescription":
-      case "Submodel":
-      case "AccessPermissionRule":
-      case "AnnotatedRelationshipElement":
-      case "BasicEvent":
-      case "Blob":
-      case "Capability":
-      case "ConceptDictionary":
-      case "DataElement":
-      case "File":
-      case "Entity":
-      case "Event":
-      case "MultiLanguageProperty":
-      case "Operation":
-      case "Property":
-      case "Range":
-      case "ReferenceElement":
-      case "RelationshipElement":
-      case "SubmodelElement":
-      case "SubmodelElementCollection":
-      case "View":
-      case "GlobalReference":
-      case "FragmentReference":
-      case "Constraint":
-      case "Formula":
-      case "Qualifier":
-         type.tData = JSON;
-         break;
-      default:
-         type.tData = "Unknown model Type";
-         break;
-      }
    }
 
    parseAASRegistryV3(JSON: string, object: TreeObject) {
@@ -1776,49 +1322,18 @@ export class ParserBase extends Base {
 
       // submodelDescriptor [submodelDescriptor] - (0-n)
       if (this.elementExists(jsonObj, "submodelDescriptor"))
-         this.parseArray(jsonObj.submodelDescriptor,
+         this.parseArrayV3(jsonObj.submodelDescriptor,
                "submodelDescriptors",
                aasDescriptor,
                this.parseSubmodelDescriptorV3);
 
       // submodelDescriptor [submodelDescriptor] - (0-n)
       if (this.elementExists(jsonObj, "submodelDescriptors")) {
-         this.parseArray(jsonObj.submodelDescriptors,
+         this.parseArrayV3(jsonObj.submodelDescriptors,
                "submodelDescriptors",
                aasDescriptor,
                this.parseSubmodelDescriptorV3);
       }
-   }
-
-   parseSubmodelDescriptor(JSON, name, obj) {
-      var registryElement = this.newTreeObject(JSON.idShort, obj,
-         metamodelType.SubmodelDescriptor);
-
-      // administration [AdministrativeInformation] - (0-1)
-      if (this.elementExists(JSON, "administration"))
-         this.parseAdministrativeInformation(JSON.administration,
-            "adminstration", registryElement);
-      // Identifiable
-      this.parseIdentifiable(JSON, name, registryElement);
-      // Referable
-      this.parseReferable(JSON, name, registryElement);
-
-      // endpoint [Reference] - (0-1)
-      if (this.elementExists(JSON, "endpoint"))
-         this.parseArray(JSON.endpoint,
-               "endpoint",
-               registryElement,
-               this.parseKeys);
-      // Bug endpoints -> endpoint
-      if (this.elementExists(JSON, "endpoints")) {
-         console.log("Bug: endpoints instead of endpoint");
-         this.parseArray(JSON.endpoints,
-               "endpoint",
-               registryElement,
-               this.parseEndpoint);
-      }
-
-      this.parseSemantics(JSON, "semantics", registryElement);
    }
 
    parseSubmodelDescriptorV3(JSON: string, name: string, obj: TreeObject) {
@@ -1874,24 +1389,6 @@ export class ParserBase extends Base {
                this.parseEndpointV3);
    }
 
-
-   parseEndpoint(JSON, name, obj) {
-      var endpoint = this.newTreeObject(name, obj,
-         metamodelType.Endpoint);
-      if (this.elementExists(JSON, "address"))
-         this.parseString(JSON.address, "address", endpoint);
-      if (this.elementExists(JSON, "type"))
-         this.parseString(JSON.type, "type", endpoint);
-      
-      if (endpoint.getChild("type") != null &&
-          endpoint.getChild("type").second.tData.startsWith("http") &&
-          endpoint.getChild("address") != null &&
-          !this.hasInParentTreeType(obj, "SubmodelDescriptor")) {
-//            if (this.addURLToList)
-//               this.addURLToList(endpoint.childObjs.address.tData);
-         }
-   }
-
    parseEndpointV3(JSON: string, name: string, obj: TreeObject) {
       var endpoint = this.newTreeObject(name, obj, metamodelType.Endpoint);
       var jsonObj: any = JSON;
@@ -1912,7 +1409,7 @@ export class ParserBase extends Base {
          this.parseString(jsonObj.endpointProtocol, "endpointProtocol", pi);
       // endpointProtocolVersion [ShortIdType -> string] - (0-1)
       if (this.elementExists(jsonObj, "endpointProtocolVersion"))
-         this.parseArray(jsonObj.endpointProtocolVersion,
+         this.parseArrayV3(jsonObj.endpointProtocolVersion,
             "endpointProtocolVersion", pi, this.parseString);
       // subprotocol [ShortIdType -> string] - (0-1)
       if (this.elementExists(jsonObj, "subprotocol"))

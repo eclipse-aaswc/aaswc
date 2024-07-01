@@ -111,6 +111,7 @@ export class PrinterHtmlElements extends Base {
          /*iconpath = "local_icons/aas.svg";*/
          iconpath = "local_icons/IDTA/2022-03-29_IDTA_AAS-Logo_white transparent.png";
          break;
+         case metamodelType.AssetInformation:
          case metamodelType.Entity:
          iconpath += "devices/22/uav-quadcopter.svg";
          break;
