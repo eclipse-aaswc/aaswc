@@ -105,7 +105,11 @@ class PropertyObject {
 }
 
 class hints {
-   constructor() {}
+   constructor() {
+      this.noPrint = false;
+      this.noName = false;
+      this.writeable = false;
+   }
    noPrint: boolean;
    noName: boolean;
    writeable: boolean;
@@ -161,6 +165,8 @@ export enum metamodelType {
    Qualifier = "Qualifier",
    QualifierKind = "QualifierKind",
    AasSubmodelElements = "AasSubmodelElements",
+   MultiLanguageNameType = "MultiLanguageNameType",
+   MultiLanguageTextType = "MultiLanguageTextType",
    /* extra Part 1 */
    value = "Value",
    String = "String",
@@ -374,7 +380,6 @@ export class ParserBase extends Base {
       this.newTreeObject = this.newTreeObject.bind(this);
       this.newPropertyObject = this.newPropertyObject.bind(this);
       this.copyParentURL = this.copyParentURL.bind(this);
-      this.fixSubmodelURL = this.fixSubmodelURL.bind(this);
       this.setRootURLS = this.setRootURLS.bind(this);
 
       this.AjaxHelper = new Ajax.AjaxHelper();
@@ -440,6 +445,7 @@ export class ParserBase extends Base {
          this.parseArrayV3(jsonObj.submodelElements, "submodelElement", submodel,
             this.parseSubmodelElementV3);
 
+      console.log(submodel);
       return submodel;
    }
 
@@ -504,12 +510,12 @@ export class ParserBase extends Base {
             "idShort", obj);
       // displayName - MultiLanguageNameType (0-1)
       if (this.elementExists(jsonObj, "displayName"))
-         this.parseMultiLanguageNameTypeV3(jsonObj.displayName,
-            "displayName", obj);
+         this.parseArrayV3(jsonObj.displayName,
+            "displayName", obj, this.parseMultiLanguageNameTypeV3);
       // description - MultiLanguageTextType (0-1)
       if (this.elementExists(jsonObj, "description"))
-         this.parseMultiLanguageTextTypeV3(jsonObj.description,
-            "description", obj);
+         this.parseArrayV3(jsonObj.description,
+            "description", obj, this.parseMultiLanguageTextTypeV3);
       // Inherited class HasExtensions
       this.parseHasExtensionsV3(JSON, name, obj);
    }
@@ -568,7 +574,7 @@ export class ParserBase extends Base {
       case metamodelType.ReferenceElement:
          this.parseDataElementV3(JSON, name, sme);
          return;
-      case metamodelType.RelationshipElement:
+      case metamodelType.Capability:
          this.parseCapabilityV3(JSON, name, sme);
          return;
       case metamodelType.SubmodelElementList:
@@ -848,13 +854,13 @@ export class ParserBase extends Base {
       var jsonObj: any = JSON;
       obj.setTreeObjectType(metamodelType.Property);
       // valueType - DataTypeDefXsd (1)
-      this.parseDataTypeDefXsdV3(jsonObj.valueType, name, obj);
+      this.parseDataTypeDefXsdV3(jsonObj.valueType, "valueType", obj);
       // value - ValueDataType (0-1)
       if (this.elementExists(jsonObj, "value"))
-         this.parseValueDataTypeV3(jsonObj.value, name, obj);
+         this.parseValueDataTypeV3(jsonObj.value, "value", obj);
       // valueId - Reference (0-1)
       if (this.elementExists(jsonObj, "valueId"))
-         this.parseReferenceV3(jsonObj.value, name, obj);
+         this.parseReferenceV3(jsonObj.valueId, "valueId", obj);
    }
 
    parseMultiLanguagePropertyV3(JSON: string, name: string, obj: TreeObject) {
@@ -862,23 +868,24 @@ export class ParserBase extends Base {
       obj.setTreeObjectType(metamodelType.MultiLanguageProperty);
       // value - MultiLanguageTextType (0-1)
       if (this.elementExists(jsonObj, "value"))
-         this.parseMultiLanguageTextTypeV3(jsonObj.value, name, obj);
+         this.parseArrayV3(jsonObj.value,
+            "value", obj, this.parseMultiLanguageTextTypeV3);
       // valueId - Reference (0-1)
       if (this.elementExists(jsonObj, "valueId"))
-         this.parseReferenceV3(jsonObj.value, name, obj);
+         this.parseReferenceV3(jsonObj.valueId, "valueId", obj);
    }
 
    parseRangeV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
       obj.setTreeObjectType(metamodelType.Range);
       // valueType - DataTypeDefXsd (1)
-      this.parseDataTypeDefXsdV3(jsonObj.valueType, name, obj);
+      this.parseDataTypeDefXsdV3(jsonObj.valueType, "valueType", obj);
       // min - ValueDataType (0-1)
       if (this.elementExists(jsonObj, "min"))
-         this.parseValueDataTypeV3(jsonObj.min, name, obj);
+         this.parseValueDataTypeV3(jsonObj.min, "min", obj);
       // max - ValueDataType (0-1)
       if (this.elementExists(jsonObj, "max"))
-         this.parseValueDataTypeV3(jsonObj.max, name, obj);
+         this.parseValueDataTypeV3(jsonObj.max, "max", obj);
    }
 
    parseReferenceElementV3(JSON: string, name: string, obj: TreeObject) {
@@ -886,7 +893,7 @@ export class ParserBase extends Base {
       obj.setTreeObjectType(metamodelType.ReferenceElement);
       // value - Reference (0-1)
       if (this.elementExists(jsonObj, "value"))
-         this.parseReferenceV3(jsonObj.value, name, obj);
+         this.parseReferenceV3(jsonObj.value, "value", obj);
    }
 
    parseFileV3(JSON: string, name: string, obj: TreeObject) {
@@ -894,9 +901,9 @@ export class ParserBase extends Base {
       obj.setTreeObjectType(metamodelType.File);
       // value - PathType (0-1)
       if (this.elementExists(jsonObj, "value"))
-         this.parsePathTypeV3(jsonObj.value, name, obj);
+         this.parsePathTypeV3(jsonObj.value, "value", obj);
       // contentType - ContentType (1)
-      this.parseContentTypeV3(jsonObj.contentType, name, obj);
+      this.parseContentTypeV3(jsonObj.contentType, "contentType", obj);
    }
 
    parseBlobV3(JSON: string, name: string, obj: TreeObject) {
@@ -904,9 +911,9 @@ export class ParserBase extends Base {
       obj.setTreeObjectType(metamodelType.Blob);
       // value - BlobType (0-1)
       if (this.elementExists(jsonObj, "value"))
-         this.parseBlobTypeV3(jsonObj.value, name, obj);
+         this.parseBlobTypeV3(jsonObj.value, "value", obj);
       // contentType - ContentType (1)
-      this.parseContentTypeV3(jsonObj.contentType, name, obj);
+      this.parseContentTypeV3(jsonObj.contentType, "contentType", obj);
    }
 
    parseDataTypeDefXsdV3(JSON: string, name: string, obj: TreeObject) {
@@ -934,10 +941,10 @@ export class ParserBase extends Base {
          obj.setTreeObjectType(metamodelType.AnnotatedRelationshipElement);
          if (this.elementExists(jsonObj, "annotation"))
             this.parseArrayV3(jsonObj.annotation,
-               "annotation", obj, this.parseDataElementV3);
+               "annotation", obj, this.parseSubmodelElementV3);
          if (this.elementExists(jsonObj, "annotations"))
             this.parseArrayV3(jsonObj.annotations,
-               "annotation", obj, this.parseDataElementV3);
+               "annotation", obj, this.parseSubmodelElementV3);
          break;
       default:
          console.log("Unhandled RelationshipElement found: " + elementType);
@@ -992,11 +999,11 @@ export class ParserBase extends Base {
       // supplementalSemanticId - Reference (0-n)
       if (this.elementExists(jsonObj, "supplementalSemanticId"))
          this.parseArrayV3(jsonObj.supplementalSemanticId,
-            "supplementalSemanticId", obj, this.parseReferenceTypesV3);
+            "supplementalSemanticId", obj, this.parseReferenceV3);
       // Bug: supplementalSemanticIds
       if (this.elementExists(jsonObj, "supplementalSemanticIds"))
          this.parseArrayV3(jsonObj.supplementalSemanticIds,
-            "supplementalSemanticId", obj, this.parseReferenceTypesV3);
+            "supplementalSemanticId", obj, this.parseReferenceV3);
    }
 
    parseReferenceV3(JSON: string, name: string, obj: TreeObject): TreeObject {
@@ -1070,11 +1077,21 @@ export class ParserBase extends Base {
    }
 
    parseMultiLanguageTextTypeV3(JSON: string, name: string, obj: TreeObject) {
-      this.parseString(JSON, name, obj);
+      var jsonObj: any = JSON;
+      var mlnt = this.newTreeObject(name, obj, metamodelType.MultiLanguageTextType);
+      if (this.elementExists(jsonObj, "language"))
+         this.parseString(jsonObj.language, "language", mlnt);
+      if (this.elementExists(jsonObj, "text"))
+         this.parseString(jsonObj.text, "text", mlnt);
    }
 
    parseMultiLanguageNameTypeV3(JSON: string, name: string, obj: TreeObject) {
-      this.parseString(JSON, name, obj);
+      var jsonObj: any = JSON;
+      var mlnt = this.newTreeObject(name, obj, metamodelType.MultiLanguageNameType);
+      if (this.elementExists(jsonObj, "language"))
+         this.parseString(jsonObj.language, "language", mlnt);
+      if (this.elementExists(jsonObj, "text"))
+         this.parseString(jsonObj.text, "text", mlnt);
    }
 
    parsePathTypeV3(JSON: string, name: string, obj: TreeObject) {
@@ -1119,7 +1136,7 @@ export class ParserBase extends Base {
       this.parseArrayV3(jsonObj.qualifier, "qualifier", obj,
          this.parseQualifierV3);
       // Bug: qualifiers
-      if (this.elementExists(jsonObj, "qualifier"))
+      if (this.elementExists(jsonObj, "qualifiers"))
       this.parseArrayV3(jsonObj.qualifiers, "qualifier", obj,
          this.parseQualifierV3);
    }
@@ -1241,11 +1258,11 @@ export class ParserBase extends Base {
    parseDescriptorV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
       if (this.elementExists(jsonObj, "description"))
-         this.parseMultiLanguageTextTypeV3(jsonObj.description,
-            "description", obj);
+         this.parseArrayV3(jsonObj.description,
+            "description", obj, this.parseMultiLanguageTextTypeV3);
       if (this.elementExists(jsonObj, "displayName"))
-         this.parseMultiLanguageNameTypeV3(jsonObj.displayName,
-            "displayName", obj);
+         this.parseArrayV3(jsonObj.displayName,
+            "displayName", obj, this.parseMultiLanguageNameTypeV3);
       if (this.elementExists(jsonObj, "extension"))
          this.parseArrayV3(jsonObj.extension,
             "extension", obj, this.parseExtensionV3);
@@ -1490,16 +1507,6 @@ export class ParserBase extends Base {
       var parentURL = object.parentObj.tURL;
       object.tURL = parentURL;
       return true;
-   }
-
-   fixSubmodelURL(submodel) {
-      // fix up AAS Package Explorer Rest Server URLS
-      if (submodel.tURL.endsWith("/complete")) {
-         var l = "complete".length;
-         submodel.tOriginalURL = submodel.tURL;
-         submodel.tURL = submodel.tURL.substr(0, submodel.tURL.length - l - 1)
-            + "/submodel";
-      }
    }
 
    setRootURLS(rootElement, URL, removePathElementsCount) {

@@ -95,11 +95,17 @@ export class PrinterHtmlElements extends Base {
          return null;
       var iconpath = "local_icons/Breeze/";
       switch (object.tType) {
+         case metamodelType.EntityType:
+         case metamodelType.DataTypeDefXsd:
+         case metamodelType.ValueDataType:
          case metamodelType.ModellingKind:
          case metamodelType.AssetKind:
          case metamodelType.Key:
          case metamodelType.ReferenceType:
          case metamodelType.String:
+         case metamodelType.SpecificAssetId:
+         case metamodelType.MultiLanguageTextType:
+         case metamodelType.MultiLanguageNameType:
          iconpath += "actions/22/tag.svg";
          break;
          case metamodelType.AssetAdministrationShellRegistry:
@@ -125,11 +131,10 @@ export class PrinterHtmlElements extends Base {
          case metamodelType.SubmodelElementList:
          iconpath += "places/32/folder-green.svg";
          break;
-         //case "LangStringSet":
-         //iconpath += "places/32/folder-language.svg";
-         //break;
          case metamodelType.MultiLanguageProperty:
          case metamodelType.Property:
+         case metamodelType.Capability:
+         case metamodelType.Range:
          iconpath += "actions/22/code-variable.svg";
          break;
          case metamodelType.Identifier:
@@ -140,6 +145,7 @@ export class PrinterHtmlElements extends Base {
          //break;
          case metamodelType.ReferenceElement:
          case metamodelType.RelationshipElement:
+         case metamodelType.AnnotatedRelationshipElement:
          case metamodelType.Reference:
          iconpath += "actions/22/link.svg";
          break;

@@ -58,8 +58,12 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
          this.printAdministrativeInformation.bind(this);
       this.printLangStringSet = this.printLangStringSet.bind(this);
       this.printLangString = this.printLangString.bind(this);
+      this.printMultiLanguageNameTypeV3 =
+         this.printMultiLanguageNameTypeV3.bind(this);
       this.printEntity = this.printEntity.bind(this);
+      this.printEntityV3 = this.printEntityV3.bind(this);
       this.printFile = this.printFile.bind(this);
+      this.printFileV3 = this.printFileV3.bind(this);
       this.printFileByType = this.printFileByType.bind(this);
       this.printGenericFile = this.printGenericFile.bind(this);
       this.printFileImage = this.printFileImage.bind(this);
@@ -67,20 +71,29 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.printProperty = this.printProperty.bind(this);
       this.printMultiLanguageProperty =
          this.printMultiLanguageProperty.bind(this);
+      this.printMultiLanguagePropertyV3 =
+         this.printMultiLanguagePropertyV3.bind(this);
       this.printRange = this.printRange.bind(this);
+      this.printRangeV3 = this.printRangeV3.bind(this);
       this.printReferenceElement = this.printReferenceElement.bind(this);
+      this.printReferenceElementV3 = this.printReferenceElementV3.bind(this);
       this.printReferenceV3 = this.printReferenceV3.bind(this);
       this.printBasicEvent = this.printBasicEvent.bind(this);
       this.printSubmodelElementCollection =
          this.printSubmodelElementCollection.bind(this);
       this.printRelationshipElement = this.printRelationshipElement.bind(this);
+      this.printRelationshipElementV3 =
+         this.printRelationshipElementV3.bind(this);
       this.printAnnotatedRelationshipElement =
          this.printAnnotatedRelationshipElement.bind(this);
+         this.printAnnotatedRelationshipElementV3 =
+            this.printAnnotatedRelationshipElementV3.bind(this);
       this.printQualifier = this.printQualifier.bind(this);
-      this.printFormula = this.printFormula.bind(this);
+      this.printQualifierV3 = this.printQualifierV3.bind(this);
       this.printOperation = this.printOperation.bind(this);
       this.printOperationVariable = this.printOperationVariable.bind(this);
       this.printCapability = this.printCapability.bind(this);
+      this.printCapabilityV3 = this.printCapabilityV3.bind(this);
       this.printDataType = this.printDataType.bind(this);
       this.createValueElement = this.createValueElement.bind(this);
       this.getCategoryByObject = this.getCategoryByObject.bind(this);
@@ -195,7 +208,6 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
    }
 
    print(HTMLElement: HTMLElement, object: TreeObject) {
-
       for(var keyPair of object.childs) {
          if (keyPair.first == "parentObj" ||
              !this.isObject(keyPair.second)) {
@@ -204,34 +216,42 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
          var element = keyPair.second;
          var key = keyPair.second.tName;
          switch (element.tType) {
+         /* Basics */
          case metamodelType.String:
             this.printString(HTMLElement, element, key);
             break;
          case metamodelType.value:
             this.printValue(HTMLElement, element, key);
             break;
+         case metamodelType.DataTypeDefXsd:
+            this.printString(HTMLElement, element, key);
+            break;
+         case metamodelType.ValueDataType:
+            this.printString(HTMLElement, element, key);
+            break;
          case metamodelType.Array:
             this.printArrayV3(HTMLElement, element, key);
             break;
-         case metamodelType.Key:
-            this.printKeyV3(HTMLElement, element, key);
-            break;
+         /* Part 1 */
          case metamodelType.KeyType:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.AssetInformation:
-            this.printAssetInformationV3(HTMLElement, element, key);
-            break;
-         case metamodelType.AssetKind:
             this.printString(HTMLElement, element, key);
             break;
          case metamodelType.SpecificAssetId:
             this.printSpecifcAssetIdV3(HTMLElement, element, key);
             break;
+         case metamodelType.AssetInformation:
+            this.printAssetInformationV3(HTMLElement, element, key);
+            break;
+         case metamodelType.Key:
+            this.printKeyV3(HTMLElement, element, key);
+            break;
          case metamodelType.Reference:
             this.printReferenceV3(HTMLElement, element, key);
             break;
          case metamodelType.ReferenceType:
+            this.printString(HTMLElement, element, key);
+            break;
+         case metamodelType.AssetKind:
             this.printString(HTMLElement, element, key);
             break;
          case metamodelType.AssetAdministrationShell:
@@ -240,9 +260,54 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
          case metamodelType.Submodel:
             this.printSubmodelV3(HTMLElement, element);
             break;
-         /* Extra Elements from AAS Part 2 */
+         case metamodelType.MultiLanguageTextType:
+            /* fallthrough */
+         case metamodelType.MultiLanguageNameType:
+            this.printMultiLanguageNameTypeV3(HTMLElement, element, key);
+            break;
+         case metamodelType.ModellingKind:
+            this.printString(HTMLElement, element, key);
+            break;
+         case metamodelType.Property:
+            this.printPropertyV3(HTMLElement, element, key);
+            break;
+         case metamodelType.MultiLanguageProperty:
+            this.printMultiLanguagePropertyV3(HTMLElement, element, key);
+            break;
+         case metamodelType.Capability:
+            this.printCapabilityV3(HTMLElement, element, key);
+            break;
+         case metamodelType.Entity:
+            this.printEntityV3(HTMLElement, element, key);
+            break;
+         case metamodelType.EntityType:
+            this.printString(HTMLElement, element, key);
+            break;
+         case metamodelType.ReferenceElement:
+            this.printReferenceElementV3(HTMLElement, element, key);
+            break;
+         case metamodelType.RelationshipElement:
+            this.printRelationshipElementV3(HTMLElement, element, key);
+            break;
+         case metamodelType.AnnotatedRelationshipElement:
+            this.printAnnotatedRelationshipElementV3(HTMLElement, element, key);
+            break;
+         case metamodelType.Range:
+            this.printRangeV3(HTMLElement, element, key);
+            break;
+         case metamodelType.Qualifier:
+            this.printQualifierV3(HTMLElement, element, key);
+            break;
+         case metamodelType.QualifierKind:
+            this.printString(HTMLElement, element, key);
+            break;
+         case metamodelType.File:
+            this.printFileV3(HTMLElement, element, key);
+            break;
+         /* Part 2 */
          case metamodelType.AssetAdministrationShellDescriptor:
-            this.printAssetAdministrationShellDescriptorV3(HTMLElement, element, key);
+            this.printAssetAdministrationShellDescriptorV3(HTMLElement,
+               element, key);
             break;
          case metamodelType.SubmodelDescriptor:
             this.printSubmodelDescriptorV3(HTMLElement, element, key);
@@ -255,11 +320,41 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
             break;
          case metamodelType.SecurityAttributeObject:
             this.printSecurityAttributeObjectV3(HTMLElement, element, key);
+            break;
          case metamodelType.SecurityType:
             this.printString(HTMLElement, element, key);
-         // Generic error to show the user something went wrong
+            break;
+         /* End Part 2 */
+         /* Extra - do print */
+         /* Extra - do not print */
+         /* TODO */
+         case metamodelType.Identifier:
+         case metamodelType.AdministrativeInformation:
+         case metamodelType.Extension:
+         case metamodelType.Resource:
+         case metamodelType.Operation:
+         case metamodelType.OperationVariable:
+         case metamodelType.Blob:
+         case metamodelType.EventElement:
+         case metamodelType.BasicEventElement:
+         case metamodelType.Direction:
+         case metamodelType.StateOfEvent:
+         case metamodelType.SubmodelElementCollection:
+         case metamodelType.SubmodelElementList:
+         case metamodelType.AasSubmodelElements:
+         case metamodelType.SubmodelElement:
+         case metamodelType.DataElement:
+         case metamodelType.Submodels:
+         case metamodelType.AssetAdministrationShellRoot:
+         case metamodelType.SubmodelRoot:
+         case metamodelType.AssetAdministrationShellRegistryRoot:
+         case metamodelType.SubmodelRegistryRoot:
          case metamodelType.Error:
-            this.printError(HTMLElement, element, key);
+         case metamodelType.AssetAdministrationShellRegistry:
+         case metamodelType.SubmodelRegistry:
+            /* TODO */
+         case metamodelType.Descriptor:
+            /* fallthrough */
          default:
             console.log("Unhandled Type in print: " + element.tType, element);
             break;
@@ -276,10 +371,20 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
 
    printSpecifcAssetIdV3(HTMLElement: HTMLElement, element: TreeObject,
       key: string) {
-      var HTMLObject = this.printNode(HTMLElement, element, name, "",
-            this.colors.assetColor, true);
+      var img = this.iconByType(element);
+      var content = [
+         img,
+         document.createTextNode(key),
+         document.createTextNode(element.getChildValue("name").tData),
+         document.createTextNode(element.getChildValue("value").tData),
+         ];
 
-      this.print(HTMLObject.container, element);
+      this.createRowWithContent(HTMLElement,
+                                new Array("col-auto","col-2", "col-2","col"),
+                                content,
+                                true);
+      if (element.getChild("externalSubjectId") != null)
+        this.print(HTMLElement, element.getChildValue("externalSubjectId"));
    }
 
    printArrayV3(HTMLElement: HTMLElement, object: TreeObject, name: string) {
@@ -475,12 +580,37 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
                                 true);
    }
 
+   printMultiLanguageNameTypeV3(HTMLElement: HTMLElement, element: TreeObject,
+      key: string) {
+         if (!element.getChild("language") || !element.getChild("text"))
+            return;
+         
+         var img = this.iconByType(element);
+         var content = [
+            img,
+            document.createTextNode(element.getChildValue("language").tData),
+            document.createTextNode(element.getChildValue("text").tData),
+            ];
+
+         this.createRowWithContent(HTMLElement,
+                                   new Array("col-auto","col-2", "col"),
+                                   content,
+                                   true);
+   }
+
    printEntity(HTMLElement, object, name) {
       var childObjs = object.childObjs;
       var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
             childObjs.idShort.tData, "Entity");
 
       this.print(HTMLObject.container, object);
+   }
+
+   printEntityV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
+            element.getChildValue("idShort").tData, "Entity");
+
+      this.print(HTMLObject.container, element);
    }
 
    printFile(HTMLElement, object, name) {
@@ -490,31 +620,39 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.printFileByType(HTMLObject.container, object);
    }
 
-   printFileByType(HTMLElement, object) {
-      if (!this.elementExists(object.childObjs, "mimeType"))
-         this.printGenericFile(HTMLElement, object);
+   printFileV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
+            element.getChildValue("idShort").tData, "File");
+      this.printFileByType(HTMLObject.container, element);
+   }
+
+   printFileByType(HTMLElement: HTMLElement, element: TreeObject) {
+      if (!element.getChild("contentType"))
+         this.printGenericFile(HTMLElement, element);
       else {
-         var type = object.childObjs.mimeType.tData.toLowerCase();
+         var type = element.getChildValue("contentType").tData.toLowerCase();
          switch (type) {
          case "image/jpeg":
          case "image/png":
-            this.printFileImage(HTMLElement, object);
+         case "image/svg":
+         case "image/svg+xml":
+            this.printFileImage(HTMLElement, element);
             break;
          default:
-            console.log("TODO: Print file by type: ", type, object);
-            this.printGenericFile(HTMLElement, object);
+            console.log("TODO: Print file by type: ", type, element);
+            this.printGenericFile(HTMLElement, element);
             break;
          }
       }
    }
 
-   printGenericFile(HTMLElement, object) {
-      var fileURL = this.handleLinkTypes(object);
+   printGenericFile(HTMLElement: HTMLElement, element: TreeObject) {
+      var fileURL = this.handleLinkTypes(element);
       if (fileURL) {
          // TODO: Fix the placeholderName
          var bodyElement = this.createHTMLLink(fileURL,
             document.createTextNode(fileURL), "_blank");
-         var img = this.iconByType(object);
+         var img = this.iconByType(element);
          var content = [
             img,
             bodyElement,
@@ -524,16 +662,18 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
                                    content,
                                    true);
       }
-      this.print(HTMLElement, object);
+      this.print(HTMLElement, element);
    }
 
-   printFileImage(HTMLElement, object) {
-      var imageURL = this.handleLinkTypes(object);
+   printFileImage(HTMLElement: HTMLElement, element: TreeObject) {
+      var imageURL = this.handleLinkTypes(element);
       if (imageURL) {
          // TODO: Fix the placeholderName
-         var placeHolderName = "Image: " + object.childObjs.idShort.tData;
+         var placeHolderName = "Image: " + 
+            element.getChildValue("idShort").tData;
          var bodyElement = this.createImage(imageURL, placeHolderName);
-         var img = this.iconByType(object, object.childObjs.mimeType.tData);
+         var img = this.iconByType(element,
+            element.getChildValue("contentType").tData);
          var content = [
             img,
             bodyElement,
@@ -544,7 +684,7 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
                                    true);
       }
 
-      this.print(HTMLElement, object);
+      this.print(HTMLElement, element);
    }
 
    printBlob(HTMLElement, object, name) {
@@ -563,12 +703,27 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, object);
    }
 
+   printPropertyV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
+            element.getChildValue("idShort").tData, "Property");
+
+      this.print(HTMLObject.container, element);
+   }
+
    printMultiLanguageProperty(HTMLElement, object, name) {
       var childObjs = object.childObjs;
       var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
             childObjs.idShort.tData, "Multi Language Property");
 
       this.print(HTMLObject.container, object);
+   }
+
+   printMultiLanguagePropertyV3(HTMLElement: HTMLElement,
+      element: TreeObject, key: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
+            element.getChildValue("idShort").tData, "Multi Language Property");
+
+      this.print(HTMLObject.container, element);
    }
 
    printRange(HTMLElement, object, name) {
@@ -579,10 +734,25 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, object);
    }
 
+   printRangeV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
+            element.getChildValue("idShort").tData, "Range");
+
+      this.print(HTMLObject.container, element);
+   }
+
    printReferenceElement(HTMLElement, object, name) {
       var childObjs = object.childObjs;
       var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
             childObjs.idShort.tData, "Reference Element");
+
+      this.print(HTMLObject.container, object);
+   }
+
+   printReferenceElementV3(HTMLElement: HTMLElement, object: TreeObject,
+         name: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
+            object.getChildValue("idShort").tData, "Reference Element");
 
       this.print(HTMLObject.container, object);
    }
@@ -594,7 +764,7 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
        */
       var new_name: string = "Reference: " + name;
       var keyArr = object.getChildValue("key");
-      if (keyArr.childs.length == 1) 
+      if (keyArr && keyArr.childs.length == 1) 
          new_name += " : " +
          keyArr.childs.at(0).second.getChildValue("value").tData;
 
@@ -628,10 +798,27 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, object);
    }
 
+   printRelationshipElementV3(HTMLElement: HTMLElement, object: TreeObject,
+         name: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
+            object.getChildValue("idShort").tData, "Relationship Element");
+
+      this.print(HTMLObject.container, object);
+   }
+
    printAnnotatedRelationshipElement(HTMLElement, object, name) {
       var childObjs = object.childObjs;
       var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
             childObjs.idShort.tData, "Annotated Relationship Element");
+
+      this.print(HTMLObject.container, object);
+   }
+
+   printAnnotatedRelationshipElementV3(HTMLElement: HTMLElement,
+      object: TreeObject, name: string) {
+      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
+            object.getChildValue("idShort").tData,
+            "Annotated Relationship Element");
 
       this.print(HTMLObject.container, object);
    }
@@ -645,9 +832,11 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, object);
    }
 
-   printFormula(HTMLElement, object, name) {
-      var HTMLObject = this.printNode(HTMLElement, object, name,
-            "Formula", this.colors.qualifierColor, false);
+   printQualifierV3(HTMLElement: HTMLElement, object: TreeObject,
+      name: string) {
+      var HTMLObject = this.printNode(HTMLElement, object, 
+           object.getChildValue("type").tData, "Qualifier",
+           this.colors.qualifierColor, false);
 
       this.print(HTMLObject.container, object);
    }
@@ -684,20 +873,24 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, object);
    }
 
+   printCapabilityV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
+      var HTMLObject = this.printNode(HTMLElement, element,
+           element.getChildValue("idShort").tData, "Capability",
+           this.colors.submodelElementColor, false);
+      this.print(HTMLObject.container, element);
+   }
+
    printDataType(HTMLElement, object, name) {
       var childObjs = object.childObjs;
       this.printString(HTMLElement, childObjs.dataObjectType, name)
    }
 
-   createValueElement(object, valueName = null, update = false) {
-      var childObjs = object.childObjs;
-      var bodyElement = null;
-      var category = "CONSTANT";
-      if (valueName == "value")
-         category = this.getCategoryByObject(object);
+   createValueElement(object: any, valueName: string = null,
+      update: boolean = false) {
 
-      if (category == "")
-         category = "CONSTANT";
+      var bodyElement = null;
+      // TODO: Category
+      var category = "CONSTANT";
 
       switch (category) {
       default:
@@ -851,18 +1044,18 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       this.print(HTMLObject.container, element);
 }
 
-   handleLinkTypes(object) {
-      if (this.elementExists(object.childObjs, "value")) {
-         var fURL = object.childObjs.value.tData;
+   handleLinkTypes(element: TreeObject) {
+      if (element.getChild("value")) {
+         var fURL = element.getChildValue("value").tData;
          if (this.isNull(fURL) || fURL == "")
             return null;
          if (!(fURL.startsWith("http://") ||
                fURL.startsWith("https://"))) {
-            var rootUrl = this. findPropertyElementUpward(object,
+            var rootUrl = this. findPropertyElementUpward(element,
                "tRootURL");
             // Relative path from current element
             if (!fURL.startsWith("/"))
-               fURL = object.tURL + "/" + fURL;
+               fURL = element.tURL + "/" + fURL;
             // Absolute path from root element
             else
                fURL = rootUrl + fURL;
