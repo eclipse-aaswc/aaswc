@@ -105,10 +105,10 @@ class PropertyObject {
 }
 
 class hints {
-   constructor() {
-      this.noPrint = false;
-      this.noName = false;
-      this.writeable = false;
+   constructor(noPrint = false, noName = false, writeable = false) {
+      this.noPrint = noPrint;
+      this.noName = noName;
+      this.writeable = writeable;
    }
    noPrint: boolean;
    noName: boolean;
@@ -405,8 +405,7 @@ export class ParserBase extends Base {
       this.parseAssetInformationV3(jsonObj.assetInformation,
          "assetInformation", aas);
 
-      var h: hints = new hints();
-      h.noPrint = false;
+      var h: hints = new hints(false);
       // submodel - ModelReference<Submodel> (0-1)
       if (this.elementExists(jsonObj, "submodel"))
          this.parseArrayV3(jsonObj.submodel, "Submodel Overview", aas,
@@ -608,8 +607,7 @@ export class ParserBase extends Base {
       if (this.elementExists(jsonObj, "globalAssetId"))
          this.parseIdentifierV3(jsonObj.globalAssetId, "globalAssetId", obj);
 
-      var hints_ = new hints();
-      hints_.noPrint = true;
+      var hints_ = new hints(true);
       // specificAssetId - SpecificAssetId (0-n)
       if (this.elementExists(jsonObj, "specificAssetId"))
          this.parseArrayV3(jsonObj.specificAssetId,
@@ -648,8 +646,6 @@ export class ParserBase extends Base {
          console.log("Unhandled Event (SubmodelElement) found: " + elementType);
          break;
       }
-      // TODO: Rest of parseEventElementV3
-      console.log("TODO: Rest of parseEventElementV3");
    }
 
    parseBasicEventElementV3(JSON: string, name: string, obj: TreeObject) {
@@ -657,7 +653,7 @@ export class ParserBase extends Base {
       obj.setTreeObjectType(metamodelType.BasicEventElement);
 
       // observed - ModelReference<Referable> (1)
-      this.parseReferableV3(jsonObj.observed, "observed", obj);
+      this.parseReferenceV3(jsonObj.observed, "observed", obj);
       // direction - Direction (1)
       this.parseEventDirectionV3(jsonObj.direction, "direction", obj);
       // state - StateOfEvent (1)
@@ -668,7 +664,7 @@ export class ParserBase extends Base {
             "messageTopic", obj);
       // messageBroker - ModelReference<Referable> (0-1)
       if (this.elementExists(jsonObj, "messageBroker"))
-         this.parseReferableV3(jsonObj.messageBroker, "messageBroker", obj);
+         this.parseReferenceV3(jsonObj.messageBroker, "messageBroker", obj);
       // lastUpdate - dateTime (0-1)
       if (this.elementExists(jsonObj, "lastUpdate"))
          this.parseString(jsonObj.lastUpdate, "lastUpdate", obj);
@@ -698,10 +694,9 @@ export class ParserBase extends Base {
 
    parseOperationV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
-      obj.setTreeObjectType(metamodelType.EventElement);
+      obj.setTreeObjectType(metamodelType.Operation);
 
-      var hints_ = new hints();
-      hints_.noPrint = true;
+      var hints_ = new hints(true);
       // inputVariable - OperationVariable (0-n)
       if (this.elementExists(jsonObj, "inputVariable"))
          this.parseArrayV3(jsonObj.inputVariable, "inputVariable", obj,
@@ -728,8 +723,7 @@ export class ParserBase extends Base {
    parseOperationVariableV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
       var opv = this.newTreeObject(name, obj, metamodelType.OperationVariable);
-      var hints_ = new hints();
-      hints_.noPrint = true;
+      var hints_ = new hints(true);
       opv.tHints = hints_;
       // value - SubmodelElement (1)
       if (this.elementExists(jsonObj, "value"))
@@ -740,8 +734,7 @@ export class ParserBase extends Base {
       var jsonObj: any = JSON;
       obj.setTreeObjectType(metamodelType.SubmodelElementCollection);
 
-      var hints_ = new hints();
-      hints_.noPrint = true;
+      var hints_ = new hints(true);
       // value - SubmodelElement (0-n)
       if (this.elementExists(jsonObj, "value"))
          this.parseArrayV3(jsonObj.value,
@@ -771,8 +764,7 @@ export class ParserBase extends Base {
          this.parseDataTypeDefXsdV3(jsonObj.valueTypeListElement,
             "valueTypeListElement", obj);
 
-      var hints_ = new hints();
-      hints_.noPrint = true;
+      var hints_ = new hints(false);
       // value - SubmodelElement (0-n)
       if (this.elementExists(jsonObj, "value"))
          this.parseArrayV3(jsonObj.value,
@@ -1019,12 +1011,13 @@ export class ParserBase extends Base {
          this.parseReferenceV3(jsonObj.referredSemanticId,
             "referredSemanticId", ref);
 
+       var hints_: hints = new hints(true);
       // key <<ordered>>  [Key] - (1-n)
       if (this.elementExists(jsonObj, "key"))
-         this.parseArrayV3(jsonObj.key, "key", ref, this.parseKeyV3);
+         this.parseArrayV3(jsonObj.key, "key", ref, this.parseKeyV3, hints_);
       // Bug: keys
       if (this.elementExists(jsonObj, "keys"))
-         this.parseArrayV3(jsonObj.keys, "key", ref, this.parseKeyV3);
+         this.parseArrayV3(jsonObj.keys, "key", ref, this.parseKeyV3, hints_);
 
       return ref;
    }
@@ -1131,14 +1124,15 @@ export class ParserBase extends Base {
 
    parseQualifiableV3(JSON: string, name: string, obj: TreeObject) {
       var jsonObj: any = JSON;
+      var hints_: hints = new hints(true);
       // qualifier - Qualifier (0-n)
       if (this.elementExists(jsonObj, "qualifier"))
       this.parseArrayV3(jsonObj.qualifier, "qualifier", obj,
-         this.parseQualifierV3);
+         this.parseQualifierV3, hints_);
       // Bug: qualifiers
       if (this.elementExists(jsonObj, "qualifiers"))
       this.parseArrayV3(jsonObj.qualifiers, "qualifier", obj,
-         this.parseQualifierV3);
+         this.parseQualifierV3, hints_);
    }
 
    parseQualifierV3(JSON: string, name: string, obj: TreeObject) {

@@ -27,6 +27,7 @@ export class AASColors {
    referenceColor: string = "bg-lenzegreen";
    submodelElementColor: string = "bg-lenzecyan";
    operationColor: string = "bg-primary";
+   eventColor: string = "bg-info"
    qualifierColor: string = "bg-secondary";
    errorColor: string = "bg-danger";
 }
@@ -100,12 +101,15 @@ export class PrinterHtmlElements extends Base {
          case metamodelType.ValueDataType:
          case metamodelType.ModellingKind:
          case metamodelType.AssetKind:
+         case metamodelType.QualifierKind:
          case metamodelType.Key:
          case metamodelType.ReferenceType:
          case metamodelType.String:
          case metamodelType.SpecificAssetId:
          case metamodelType.MultiLanguageTextType:
          case metamodelType.MultiLanguageNameType:
+         case metamodelType.Direction:
+         case metamodelType.AasSubmodelElements:
          iconpath += "actions/22/tag.svg";
          break;
          case metamodelType.AssetAdministrationShellRegistry:
@@ -149,7 +153,9 @@ export class PrinterHtmlElements extends Base {
          case metamodelType.Reference:
          iconpath += "actions/22/link.svg";
          break;
-         case metamodelType.File: {
+         case metamodelType.File:
+         case metamodelType.Blob:
+         {
             switch (mimeType) {
                case "image/png":
                case "image/jpeg":
@@ -161,6 +167,7 @@ export class PrinterHtmlElements extends Base {
             }
          }
          break;
+         case metamodelType.BasicEventElement:
          case metamodelType.Operation:
          iconpath += "actions/22/run-build.svg";
          break;
