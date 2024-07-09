@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Lenze SE
+ * Copyright (c) 2024 Lenze SE
  * SPDX-License-Identifier: Apache-2.0
  */
 

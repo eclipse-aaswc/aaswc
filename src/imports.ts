@@ -1,6 +1,11 @@
+/*
+ * Copyright (c) 2024 Lenze SE
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 export * from "./Base.js"
 export * from "./AjaxHelper.js"
+
 export * from "./ParserBase.js"
 
 export * from "./AASParser.js"

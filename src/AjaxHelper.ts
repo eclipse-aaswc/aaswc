@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2024 Lenze SE
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /// <reference path="../node_modules/@types/jquery/dist/jquery.slim.d.ts" />
 
 export module Ajax {
