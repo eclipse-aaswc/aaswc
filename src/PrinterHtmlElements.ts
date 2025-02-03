@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Ajax, Base, TreeObject, metamodelType } from "./imports.js"
+import { Ajax, Base, TreeObject, types } from "./imports.js"
 
 
-class AASHTMLElement {
+ export class AASHTMLElement {
    constructor() {}
 
    headline: HTMLElement;
@@ -91,70 +91,70 @@ export class PrinterHtmlElements extends Base {
       this.tSubmodelRegistryBrowserURL = tempURL + "submodelRegistryBrowser.html";
    }
 
-   iconByType(object: TreeObject, mimeType = "") {
-      if (object == null)
-         return null;
+   iconByType(type: types.metamodelType, mimeType = "") {
       var iconpath = "local_icons/Breeze/";
-      switch (object.tType) {
-         case metamodelType.EntityType:
-         case metamodelType.DataTypeDefXsd:
-         case metamodelType.ValueDataType:
-         case metamodelType.ModellingKind:
-         case metamodelType.AssetKind:
-         case metamodelType.QualifierKind:
-         case metamodelType.Key:
-         case metamodelType.ReferenceType:
-         case metamodelType.String:
-         case metamodelType.SpecificAssetId:
-         case metamodelType.MultiLanguageTextType:
-         case metamodelType.MultiLanguageNameType:
-         case metamodelType.Direction:
-         case metamodelType.AasSubmodelElements:
+      switch (type) {
+         case types.metamodelType.EntityType:
+         case types.metamodelType.DataTypeDefXsd:
+         case types.metamodelType.ValueDataType:
+         case types.metamodelType.ModellingKind:
+         case types.metamodelType.AssetKind:
+         case types.metamodelType.QualifierKind:
+         case types.metamodelType.Key:
+         case types.metamodelType.ReferenceType:
+         case types.metamodelType.String:
+         case types.metamodelType.SpecificAssetId:
+         case types.metamodelType.MultiLanguageTextType:
+         case types.metamodelType.MultiLanguageNameType:
+         case types.metamodelType.Direction:
+         case types.metamodelType.AasSubmodelElements:
+         case types.metamodelType.StateOfEvent:
          iconpath += "actions/22/tag.svg";
          break;
-         case metamodelType.AssetAdministrationShellRegistry:
-         case metamodelType.SubmodelRegistry:
-         case metamodelType.AssetAdministrationShell:
+         case types.metamodelType.Environment:
+         case types.metamodelType.AssetAdministrationShellRegistry:
+         case types.metamodelType.SubmodelRegistry:
+         case types.metamodelType.AssetAdministrationShell:
          iconpath = "local_icons/IDTA/2022-03-29_IDTA_AAS-Logo_white transparent.png";
          break;
-         case metamodelType.AssetAdministrationShellDescriptor:
+         case types.metamodelType.AssetAdministrationShellDescriptor:
          /*iconpath = "local_icons/aas.svg";*/
          iconpath = "local_icons/IDTA/2022-03-29_IDTA_AAS-Logo_white transparent.png";
          break;
-         case metamodelType.AssetInformation:
-         case metamodelType.Entity:
+         case types.metamodelType.AssetInformation:
+         case types.metamodelType.Entity:
          iconpath += "devices/22/uav-quadcopter.svg";
          break;
-         case metamodelType.Submodel:
-         case metamodelType.SubmodelDescriptor:
+         case types.metamodelType.Submodel:
+         case types.metamodelType.SubmodelDescriptor:
          iconpath += "places/32/folder-blue.svg";
          break;
-         case metamodelType.ProtocolInformation:
-         case metamodelType.Array:
-         case metamodelType.SubmodelElementCollection:
-         case metamodelType.SubmodelElementList:
+         case types.metamodelType.ProtocolInformation:
+         case types.metamodelType.Array:
+         case types.metamodelType.SubmodelElementCollection:
+         case types.metamodelType.SubmodelElementList:
          iconpath += "places/32/folder-green.svg";
          break;
-         case metamodelType.MultiLanguageProperty:
-         case metamodelType.Property:
-         case metamodelType.Capability:
-         case metamodelType.Range:
+         case types.metamodelType.MultiLanguageProperty:
+         case types.metamodelType.Property:
+         case types.metamodelType.Capability:
+         case types.metamodelType.Range:
          iconpath += "actions/22/code-variable.svg";
          break;
-         case metamodelType.Identifier:
+         case types.metamodelType.Identifier:
          iconpath += "actions/22/favorite-genres-amarok.svg";
          break;
          //case "LangString":
          //iconpath += "actions/22/amarok_change_language.svg";
          //break;
-         case metamodelType.ReferenceElement:
-         case metamodelType.RelationshipElement:
-         case metamodelType.AnnotatedRelationshipElement:
-         case metamodelType.Reference:
+         case types.metamodelType.ReferenceElement:
+         case types.metamodelType.RelationshipElement:
+         case types.metamodelType.AnnotatedRelationshipElement:
+         case types.metamodelType.Reference:
          iconpath += "actions/22/link.svg";
          break;
-         case metamodelType.File:
-         case metamodelType.Blob:
+         case types.metamodelType.File:
+         case types.metamodelType.Blob:
          {
             switch (mimeType) {
                case "image/png":
@@ -167,14 +167,16 @@ export class PrinterHtmlElements extends Base {
             }
          }
          break;
-         case metamodelType.BasicEventElement:
-         case metamodelType.Operation:
+         case types.metamodelType.BasicEventElement:
+         case types.metamodelType.Operation:
          iconpath += "actions/22/run-build.svg";
          break;
-         case metamodelType.Endpoint:
+         case types.metamodelType.Endpoint:
          iconpath += "actions/22/network-connect.svg";
          break;
-         
+         case types.metamodelType.Qualifier:
+         iconpath += "actions/22/dependency.svg";
+         break;
          default:
          iconpath += "mimetypes/32/application-x-zerosize.svg";
          break;
@@ -182,18 +184,21 @@ export class PrinterHtmlElements extends Base {
       return this.createImage(iconpath,"", 22, 22);
    }
 
-   createBootstrapColCard(extraClasses = null) {
-      var card = this.createBootstrapCard(extraClasses);
+   createBootstrapColCard(bgColor = "bg-none", extraClasses = null) {
+      var card = this.createBootstrapCard(bgColor, extraClasses);
       card.classList.add("col");
       return card;
    }
 
-   createBootstrapCard(extraClasses = null) {
+   createBootstrapCard(bgColor = "bg-white", extraClasses = null) {
       var card = document.createElement("div");
       card.classList.add("card");
-      card.classList.add('shadow');
-      card.classList.add('rounded-0');
-      card.classList.add('border-0');
+      card.classList.add(bgColor);
+      card.classList.add('shadow-none');
+      card.classList.add('rounded-1');
+      card.classList.add('rounded-end-0');
+      card.classList.add('border');
+//      card.classList.add('border-end-0');
       if (this.isArray(extraClasses))
          extraClasses.forEach(element => card.classList.add(element));
       return card;
@@ -299,7 +304,7 @@ export class PrinterHtmlElements extends Base {
    
    prepareContainer(HTMLElement, bgColor, extContainer = null) {
       var row = this.createBootstrapContainerRow();
-      var card = this.createBootstrapColCard(Array("p-0", "my-1", "ms-1"));
+      var card = this.createBootstrapColCard(bgColor, Array("p-1", "my-1", "ms-0"));
       var cardBody = this.createBootstrapCardBody(0, 0, false, bgColor);
       var container = null;
       if (extContainer != null)
@@ -435,7 +440,7 @@ export class PrinterHtmlElements extends Base {
                         flat = false, bgcolor ="bg-white") {
       var row = this.createBootstrapContainerRow();
       if (!flat) {
-         var card = this.createBootstrapColCard(Array("p-0"));
+         var card = this.createBootstrapColCard(bgcolor, Array("p-0"));
          var cardBody = this.createBootstrapCardBody(0, 0, true, bgcolor);
 
          card.appendChild(cardBody);
@@ -496,14 +501,15 @@ export class PrinterHtmlElements extends Base {
       return div;
    }
 
-      printNode(HTMLElement, object, name, titlename, bgColor,
-         expanded = true, textColor = "text-white", titlesize = 3, 
-         extContainer = null) {
+      printNode(HTMLElement: any, object: TreeObject, name: string,
+         titlename: string, bgColor: string, expanded: boolean = true,
+         textColor: string = "text-white", titlesize: number = 3,
+         extContainer: HTMLElement = null): AASHTMLElement {
 
-      var icon = this.iconByType(object);
+      var icon = this.iconByType(object.getMetamodelType());
       var HTMLObject = this.prepareContainer(HTMLElement, bgColor, extContainer);
       var collapsable = this.insertBootstrapCardElement(HTMLObject.cardBody,
-            HTMLObject.container, "bg-light", "text-black", expanded);
+            HTMLObject.container, "bg-transparent", "text-black", expanded);
 
       var title = "";
       if (name != "" && titlename != "")

@@ -3,36 +3,35 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Ajax, ParserBase, TreeObject, AASWebStorageHandler, metamodelType } from "./imports.js";
+import { Ajax, ParserBase, TreeObject, AASWebStorageHandler, types,
+   registryV3,
+   apiV3} from "./imports.js";
 
 export class SubmodelRegistryParser extends ParserBase {
-   smRegistryPrinter: any;
-   //AjaxHelper: Ajax.AjaxHelper;
-
    aasStorageHandler: AASWebStorageHandler;
 
    smRegistryURL: string;
 
-   smRegistryRoot: TreeObject;
+   RegistryRoot: TreeObject;
    treeRoot: TreeObject;
 
-   constructor(smRegistryPrinter) {
+   registryEnv: registryV3.RegistryEnvironment =
+      new registryV3.RegistryEnvironment();
+
+   constructor(printer: any) {
       super();
       /* general */
       this.run = this.run.bind(this);
-      this.trimSuffixSlash = this.trimSuffixSlash.bind(this);
       /* Submodel Registry */
-      this.parseRegistryRaw = this.parseRegistryRaw.bind(this);
+      this.triggerParse = this.triggerParse.bind(this);
       this.addURLToList = this.addURLToList.bind(this);
 
-      this.smRegistryPrinter = smRegistryPrinter;
-      this.AjaxHelper = new Ajax.AjaxHelper();
+      this.printer = printer;
       /* Variables */
       this.smRegistryURL = "";
 
-      this.smRegistryRoot = this.newTreeObject("SubmodelRegistryRoot", null,
-                                        metamodelType.SubmodelRegistryRoot);
-      this.treeRoot = this.smRegistryRoot;
+      this.registryEnv = new registryV3.RegistryEnvironment();
+      this.treeRoot = this.RegistryRoot;
 
       this.aasStorageHandler = new AASWebStorageHandler();
    }
@@ -41,24 +40,21 @@ export class SubmodelRegistryParser extends ParserBase {
       var regURL = this.getQueryVariable("endpoint");
       if (regURL) {
          regURL = decodeURIComponent(regURL);
-         regURL = this.trimSuffixSlash(regURL);
+         apiV3.Helper.trimSuffixSlash
+         regURL = apiV3.Helper.trimSuffixSlash(regURL);
          this.aasStorageHandler.setCurrentSubmodelRegistry(regURL);
-      }
+         var regURL = apiV3.Helper.getBaseRegURL(regURL,
+            types.metamodelType.SubmodelRegistry);
 
-      // Set extra base URL
-      if (regURL != null) {
-         var registryURL = new URL(regURL); /*new URL(this.aasStorageHandler.getCurrentRegistry());*/
-         this.setRootURLS(this.smRegistryRoot, registryURL, 2);
-         this.smRegistryRoot.tURL = registryURL.href;/*this.aasStorageHandler.getCurrentRegistry()*/;
+         var apicl = new apiV3.APIClient();
+         apicl.GetAllSubmodelDescriptors(regURL,
+            this.triggerParse, this.setError);
       }
       else
-         this.smRegistryRoot.tURL = "";
+         this.RegistryRoot.setPath("");
+      }
 
-      this.getByURL(this.smRegistryRoot,
-            this.smRegistryRoot.tURL,
-            this.parseRegistryRaw,
-            this.setErrorRegistry);
-   }
+   
 
    addURLToList(URL) {
       this.aasStorageHandler.addSubmodelRegistryURL(URL, true);
@@ -70,52 +66,14 @@ export class SubmodelRegistryParser extends ParserBase {
       return URL.slice(0, - 1);
    }
 
-   /* unbound for compound -> this */
-   setErrorRegistry(status) {
-      var URL = this.URL;
-      var object = this.object;
-      var that = this.parentObj;
-
-      if (status.status == 401) {
-         var error = that.newTreeObject("SubmodelRegistryError", object,
-            metamodelType.Error);
-         that.parseString("Could not retrieve the Submodel Registry", "Description", 
-            error);
-         that.parseString(URL, "URL", error);
-         that.parseValue(status.status, "ErrorCode", error);
-         that.registryPrinter.printError(error, "");
-         return;
-      }
-
-      if (this.retry < 2) {
-         this.retry++;
-         this.parentObj.AjaxHelper.getJSON(this.URL,
-                                        this.onSuccess,
-                                        this.onError,
-                                        this);
-         return;
-      }
-
-      var error = that.newTreeObject("SubmodelRegistryError", object,
-         metamodelType.Error);
-      that.parseString("Could not retrieve the Submodel Registry", "Description", error);
-      that.parseString(URL, "URL", error);
-      if (status.status != 0)
-         that.parseValue(status.status, "ErrorCode", error);
-      that.registryPrinter.printError(error, "");
+   setError(errObj: any) {
+      console.log(errObj);
    }
 
-   parseRegistryRaw(JSON: any) {
-      var RegistryJSON = JSON;
-      if (JSON.hasOwnProperty("result"))
-         RegistryJSON = RegistryJSON.result;
-      var registry = this.parseSubmodelRegistryV3(RegistryJSON, this.smRegistryRoot);
-
-      this.aasStorageHandler.writeSubmodelRegistryMap();
-
-      console.log(registry);
-
-      this.smRegistryPrinter.printSubmodelRegistryV3(this.smRegistryPrinter.rootElement,
-         registry);
+   triggerParse(JSON: string) {
+      console.log(JSON);
+      this.parseSubmodelRegistryV3(JSON["result"], this.registryEnv);
+      this.printer.printRegistryEnvironmentV3Typed(this.printer.rootElement,
+         this.registryEnv, this.treeRoot);
    }
 }

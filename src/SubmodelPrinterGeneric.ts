@@ -9,7 +9,6 @@ import { AASPrinterMetamodelElements, SubmodelParser } from "./imports.js";
 export class SubmodelPrinterGeneric extends AASPrinterMetamodelElements {
    expandedView: any;
 
-   //parser: SubmodelParser;
    constructor(parentElement = null, parentHTMLEle = null, submodelURL = null, 
                expandedView = true) {
      var parentHTMLElement = null;
@@ -22,11 +21,10 @@ export class SubmodelPrinterGeneric extends AASPrinterMetamodelElements {
 
       this.expandedView = expandedView;
       /* variables */
-      //this.treeRoot = treeRoot;
       this.parser = new SubmodelParser(this, parentElement, submodelURL);
       this.parser.run();
 
-      window.setInterval(this.timedUpdateValues, 2000);
+      //window.setInterval(this.timedUpdateValues, 2000);
    }
 
 }

@@ -3,42 +3,46 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Ajax, AASWebStorageHandler, ParserBase, TreeObject, metamodelType } from "./imports.js";
+import { Ajax, AASWebStorageHandler, ParserBase, TreeObject, types, metamodelV3, apiV3 } from "./imports.js";
 
 class ErrorObject {
    component: string;
    errorString: string;
    URL: string;
+
 }
 
 export class SubmodelParser extends ParserBase {
-   //printer: any;
-   //AjaxHelper: Ajax.AjaxHelper;
-
    submodelURLStr: string;
    submodelURL: URL;
+   env: metamodelV3.Environment;
+   parent: TreeObject;
 
-   parentElement: TreeObject;
+   newEnv: boolean;
 
-   constructor(printer, parentElement = null, URL = null) {
+   constructor(printer: any, parentElement: TreeObject = null,
+         env: metamodelV3.Environment = null, URL: string = null) {
       super();
       /* general */
       this.run = this.run.bind(this);
-      this.trimSuffixSlash = this.trimSuffixSlash.bind(this);
       /* Submodel */
-      this.parseSubmodelRaw = this.parseSubmodelRaw.bind(this);
+      this.triggerParse = this.triggerParse.bind(this);
 
       this.printer = printer;
-      this.AjaxHelper = new Ajax.AjaxHelper();
       /* Variables */
       this.submodelURLStr = URL;
-      if (parentElement == null) {
-         this.parentElement = this.newTreeObject("treeRoot", null,
-                                            metamodelType.SubmodelRoot);
-         //this.treeRoot = this.parentElement;
+
+      if (env == null) {
+         this.env = new metamodelV3.Environment();
+         this.parent = new TreeObject("Environment", null,
+            types.metamodelType.Environment);
+         this.newEnv = true;
       }
-      else
-         this.parentElement = parentElement;
+      else {
+         this.env = env;
+         this.parent = parentElement;
+         this.newEnv = false;
+      }
    }
 
    run() {
@@ -47,73 +51,36 @@ export class SubmodelParser extends ParserBase {
          this.submodelURLStr = this.getQueryVariable("endpoint");
          if (this.submodelURLStr) {
             this.submodelURLStr = decodeURIComponent(this.submodelURLStr);
-            this.submodelURLStr = this.trimSuffixSlash(this.submodelURLStr);
+            this.submodelURLStr = apiV3.Helper.trimSuffixSlash(this.submodelURLStr);
+            if (this.newEnv) {
+               var envURL = apiV3.Helper.getBaseEnvironmentURL(
+                  this.submodelURLStr,
+                  types.metamodelType.Submodel);
+            this.parent.setPath(envURL, true);
+            }
+
+            var idp = apiV3.Helper.getIdByURL(this.submodelURLStr, envURL);
+
+            var apicl = new apiV3.APIClient();
+            apicl.GetSubmodelById(envURL, idp.getFirst(),
+               this.triggerParse, this.setError);
+
             aasStorageHandler.setCurrentSubmodel(this.submodelURLStr);
          }
       }
 
       // Set extra base URL
       this.submodelURL = new URL(this.submodelURLStr);
-      //this.treeRoot.tURL = aasStorageHandler.getCurrentAAS();
-      //this.treeRoot.tURL = this.submodelURLStr;
-
-      this.getByURL(this.parentElement,
-            this.submodelURLStr,
-            this.parseSubmodelRaw,
-            this.setErrorSubmodel);
    }
 
-   trimSuffixSlash(URL) {
-      if (!URL.endsWith("/"))
-         return URL;
-      return URL.slice(0, - 1);
-   }
-
-   setError(errObj) {
+   setError(errObj: any) {
       console.log(errObj);
    }
 
-   parseSubmodelRaw(JSON) {
-      var submodelJSON = JSON;
-      if(this.elementExists(submodelJSON, "entity"))
-         submodelJSON = submodelJSON.entity;
-      if (this.elementExists(submodelJSON, "idShort"))
-         var submodel = this.parseSubmodelV3(submodelJSON, this.submodelURLStr,
-         this.parentElement);
-      this.printer.printSubmodelV3(
-         this.printer.rootElement, submodel, this.printer.expandedView);
-   }
-
-   /* unbound for compound -> this */
-   setErrorSubmodel() {
-      if (this.retry < 1) {
-         this.retry++;
-         this.parentObj.AjaxHelper.getJSON(this.URL,
-                                           this.parentObj.parseSubmodelRaw,
-                                           this.parentObj.setErrorSubmodel,
-                                           this);
-         return;
-      }
-
-      var nextURL = "";
-      var nextRun = false;
-      if (this.object.URLArray.data.length > 0) {
-         nextURL = this.object.URLArray.data[this.object.URLArray.data.length -1]
-         this.object.URLArray.data.pop();
-         nextRun = true;
-      }
-      if (nextRun) {
-         this.parentObj.getByURL(this.object,
-                                 nextURL,
-                                 this.parentObj.parseSubmodelRaw,
-                                 this.parentObj.setErrorSubmodel);
-         return;
-      }
-
-      var error = new ErrorObject();
-      error.component = "Submodel";
-      error.errorString = "Retrieving the Submodel failed";
-      error.URL = this.URL;
-      this.parentObj.setError(error);
+   triggerParse(JSON: string) {
+      console.log(JSON);
+      this.parseSubmodelV3(JSON, this.env);
+      this.printer.printEnvironmentV3Typed(this.printer.rootElement, this.env,
+         this.parent);
    }
 }

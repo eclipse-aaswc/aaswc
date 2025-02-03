@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AASColors, PrinterHtmlElements, TreeObject, metamodelType, Pair } from "./imports.js"
+import { AASColors, AASHTMLElement, PrinterHtmlElements, TreeObject, interfaces,
+   metamodelV3, registryV3, types, util } from "./imports.js"
 
 class AjaxCallContext {
    context: any;
@@ -17,6 +18,8 @@ class MethodCallObject {
    inoutputArguments : Array<any>;
 }
 
+type printNamedArrayCallback<V> = (HTMLElement: HTMLElement, obj: V,
+   parent: TreeObject, type: types.metamodelType, name: string) => void;
 
 export class AASPrinterMetamodelElements extends PrinterHtmlElements {
    valueUpdateArray : Array<any>;
@@ -40,372 +43,394 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
    constructor(rootElement: HTMLElement) {
       super(rootElement);
       /* bind this pointer */
-      this.printAASV3 = this.printAASV3.bind(this);
-      this.printAssetInformationV3 = this.printAssetInformationV3.bind(this);
-      this.printSubmodelV3 = this.printSubmodelV3.bind(this);
-      this.printError = this.printError.bind(this);
-      this.print = this.print.bind(this);
-      this.printSpecifcAssetIdV3 = this.printSpecifcAssetIdV3.bind(this);
-      this.printArrayV3 = this.printArrayV3.bind(this);
-      this.printKeyV3 = this.printKeyV3.bind(this);
-      this.printAdministrativeInformationV3 =
-         this.printAdministrativeInformationV3.bind(this);
-      this.printMultiLanguageNameTypeV3 =
-         this.printMultiLanguageNameTypeV3.bind(this);
-      this.printEntityV3 = this.printEntityV3.bind(this);
-      this.printExtensionV3 = this.printExtensionV3.bind(this);
-      this.printFileV3 = this.printFileV3.bind(this);
-      this.printResourceV3 = this.printResourceV3.bind(this);
-      this.printFileByType = this.printFileByType.bind(this);
-      this.printGenericFile = this.printGenericFile.bind(this);
-      this.printFileImage = this.printFileImage.bind(this);
-      this.printBlobV3 = this.printBlobV3.bind(this);
-      this.printBasicEventElementV3 = this.printBasicEventElementV3.bind(this);
-      this.printMultiLanguagePropertyV3 =
-         this.printMultiLanguagePropertyV3.bind(this);
-      this.printRangeV3 = this.printRangeV3.bind(this);
-      this.printReferenceElementV3 = this.printReferenceElementV3.bind(this);
-      this.printReferenceV3 = this.printReferenceV3.bind(this);
-      this.printSubmodelElementCollectionV3 =
-         this.printSubmodelElementCollectionV3.bind(this);
-      this.printSubmodelElementListV3 =
-         this.printSubmodelElementListV3.bind(this);
-      this.printRelationshipElementV3 =
-         this.printRelationshipElementV3.bind(this);
-         this.printAnnotatedRelationshipElementV3 =
-            this.printAnnotatedRelationshipElementV3.bind(this);
-      this.printQualifierV3 = this.printQualifierV3.bind(this);
-      this.printOperationV3 = this.printOperationV3.bind(this);
-      this.printOperationVariableV3 = this.printOperationVariableV3.bind(this);
-      this.printCapabilityV3 = this.printCapabilityV3.bind(this);
-      this.createValueElement = this.createValueElement.bind(this);
+      this.printEnvironmentV3Typed = this.printEnvironmentV3Typed.bind(this);
+      this.printAssetAdministrationShellV3Typed =
+         this.printAssetAdministrationShellV3Typed.bind(this);
+      this.printConceptDescriptionV3Typed =
+         this.printConceptDescriptionV3Typed.bind(this);
+      this.printSubmodelV3Typed = this.printSubmodelV3Typed.bind(this);
+      this.printSubmodelElementV3Typed =
+         this.printSubmodelElementV3Typed.bind(this);
+      this.printSubmodelElementInheritedV3Typed =
+         this.printSubmodelElementInheritedV3Typed.bind(this);
+      this.printHasKindV3Typed = this.printHasKindV3Typed.bind(this);
+      this.printQualifiableV3Typed = this.printQualifiableV3Typed.bind(this);
+      this.printHasExtensionV3Typed = this.printHasExtensionV3Typed.bind(this);
+      this.printReferableV3Typed = this.printReferableV3Typed.bind(this);
+      this.printIdentifiableV3Typed = this.printIdentifiableV3Typed.bind(this);
+      this.printHasDataSpecificationV3Typed =
+         this.printHasDataSpecificationV3Typed.bind(this);
+      this.printSpecificAssetIdV3Typed =
+         this.printSpecificAssetIdV3Typed.bind(this);
+      this.printKeyV3Typed = this.printKeyV3Typed.bind(this);
+      this.printAdministrativeInformationV3Typed =
+         this.printAdministrativeInformationV3Typed.bind(this);
+      this.printMultiLanguageTypeV3Typed =
+         this.printMultiLanguageTypeV3Typed.bind(this);
+      this.printMultiLanguageTextTypeV3Typed =
+         this.printMultiLanguageTextTypeV3Typed.bind(this);
+      this.printExtensionV3Typed = this.printExtensionV3Typed.bind(this);
+      this. printHasSemanticsV3Typed = this.printHasSemanticsV3Typed.bind(this);
+      this.printFileV3Typed = this.printFileV3Typed.bind(this);
+      this.printResourceV3Typed = this.printResourceV3Typed.bind(this);
+      this.printBlobV3Typed = this.printBlobV3Typed.bind(this);
+      this.printBasicEventElementV3Typed =
+         this.printBasicEventElementV3Typed.bind(this);
+      this.printPropertyV3Typed = this.printPropertyV3Typed.bind(this);
+      this.printMultiLanguagePropertyV3Typed =
+         this.printMultiLanguagePropertyV3Typed.bind(this);
+      this.printReferenceElementV3Typed =
+         this.printReferenceElementV3Typed.bind(this);
+      this.printReferenceV3Typed = this.printReferenceV3Typed.bind(this);
+      this.printSubmodelElementCollectionV3Typed =
+         this.printSubmodelElementCollectionV3Typed.bind(this);
+      this.printSubmodelElementListV3Typed =
+         this.printSubmodelElementListV3Typed.bind(this);
+      this.printRelationshipElementV3Typed =
+         this.printRelationshipElementV3Typed.bind(this);
+      this.printRelationshipElementV3TypedCommon =
+      this.printRelationshipElementV3TypedCommon.bind(this);
+      this.printAnnotatedRelationshipElementV3Typed =
+         this.printAnnotatedRelationshipElementV3Typed.bind(this);
+      this.printQualifierV3Typed = this.printQualifierV3Typed.bind(this);
+      this.printOperationV3Typed = this.printOperationV3Typed.bind(this);
+      this.printOperationVariableV3Typed =
+         this.printOperationVariableV3Typed.bind(this);
+      this.printCapabilityV3Typed = this.printCapabilityV3Typed.bind(this);
+      this.createValueElementTyped = this.createValueElementTyped.bind(this);
       this.printGenericSubmodelElement =
          this.printGenericSubmodelElement.bind(this);
-      this.printString = this.printString.bind(this);
-      this.printValue = this.printValue.bind(this);
+      this.printStringTyped = this.printStringTyped.bind(this);
+      this.printValueTyped = this.printValueTyped.bind(this);
       /* AAS Part 2 */
-      this.printAASRegistryV3 = this.printAASRegistryV3.bind(this);
-      this.printSubmodelRegistryV3 = this.printSubmodelRegistryV3.bind(this);
-      this.printAssetAdministrationShellDescriptorV3 =
-         this.printAssetAdministrationShellDescriptorV3.bind(this);
-      this.printSubmodelDescriptorV3 = this.printSubmodelDescriptorV3.bind(this);
-      this.printEndpointV3 = this.printEndpointV3.bind(this);
-      this.printProtocolInformationV3 = this.printProtocolInformationV3.bind(this);
-      this.printSecurityAttributeObjectV3 =
-         this.printSecurityAttributeObjectV3.bind(this);
+      this.printRegistryEnvironmentV3Typed =
+         this.printRegistryEnvironmentV3Typed.bind(this);
+      this.printDescriptorV3Typed = this.printDescriptorV3Typed.bind(this);
+      this.printAssetAdministrationShellDescriptorV3Typed =
+         this.printAssetAdministrationShellDescriptorV3Typed.bind(this);
+      this.printSubmodelDescriptorV3Typed =
+         this.printSubmodelDescriptorV3Typed.bind(this);
+      this.printEndpointV3Typed = this.printEndpointV3Typed.bind(this);
+      this.printProtocolInformationV3Typed =
+         this.printProtocolInformationV3Typed.bind(this);
+      this.printSecurityAttributeObjectV3Typed =
+         this.printSecurityAttributeObjectV3Typed.bind(this);
       /* Helper */
-      this.handleLinkTypes = this.handleLinkTypes.bind(this);
+
       this.isLink = this.isLink.bind(this);
-      this.submitValue = this.submitValue.bind(this);
-      this.callOperation = this.callOperation.bind(this);
-      this.findChildElementUpward = this.findChildElementUpward.bind(this);
-      this.findPropertyElementUpward = this.findPropertyElementUpward.bind(this);
-      this.findElementByHtmlId = this.findElementByHtmlId.bind(this);
-      this.findElementsByType = this.findElementsByType.bind(this);
-      this.timedUpdateValues = this.timedUpdateValues.bind(this);
-      this.updateValue = this.updateValue.bind(this);
-      this.addGenericBrowserURL = this.addGenericBrowserURL.bind(this);
-      this.addAASBrowserURL = this.addAASBrowserURL.bind(this);
-      this.addSubmodelBrowserURL = this.addSubmodelBrowserURL.bind(this);
-      this.makeURLFromAASID = this.makeURLFromAASID.bind(this);
-      this.makeURLFromSubmodelID = this.makeURLFromSubmodelID.bind(this);
       /* variables */
-      this.valueUpdateArray = new Array();
 
       this.colors = new AASColors();
-
       /*
        * We need to make sure the container for our async submodels is ready
        * even if our aas is not printed already
        */
       this.aasContainer = this.createBootstrapContainerFluid();
 
-      window.setInterval(this.timedUpdateValues, 2000);
+      //window.setInterval(this.timedUpdateValues, 2000);
    }
 
-   printAASV3(HTMLElement: HTMLElement, object: TreeObject) {
-      if (this.treeRoot == null)
-         this.treeRoot = object;
-      var name = object.getChildValue("id");
-
-      var HTMLObject = this.printNode(HTMLElement, object,
-            name.tData, "Asset Administration Shell",
-            this.colors.AASColor, true, "text-white", 3, this.aasContainer);
-
-      this.print(HTMLObject.container, object);
+   printEnvironmentV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.Environment, treeRoot: TreeObject) {
+      var HTMLObject = this.printNode(HTMLElement, treeRoot, "Environment", "",
+         this.colors.submodelElementColor, true);
+      this.printNamedArrayV3<metamodelV3.AssetAdministrationShell>(
+         HTMLObject.container, obj.getAssetAdministrationShells() as
+         util.NamedArray<metamodelV3.AssetAdministrationShell>,
+         this.printAssetAdministrationShellV3Typed,
+         types.metamodelType.AssetAdministrationShell, treeRoot);
+      this.printNamedArrayV3<metamodelV3.Submodel>(
+         HTMLObject.container, obj.getSubmodels() as
+         util.NamedArray<metamodelV3.Submodel>,
+         this.printSubmodelV3Typed,
+         types.metamodelType.Submodel, treeRoot);
+      this.printNamedArrayV3<metamodelV3.ConceptDescription>(
+         HTMLObject.container, obj.getConceptDescriptions() as
+         util.NamedArray<metamodelV3.ConceptDescription>,
+         this.printConceptDescriptionV3Typed,
+         types.metamodelType.ConceptDescription, treeRoot);
    }
 
-   printAssetInformationV3(HTMLElement: HTMLElement, element: TreeObject,
-         key: string) {
-      var HTMLObject = this.printNode(HTMLElement, element, key, "",
-         this.colors.assetColor, false);
-      this.print(HTMLObject.container, element);
+   printAssetAdministrationShellV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.AssetAdministrationShell, parent: TreeObject) {
+      var tree = new TreeObject(obj.getId(), parent,
+         types.metamodelType.AssetAdministrationShell);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getId(), "",
+         this.colors.AASColor, false);
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getDerivedFrom() as metamodelV3.Reference, tree, "derivedFrom");
+      this.printIdentifiableV3Typed(HTMLObject.container, obj, tree);
+      this.printAssetInformationV3Typed(HTMLObject.container,
+         obj.getAssetInformation() as metamodelV3.AssetInformation ,tree);
+      this.printHasDataSpecificationV3Typed(HTMLObject.container, obj, tree);
+      this.printNamedArrayV3<metamodelV3.Reference>(HTMLObject.container,
+         obj.getSubmodels() as util.NamedArray<metamodelV3.Reference>,
+         this.printReferenceV3Typed, types.metamodelType.Reference, tree);
    }
 
-   printSubmodelV3(HTMLElement: HTMLElement, object: TreeObject,
-         expand: boolean = false) {
-      if (this.treeRoot == null)
-         this.treeRoot = object;
-      var name = object.getChildValue("id");
+   printConceptDescriptionV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.ConceptDescription, parent: TreeObject) {
+      var tree = new TreeObject(obj.getId(), parent,
+         types.metamodelType.ConceptDescription);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getId(),"",
+         this.colors.submodelElementColor, false);
 
-      var HTMLObject = this.printNode(HTMLElement, object, name.tData,
-            "Submodel", this.colors.submodelColor, expand);
+      this.printIdentifiableV3Typed(HTMLObject.container, obj, tree);
 
-      this.print(HTMLObject.container, object);
+      this.printNamedArrayV3<metamodelV3.Reference>(HTMLObject.container,
+         obj.getIsCaseOf() as util.NamedArray<metamodelV3.Reference>,
+         this.printReferenceV3Typed, types.metamodelType.Reference, tree);
+
+      this.printHasDataSpecificationV3Typed(HTMLObject.container, obj, tree);
    }
 
-   printError(object, name, key) {
-      // We can only print Errors on the most upper level for now
-      console.log("Fixme: Add tHTMLContainer to object-tree and print error in its domain");
-      var HTMLObject = this.printNode(this.rootElement, object, name,
-            "Error", this.colors.errorColor, true);
+   printAssetInformationV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.AssetInformation, parent: TreeObject) {
+      var tree = new TreeObject("assetInformation", parent,
+         types.metamodelType.AssetInformation);
+      var HTMLObject = this.printNode(HTMLElement, tree, "assetInformation",
+         "", this.colors.assetColor, false);
 
-      this.print(HTMLObject.container, object);
-
-
-      //this.rootElement.appendChild(HTMLObject);
+      this.printStringTyped<types.AssetKind>(HTMLObject.container,
+         obj.getAssetKind(), tree, types.metamodelType.AssetKind, "assetKind");
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getGlobalAssetId(), tree, types.metamodelType.Identifier,
+         "globalAssetId");
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getAssetType(), tree, types.metamodelType.Identifier, "assetType");
+      this.printNamedArrayV3<metamodelV3.SpecificAssetId>(HTMLObject.container,
+         obj.getSpecificAssetIds() as
+         util.NamedArray<metamodelV3.SpecificAssetId>,
+         this.printSpecificAssetIdV3Typed, types.metamodelType.SpecificAssetId,
+         tree);
+      this.printResourceV3Typed(HTMLObject.container, 
+         obj.getDefaultTumbnail() as metamodelV3.Resource, tree,
+         "defaultThumbnail");
    }
 
-   print(HTMLElement: HTMLElement, object: TreeObject) {
-      for(var keyPair of object.childs) {
-         if (keyPair.first == "parentObj" ||
-             !this.isObject(keyPair.second)) {
-            continue;
-         }
-         var element = keyPair.second;
-         var key = keyPair.second.tName;
-         switch (element.tType) {
-         /* Basics */
-         case metamodelType.String:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.value:
-            this.printValue(HTMLElement, element, key);
-            break;
-         case metamodelType.DataTypeDefXsd:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.ValueDataType:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.Array:
-            this.printArrayV3(HTMLElement, element, key);
-            break;
-         /* Part 1 */
-         case metamodelType.KeyType:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.SpecificAssetId:
-            this.printSpecifcAssetIdV3(HTMLElement, element, key);
-            break;
-         case metamodelType.AssetInformation:
-            this.printAssetInformationV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Key:
-            this.printKeyV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Reference:
-            this.printReferenceV3(HTMLElement, element, key);
-            break;
-         case metamodelType.ReferenceType:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.AssetKind:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.AssetAdministrationShell:
-            this.printAASV3(HTMLElement, element);
-            break;
-         case metamodelType.Submodel:
-            this.printSubmodelV3(HTMLElement, element);
-            break;
-         case metamodelType.MultiLanguageTextType:
-            /* fallthrough */
-         case metamodelType.MultiLanguageNameType:
-            this.printMultiLanguageNameTypeV3(HTMLElement, element, key);
-            break;
-         case metamodelType.ModellingKind:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.Property:
-            this.printPropertyV3(HTMLElement, element, key);
-            break;
-         case metamodelType.MultiLanguageProperty:
-            this.printMultiLanguagePropertyV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Capability:
-            this.printCapabilityV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Entity:
-            this.printEntityV3(HTMLElement, element, key);
-            break;
-         case metamodelType.EntityType:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.ReferenceElement:
-            this.printReferenceElementV3(HTMLElement, element, key);
-            break;
-         case metamodelType.RelationshipElement:
-            this.printRelationshipElementV3(HTMLElement, element, key);
-            break;
-         case metamodelType.AnnotatedRelationshipElement:
-            this.printAnnotatedRelationshipElementV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Range:
-            this.printRangeV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Qualifier:
-            this.printQualifierV3(HTMLElement, element, key);
-            break;
-         case metamodelType.QualifierKind:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.File:
-            this.printFileV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Blob:
-            this.printBlobV3(HTMLElement, element, key);
-            break;
-         case metamodelType.BasicEventElement:
-            this.printBasicEventElementV3(HTMLElement, element, key);
-            break;
-         case metamodelType.SubmodelElementCollection:
-            this.printSubmodelElementCollectionV3(HTMLElement, element, key);
-            break;
-         case metamodelType.SubmodelElementList:
-            this.printSubmodelElementListV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Operation:
-            this.printOperationV3(HTMLElement, element, key);
-            break;
-         case metamodelType.OperationVariable:
-            this.printOperationVariableV3(HTMLElement, element, key);
-            break;
-         case metamodelType.AasSubmodelElements:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.Direction:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.Identifier:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.Extension:
-            this.printExtensionV3(HTMLElement, element, key);
-            break;
-         case metamodelType.AdministrativeInformation:
-            this.printAdministrativeInformationV3(HTMLElement, element, key);
-            break;
-         case metamodelType.StateOfEvent:
-            this.printString(HTMLElement, element, key);
-            break;
-         case metamodelType.Resource:
-            this.printResourceV3(HTMLElement, element, key);
-            break;
-         /* Part 2 */
-         case metamodelType.AssetAdministrationShellDescriptor:
-            this.printAssetAdministrationShellDescriptorV3(HTMLElement,
-               element, key);
-            break;
-         case metamodelType.SubmodelDescriptor:
-            this.printSubmodelDescriptorV3(HTMLElement, element, key);
-            break;
-         case metamodelType.Endpoint:
-            this.printEndpointV3(HTMLElement, element, key);
-            break;
-         case metamodelType.ProtocolInformation:
-            this.printProtocolInformationV3(HTMLElement, element, key);
-            break;
-         case metamodelType.SecurityAttributeObject:
-            this.printSecurityAttributeObjectV3(HTMLElement, element, key);
-            break;
-         case metamodelType.SecurityType:
-            this.printString(HTMLElement, element, key);
-            break;
-         /* End Part 2 */
-         /* Extra - do print */
-         /* Extra - do not print */
-         /* Abstract class, noting todo */
-         case metamodelType.EventElement:
-         case metamodelType.SubmodelElement:
-         case metamodelType.DataElement:
-         /* -- */
-         case metamodelType.Submodels:
-         case metamodelType.AssetAdministrationShellRoot:
-         case metamodelType.SubmodelRoot:
-         case metamodelType.AssetAdministrationShellRegistryRoot:
-         case metamodelType.SubmodelRegistryRoot:
-         case metamodelType.Error:
-         case metamodelType.AssetAdministrationShellRegistry:
-         case metamodelType.SubmodelRegistry:
-         case metamodelType.Descriptor:
-            /* nothing todo */
-            break;
-         default:
-            console.log("Unhandled Type in print: " + element.tType, element);
-            break;
-         }
+   printSubmodelV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Submodel,
+      parent: TreeObject) {
+      var tree = new TreeObject(obj.getId(), parent,
+         types.metamodelType.Submodel);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getId(),
+         "", this.colors.submodelColor, false);
+      this.printHasKindV3Typed(HTMLObject.container, obj, tree);
+      this.printIdentifiableV3Typed(HTMLObject.container, obj, tree);
+      this.printHasSemanticsV3Typed(HTMLObject.container, obj, tree);
+      this.printQualifiableV3Typed(HTMLObject.container, obj, tree);
+      this.printHasDataSpecificationV3Typed(HTMLObject.container, obj, tree);
+
+      this.printNamedArrayV3<metamodelV3.SubmodelElement>(HTMLObject.container,
+         obj.getSubmodelElements() as
+         util.NamedArray<metamodelV3.SubmodelElement>,
+         this.printSubmodelElementV3Typed, types.metamodelType.SubmodelElement,
+         tree);
+   }
+
+   printSubmodelElementV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.SubmodelElement, parent: TreeObject) {
+      var smeType: types.metamodelType =
+         obj.constructor.name as types.metamodelType;
+      switch(smeType) {
+      case types.metamodelType.Capability:
+         this.printCapabilityV3Typed(HTMLElement,
+            obj as metamodelV3.Capability, parent);
+         break;
+      case types.metamodelType.Property:
+         this.printPropertyV3Typed(HTMLElement,
+            obj as metamodelV3.Property, parent);
+         break;
+      case types.metamodelType.MultiLanguageProperty:
+         this.printMultiLanguagePropertyV3Typed(HTMLElement,
+            obj as metamodelV3.MultiLanguageProperty, parent);
+         break;
+      case types.metamodelType.Range:
+         this.printRangeV3Typed(HTMLElement,
+            obj as metamodelV3.Range, parent);
+         break;
+      case types.metamodelType.RelationshipElement:
+         this.printRelationshipElementV3Typed(HTMLElement,
+            obj as metamodelV3.RelationshipElement, parent);
+         break;
+      case types.metamodelType.AnnotatedRelationshipElement:
+         this.printAnnotatedRelationshipElementV3Typed(HTMLElement,
+            obj as metamodelV3.AnnotatedRelationshipElement, parent);
+         break;
+      case types.metamodelType.ReferenceElement:
+         this.printReferenceElementV3Typed(HTMLElement,
+            obj as metamodelV3.ReferenceElement, parent);
+         break;
+      case types.metamodelType.Entity:
+         this.printEntityV3Typed(HTMLElement, obj as metamodelV3.Entity, parent);
+         break;
+      case types.metamodelType.Blob:
+         this.printBlobV3Typed(HTMLElement, obj as metamodelV3.Blob, parent);
+         break;
+      case types.metamodelType.File:
+         this.printFileV3Typed(HTMLElement, obj as metamodelV3.File, parent);
+         break;
+      case types.metamodelType.SubmodelElementList:
+         this.printSubmodelElementListV3Typed(HTMLElement,
+            obj as metamodelV3.SubmodelElementList, parent);
+         break;
+      case types.metamodelType.SubmodelElementCollection:
+         this.printSubmodelElementCollectionV3Typed(HTMLElement,
+            obj as metamodelV3.SubmodelElementCollection, parent);
+         break;
+      case types.metamodelType.BasicEventElement:
+         this.printBasicEventElementV3Typed(HTMLElement,
+            obj as metamodelV3.BasicEventElement, parent);
+         break;
+      case types.metamodelType.Operation:
+         this.printOperationV3Typed(HTMLElement, obj as metamodelV3.Operation,
+            parent);
+         break;
+      default:
+         /* do nothing */
+         console.log("Unhandled submodelElement found: " + smeType);
+         return;
       }
    }
 
-   printSpecifcAssetIdV3(HTMLElement: HTMLElement, element: TreeObject,
-      key: string) {
-      var img = this.iconByType(element);
-      var content = [
-         img,
-         document.createTextNode(key),
-         document.createTextNode(element.getChildValue("name").tData),
-         document.createTextNode(element.getChildValue("value").tData),
-         ];
-
-      this.createRowWithContent(HTMLElement,
-                                new Array("col-auto","col-2", "col-2","col"),
-                                content,
-                                true);
-      if (element.getChild("externalSubjectId") != null)
-        this.print(HTMLElement, element.getChildValue("externalSubjectId"));
+   printSubmodelElementInheritedV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.SubmodelElement, parent: TreeObject) {
+      this.printReferableV3Typed(HTMLElement, obj, parent);
+      this.printHasSemanticsV3Typed(HTMLElement, obj, parent);
+      this.printQualifiableV3Typed(HTMLElement, obj, parent);
+      this.printHasDataSpecificationV3Typed(HTMLElement, obj, parent);
    }
 
-   printArrayV3(HTMLElement: HTMLElement, object: TreeObject, name: string) {
-      if (object.tHints.noPrint == false) {
-         var HTMLObject = this.printNode(HTMLElement, object, name, "Array",
-               this.colors.submodelColor, false);
-
-         this.print(HTMLObject.container, object);
-      }
-      else
-         this.print(HTMLElement, object);
+   printHasKindV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.HasKind,
+      parent: TreeObject) {
+      this.printStringTyped<types.ModellingKind>(HTMLElement,
+         obj.getModellingKind(), parent, types.metamodelType.ModellingKind,
+         "kind");
    }
 
-   printKeyV3(HTMLElement: HTMLElement, object: TreeObject, name: string) {
+   printQualifiableV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.Qualifiable, parent: TreeObject) {
+      this.printNamedArrayV3<metamodelV3.Qualifier>(HTMLElement,
+         obj.getQualifiers() as util.NamedArray<metamodelV3.Qualifier>,
+         this.printQualifierV3Typed, types.metamodelType.Qualifier, parent,
+         true);
+   }
+
+   printHasExtensionV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.HasExtension, parent: TreeObject) {
+      this.printNamedArrayV3<metamodelV3.Extension>(HTMLElement,
+         obj.getExtensions() as util.NamedArray<metamodelV3.Extension>,
+         this.printExtensionV3Typed, types.metamodelType.Extension, parent);
+   }
+
+   printReferableV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Referable,
+      parent: TreeObject) {
+      this.printStringTyped<types.NameType>(HTMLElement,
+         obj.getIdShort(), parent, types.metamodelType.String, "idShort");
+      this.printStringTyped<types.NameType>(HTMLElement,
+         obj.getCategory(), parent, types.metamodelType.String, "category");
+      this.printMultiLanguageTypeV3Typed(HTMLElement, obj.getDisplayName() as
+         metamodelV3.MultiLanguageType, parent);
+      this.printMultiLanguageTypeV3Typed(HTMLElement, obj.getDescription() as
+         metamodelV3.MultiLanguageType, parent);
+      this.printHasExtensionV3Typed(HTMLElement, obj, parent);
+   }
+
+   printIdentifiableV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.Identifable, parent: TreeObject) {
+      this.printStringTyped<types.Identifier>(HTMLElement,
+         obj.getId(), parent, types.metamodelType.String, "id");
+      this.printReferableV3Typed(HTMLElement, obj, parent);
+      this.printAdministrativeInformationV3Typed(HTMLElement,
+         obj.getAdministration() as metamodelV3.AdministrativeInformation,
+         parent);
+   }
+
+   printHasDataSpecificationV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.HasDataSpecification, parent: TreeObject) {
+      this.printNamedArrayV3<metamodelV3.Reference>(HTMLElement,
+         obj.getDataSpecification() as util.NamedArray<metamodelV3.Reference>,
+         this.printReferenceV3Typed, types.metamodelType.Reference, parent);
+   }
+
+   printSpecificAssetIdV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.SpecificAssetId, parent: TreeObject) {
+      var tree = new TreeObject(obj.getName(), parent,
+         types.metamodelType.SpecificAssetId);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getName(), "specificAssetId", this.colors.submodelElementColor,
+         false);
+
+      this.printStringTyped<types.LabelType>(HTMLObject.container,
+         obj.getName(), tree, types.metamodelType.String, "name");
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getValue(), tree, types.metamodelType.Identifier, "value");
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getExternalSubjectId() as metamodelV3.Reference, tree,
+         "externalSubjectId");
+   }
+
+   printKeyV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Key,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getValue(), parent, types.metamodelType.Key);
       var content = [];
-      var img = this.iconByType(object);
+      var img = this.iconByType(types.metamodelType.Key);
       content.push(img);
       content.push(document.createTextNode("Key type"));
-      content.push(document.createTextNode(object.getChildValue("type").tData));
-      content.push(document.createTextNode(object.getChildValue("value").tData));
+      content.push(document.createTextNode(obj.getType()));
+      content.push(document.createTextNode(obj.getValue()));
       this.createRowWithContent(HTMLElement,
                                 new Array("col-auto", "col-2", "col-2", "col"),
                                 content,
                                 true);
-      console.log("printKeyV3: Add links to AAS/Submodel via Registry lookup")
    }
 
-   printAdministrativeInformationV3(HTMLElement: HTMLElement,
-         object: TreeObject, name: string) {
-      this.print(HTMLElement, object);
+   printAdministrativeInformationV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.AdministrativeInformation, parent: TreeObject) {
+      if (!obj)
+         return;
+      var tree = new TreeObject("", parent,
+         types.metamodelType.AdministrativeInformation);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         "", "Administrative Information", this.colors.submodelElementColor,
+         false);
+      
+      this.printStringTyped<types.VersionType>(HTMLObject.container,
+         obj.getVersion(), tree, types.metamodelType.String, "version");
+      this.printStringTyped<types.VersionType>(HTMLObject.container,
+         obj.getRevision(), tree, types.metamodelType.String, "revision");
+      this.printReferenceV3Typed(HTMLObject.container, obj.getCreator() as
+         metamodelV3.Reference, tree, "creator");
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+            obj.getTemplateId(), tree, types.metamodelType.String, "templateId");
    }
 
-   printMultiLanguageNameTypeV3(HTMLElement: HTMLElement, element: TreeObject,
-      key: string) {
-         if (!element.getChild("language") || !element.getChild("text"))
-            return;
-         
-         var img = this.iconByType(element);
+   printMultiLanguageTypeV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.MultiLanguageType, parent: TreeObject) {
+      if (!obj)
+         return;
+      var tree = new TreeObject(obj.getName(), parent,
+         types.metamodelType.MultiLanguageType);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getName(), "", this.colors.submodelElementColor, false);
+      var iter: IterableIterator<types.MultiLangageEntry> =
+         obj.getElements().values();
+      var iterResult = iter.next();
+      while (!iterResult.done) {
+         this.printMultiLanguageTextTypeV3Typed(HTMLObject.container,
+            iterResult.value, tree)
+         iterResult = iter.next();
+      }
+   }
+
+   printMultiLanguageTextTypeV3Typed(HTMLElement: HTMLElement,
+         p: types.MultiLangageEntry, parent: TreeObject) {
+         var tree = new TreeObject(p.getFirst(), parent,
+                     types.metamodelType.MultiLanguageTextType);
+         var img = this.iconByType(types.metamodelType.MultiLanguageTextType);
          var content = [
             img,
-            document.createTextNode(element.getChildValue("language").tData),
-            document.createTextNode(element.getChildValue("text").tData),
+            document.createTextNode(p.getFirst()),
+            document.createTextNode(p.getSecond()),
             ];
 
          this.createRowWithContent(HTMLElement,
@@ -414,297 +439,379 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
                                    true);
    }
 
-   printEntityV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "Entity");
+   printEntityV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Entity,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.Entity);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "Entity",
+         this.colors.submodelElementColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+
+      this.printStringTyped<types.EntityType>(HTMLObject.container,
+         obj.getEntityType(), tree, types.metamodelType.EntityType,
+         "entityType");
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getGlobalAssetId(), tree, types.metamodelType.Identifier,
+         "globalAssetId");
+      this.printNamedArrayV3<metamodelV3.SpecificAssetId>(HTMLObject.container,
+         obj.getSpecifcAssetIds() as
+         util.NamedArray<metamodelV3.SpecificAssetId>,
+         this.printSpecificAssetIdV3Typed, types.metamodelType.SpecificAssetId,
+         tree);
+      this.printNamedArrayV3(HTMLObject.container, obj.getStatements(),
+         this.printSubmodelElementV3Typed, types.metamodelType.SubmodelElement,
+         tree);
    }
 
-   printExtensionV3(HTMLElement: HTMLElement, element: TreeObject,
-         key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "Extension",
-            this.colors.qualifierColor);
+   printExtensionV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Extension,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getName(), parent, types.metamodelType.Extension);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getName(),
+         "Extension", this.colors.qualifierColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printStringTyped<types.NameType>(HTMLObject.container,
+         obj.getName(), tree, types.metamodelType.String, "name");
+      this.printStringTyped<types.DataTypeDefXsd>(HTMLObject.container,
+         obj.getValueType(), tree, types.metamodelType.DataTypeDefXsd,
+         "valueType");
+      this.printStringTyped<types.ValueDataType>(HTMLObject.container,
+         obj.getValue(), tree, types.metamodelType.ValueDataType, "value");
+
+      this.printHasSemanticsV3Typed(HTMLObject.container, obj, tree);
+
+      this.printNamedArrayV3<metamodelV3.Reference>(HTMLObject.container,
+         obj.getRefersTo() as util.NamedArray<metamodelV3.Reference>,
+         this.printReferenceV3Typed, types.metamodelType.Reference, tree, true);
    }
 
-   printFileV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "File");
-      this.printFileByType(HTMLObject.container, element);
+   printHasSemanticsV3Typed(HTMLElement: HTMLElement,
+      obj: metamodelV3.HasSemantics, parent: TreeObject) {
+
+      this.printReferenceV3Typed(HTMLElement, obj.getSemanticId() as
+         metamodelV3.Reference, parent, "semanticId");
+      this.printNamedArrayV3<metamodelV3.Reference>(HTMLElement,
+         obj.getSupplementalSemanticIds() as
+         util.NamedArray<metamodelV3.Reference>,
+         this.printReferenceV3Typed, types.metamodelType.Reference, parent,
+         false);
    }
 
-   printResourceV3(HTMLElement: HTMLElement, element: TreeObject,
-         key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "File");
-      this.printFileByType(HTMLObject.container, element);
+   printFileV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.File,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.File);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "File",
+         this.colors.submodelElementColor, false);
+
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+
+      this.printStringTyped<types.PathType>(HTMLObject.container,
+         obj.getValue(), tree, types.metamodelType.String, "value");
+      this.printStringTyped<types.ContentType>(HTMLObject.container,
+         obj.getContentType(), tree, types.metamodelType.String, "contentType");
    }
 
-   printFileByType(HTMLElement: HTMLElement, element: TreeObject) {
-      if (!element.getChild("contentType"))
-         this.printGenericFile(HTMLElement, element);
-      else {
-         var type = element.getChildValue("contentType").tData.toLowerCase();
-         switch (type) {
-         case "image/jpeg":
-         case "image/png":
-         case "image/svg":
-         case "image/svg+xml":
-            this.printFileImage(HTMLElement, element);
-            break;
-         default:
-            console.log("TODO: Print file by type: ", type, element);
-            this.printGenericFile(HTMLElement, element);
-            break;
-         }
-      }
+   printResourceV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Resource,
+         parent: TreeObject, name: string) {
+      if (!obj)
+         return;
+      var tree = new TreeObject(name, parent, types.metamodelType.Resource);
+      var HTMLObject = this.printNode(HTMLElement, tree, name,
+         "", this.colors.submodelElementColor, false);
+         this.printStringTyped<types.PathType>(HTMLObject.container,
+            obj.getPath(), tree, types.metamodelType.String, "path");
+         this.printStringTyped<types.ContentType>(HTMLObject.container,
+            obj.getContentType(), tree, types.metamodelType.String, 
+            "contentType");
    }
 
-   printGenericFile(HTMLElement: HTMLElement, element: TreeObject) {
-      var fileURL = this.handleLinkTypes(element);
-      if (fileURL) {
-         // TODO: Fix the placeholderName
-         var bodyElement = this.createHTMLLink(fileURL,
-            document.createTextNode(fileURL), "_blank");
-         var img = this.iconByType(element);
-         var content = [
-            img,
-            bodyElement,
-            ];
-         this.createRowWithContent(HTMLElement,
-                                   new Array("col-auto", "col"),
-                                   content,
-                                   true);
-      }
-      this.print(HTMLElement, element);
+   printBlobV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Blob,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.Blob);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "Blob",
+         this.colors.submodelElementColor, false);
+
+         this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj,
+            tree);
+
+         this.printStringTyped<types.BlobType>(HTMLObject.container,
+            obj.getValue(), tree, types.metamodelType.String, "value");
+         this.printStringTyped<types.ContentType>(HTMLObject.container,
+            obj.getContentType(), tree, types.metamodelType.String, 
+            "contentType");
    }
 
-   printFileImage(HTMLElement: HTMLElement, element: TreeObject) {
-      var imageURL = this.handleLinkTypes(element);
-      if (imageURL) {
-         // TODO: Fix the placeholderName
-         var placeHolderName = "Image: " + 
-            element.getChildValue("idShort").tData;
-         var bodyElement = this.createImage(imageURL, placeHolderName);
-         var img = this.iconByType(element,
-            element.getChildValue("contentType").tData);
-         var content = [
-            img,
-            bodyElement,
-            ];
-         this.createRowWithContent(HTMLElement,
-                                   new Array("col-auto", "col"),
-                                   content,
-                                   true);
-      }
+   printPropertyV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Property,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.Property);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "Property",
+         this.colors.submodelElementColor, false);
 
-      this.print(HTMLElement, element);
+         this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj,
+            tree);
+
+         this.printStringTyped<types.DataTypeDefXsd>(HTMLObject.container,
+            obj.getValueType(), tree, types.metamodelType.DataTypeDefXsd, 
+            "valueType");
+         this.printStringTyped<types.ValueDataType>(HTMLObject.container,
+            obj.getValue(), tree, types.metamodelType.ValueDataType, "value");
+         this.printReferenceV3Typed(HTMLObject.container,
+            obj.getValueId() as metamodelV3.Reference, tree, "valueId");
    }
 
-   printBlobV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "Blob");
+   printMultiLanguagePropertyV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.MultiLanguageProperty, parent: TreeObject) {
+   var tree = new TreeObject(obj.getIdShort(), parent,
+      types.metamodelType.MultiLanguageProperty);
+   var HTMLObject = this.printNode(HTMLElement, tree,
+      obj.getIdShort(), "MultiLanguageProperty",
+      this.colors.submodelElementColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+      this.printMultiLanguageTypeV3Typed(HTMLObject.container, obj.getValues() as
+         metamodelV3.MultiLanguageType, tree);
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getValueId() as metamodelV3.Reference, tree, "valueId");
    }
 
-   printPropertyV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "Property");
+   printRangeV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Range,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.Range);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "Range",
+         this.colors.submodelElementColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+
+      this.printStringTyped<types.DataTypeDefXsd>(HTMLObject.container,
+         obj.getValueType(), tree, types.metamodelType.DataTypeDefXsd,
+         "valueType");
+      this.printStringTyped<types.ValueDataType>(HTMLObject.container,
+         obj.getMin(), tree, types.metamodelType.ValueDataType, "min");
+      this.printStringTyped<types.ValueDataType>(HTMLObject.container,
+         obj.getMax(), tree, types.metamodelType.ValueDataType, "max");
    }
 
-   printMultiLanguagePropertyV3(HTMLElement: HTMLElement,
-      element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "Multi Language Property");
+   printReferenceElementV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.ReferenceElement, parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.ReferenceElement);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "ReferenceElement",
+         this.colors.submodelElementColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getValue() as metamodelV3.Reference, tree, "value");
    }
 
-   printRangeV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData, "Range");
+   printReferenceV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Reference,
+      parent: TreeObject, name: string) {
+      if (!obj)
+         return;
+      var tree = new TreeObject("Reference", parent,
+         types.metamodelType.Reference);
+      var HTMLObject = this.printNode(HTMLElement, tree, name,
+         "Reference", this.colors.referenceColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printStringTyped<types.ReferenceTypes>(HTMLObject.container,
+         obj.getType(), tree, types.metamodelType.ReferenceType, "type");
+
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getRefferedSemanticId() as metamodelV3.Reference, tree,
+         "refferedSemanticId");
+
+      this.printNamedArrayV3<metamodelV3.Key>(HTMLObject.container,
+         obj.getKeys() as util.NamedArray<metamodelV3.Key>,
+         this.printKeyV3Typed, types.metamodelType.Key, tree, true);
    }
 
-   printReferenceElementV3(HTMLElement: HTMLElement, object: TreeObject,
-         name: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
-            object.getChildValue("idShort").tData, "Reference Element");
+   printBasicEventElementV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.BasicEventElement, parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.BasicEventElement);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "BasicEventElement",
+         this.colors.eventColor, false);
 
-      this.print(HTMLObject.container, object);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getObserved() as metamodelV3.Reference, tree, "observed");
+      this.printStringTyped<types.Direction>(HTMLObject.container,
+         obj.getDirection(), tree, types.metamodelType.Direction, "direction");
+      this.printStringTyped<types.StateOfEvent>(HTMLObject.container,
+         obj.getState(), tree, types.metamodelType.StateOfEvent, "state");
+      this.printStringTyped<types.MessageTopicType>(HTMLObject.container,
+         obj.getMessageTopic(), tree, types.metamodelType.String, 
+         "messageTopic");
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getMessageBroker() as metamodelV3.Reference, tree,
+         "messageBroker");
+      this.printStringTyped<types.DateTime>(HTMLObject.container,
+         obj.getLastUpdate(), tree, types.metamodelType.String, "lastUpdate");
+      this.printStringTyped<types.Duration>(HTMLObject.container,
+         obj.getMinInterVal(), tree, types.metamodelType.String, "minInterval");
+      this.printStringTyped<types.Duration>(HTMLObject.container,
+         obj.getMaxInterVal(), tree, types.metamodelType.String, "maxInterval");
    }
 
-   printReferenceV3(HTMLElement: HTMLElement, object: TreeObject,
-      name: string) {
-      /* If we encounter an Reference with just one key, we can assume its name
-       * or else we just set a generic name
-       */
-      var new_name: string = "Reference: " + name;
-      var keyArr = object.getChildValue("key");
-      if (keyArr && keyArr.childs.length == 1) 
-         new_name += " : " +
-         keyArr.childs.at(0).second.getChildValue("value").tData;
+   printSubmodelElementCollectionV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.SubmodelElementCollection, parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.SubmodelElementCollection);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "SubmodelElementCollection",
+         this.colors.submodelElementColor, false);
 
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
-            new_name, "", this.colors.referenceColor);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
 
-      this.print(HTMLObject.container, object);
+      this.printNamedArrayV3(HTMLObject.container, obj.getValues(),
+         this.printSubmodelElementV3Typed, types.metamodelType.SubmodelElement,
+         tree);
    }
 
-   printBasicEventElementV3(HTMLElement: HTMLElement, element: TreeObject,
-         key: string) {
-      var HTMLObject = this.printNode(HTMLElement, element, 
-            element.getChildValue("idShort").tData,
-            "Basic Event Element", this.colors.eventColor,
-            false);
+   printSubmodelElementListV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.SubmodelElementList, parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.SubmodelElementList);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "SubmodelElementList",
+         this.colors.submodelElementColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+
+      this.printStringTyped<boolean>(HTMLObject.container,
+         obj.getOrderRelevant(), tree, types.metamodelType.String,
+         "orderRelevant");
+      this.printReferenceV3Typed(HTMLObject.container,
+         obj.getSemanticIdListElement() as metamodelV3.Reference, tree,
+         "semanticIdListElement");
+      this.printStringTyped<types.AasSubmodelElements>(
+         HTMLObject.container, obj.getTypeValueListElement(),
+         tree, types.metamodelType.AasSubmodelElements, "typeValueListElement");
+      this.printStringTyped<types.DataTypeDefXsd>(
+         HTMLObject.container, obj.getValueTypeListElement(),
+         tree, types.metamodelType.DataTypeDefXsd, "valueTypeListElement");
+
+      this.printNamedArrayV3(HTMLObject.container, obj.getValues(),
+         this.printSubmodelElementV3Typed, types.metamodelType.SubmodelElement,
+         tree);
    }
 
-   printSubmodelElementCollectionV3(HTMLElement: HTMLElement, 
-         element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData,
-            "Submodel Element Collection");
+   printRelationshipElementV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.RelationshipElement, parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.RelationshipElement);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "RelationshipElement",
+         this.colors.submodelElementColor, false);
 
-      this.print(HTMLObject.container, element);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+      this.printRelationshipElementV3TypedCommon(HTMLObject.container, obj, tree);
+
    }
 
-   printSubmodelElementListV3(HTMLElement: HTMLElement, 
-         element: TreeObject, key: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, element,
-            element.getChildValue("idShort").tData,
-            "Submodel Element List");
-
-      this.print(HTMLObject.container, element);
+   printRelationshipElementV3TypedCommon(HTMLElement: HTMLElement,
+         obj: metamodelV3.RelationshipElement, parent: TreeObject) {
+      this.printReferenceV3Typed(HTMLElement,
+         obj.getFirst() as metamodelV3.Reference, parent, "first");
+      this.printReferenceV3Typed(HTMLElement,
+         obj.getSecond() as metamodelV3.Reference, parent, "second",);
    }
 
-   printRelationshipElementV3(HTMLElement: HTMLElement, object: TreeObject,
-         name: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
-            object.getChildValue("idShort").tData, "Relationship Element");
+   printAnnotatedRelationshipElementV3Typed( HTMLElement: HTMLElement,
+            obj: metamodelV3.AnnotatedRelationshipElement, parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.AnnotatedRelationshipElement);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getIdShort(),
+         "AnnotatedRelationshipElement", this.colors.submodelElementColor,
+         false);
 
-      this.print(HTMLObject.container, object);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+      this.printRelationshipElementV3TypedCommon(HTMLObject.container, obj,
+         tree);
+
+      this.printNamedArrayV3(HTMLObject.container, obj.getAnnotations(),
+         this.printSubmodelElementV3Typed, types.metamodelType.DataElement,
+         tree);
    }
 
-   printAnnotatedRelationshipElementV3(HTMLElement: HTMLElement,
-      object: TreeObject, name: string) {
-      var HTMLObject = this.printGenericSubmodelElement(HTMLElement, object,
-            object.getChildValue("idShort").tData,
-            "Annotated Relationship Element");
-
-      this.print(HTMLObject.container, object);
+   printQualifierV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Qualifier,
+         parent: TreeObject) {
+      var tree = new TreeObject("Qualifier", parent,
+         types.metamodelType.Qualifier);
+      var HTMLObject = this.printNode(HTMLElement, tree, 
+         obj.getType(), "Qualifier", this.colors.qualifierColor, false);
+      this.printHasSemanticsV3Typed(HTMLObject.container, obj, tree);
+      this.printStringTyped<types.QualifierKind>(HTMLObject.container,
+         obj.getKind(), tree, types.metamodelType.QualifierKind, "kind");
+      this.printStringTyped<types.QualifierType>(HTMLObject.container,
+         obj.getType(), tree, types.metamodelType.String, "type");
+      this.printStringTyped<types.DataTypeDefXsd>(HTMLObject.container,
+         obj.getValueType(), tree, types.metamodelType.DataTypeDefXsd, 
+         "valueType");
+      this.printStringTyped<types.ValueDataType>(HTMLObject.container,
+         obj.getValue(), tree, types.metamodelType.ValueDataType, "value");
+      this.printReferenceV3Typed(HTMLObject.container, obj.getValueId() as
+         metamodelV3.Reference, tree, "valueId");
    }
 
-   printQualifierV3(HTMLElement: HTMLElement, object: TreeObject,
-      name: string) {
-      var HTMLObject = this.printNode(HTMLElement, object, 
-           object.getChildValue("type").tData, "Qualifier",
-           this.colors.qualifierColor, false);
+   printOperationV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Operation,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.Operation);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "Operation",
+         this.colors.operationColor, false);
 
-      this.print(HTMLObject.container, object);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+
+      this.printNamedArrayV3(HTMLObject.container, obj.getInputVariables(),
+         this.printOperationVariableV3Typed,
+         types.metamodelType.OperationVariable, tree);
+      this.printNamedArrayV3(HTMLObject.container, obj.getOutputVariables(),
+         this.printOperationVariableV3Typed,
+         types.metamodelType.OperationVariable, tree);
+      this.printNamedArrayV3(HTMLObject.container, obj.getInOutputVariables(),
+         this.printOperationVariableV3Typed,
+         types.metamodelType.OperationVariable, tree);
    }
 
-   printOperationV3(HTMLElement: HTMLElement, object: TreeObject,
-         name: string) {
-      var HTMLObject = this.printNode(HTMLElement, object, 
-            object.getChildValue("idShort").tData,
-            "Operation", this.colors.operationColor,
-            false);
-
-      var formGroup = this.createMultiElementForm(HTMLObject.container,
-            object, this.callOperation);
-
-      this.print(formGroup, object);
+   printOperationVariableV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.OperationVariable, parent: TreeObject, name: string,
+         type: types.metamodelType) {
+      var tree = new TreeObject(name, parent,
+         types.metamodelType.OperationVariable);
+      this.printSubmodelElementV3Typed(HTMLElement,
+         obj.getValue() as metamodelV3.SubmodelElement, tree);
    }
 
-   printOperationVariableV3(HTMLElement: HTMLElement, object: TreeObject,
-            name: string) {
-      if (object.tHints.noPrint == false) {
-         var HTMLObject = this.printNode(HTMLElement, object, "",
-            "OperationVariable", this.colors.submodelElementColor, false);
+   printCapabilityV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.Capability, parent: TreeObject) {
+      var tree = new TreeObject(obj.getIdShort(), parent,
+         types.metamodelType.Capability);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getIdShort(), "Capability",
+         this.colors.submodelElementColor, false);
 
-         this.print(HTMLObject.container, object);
-      }
-      else
-         this.print(HTMLElement, object);
+      this.printSubmodelElementInheritedV3Typed(HTMLObject.container, obj, tree);
+      // nothing todo
    }
 
-   printCapabilityV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
-      var HTMLObject = this.printNode(HTMLElement, element,
-           element.getChildValue("idShort").tData, "Capability",
-           this.colors.submodelElementColor, false);
-      this.print(HTMLObject.container, element);
-   }
-
-   createValueElement(object: any, valueName: string = null,
-      update: boolean = false) {
-
+   createValueElementTyped<T = string>(type: types.metamodelType, value: T,
+         valueName: string) {
       var bodyElement = null;
       // TODO: Category
-      var category = "CONSTANT";
-
-      switch (category) {
-      default:
-         /* fallthrough */
-         console.log("Unhandled category found: " + category);
-      case "DEFAULT":
-      case "CONSTANT":
-            if (this.isLink(object)) {
-               var URL = object.tData;
-               if (this.hasInParentTreeType(object, "Endpoint")) {
-                  if (this.hasInParentTreeType(object, "AssetAdministrationShellDescriptor"))
-                     URL = this.addAASBrowserURL(object, object.tData);
-                  if (this.hasInParentTreeType(object, "SubmodelDescriptor"))
-                     URL = this.addSubmodelBrowserURL(object, object.tData);
-                  }
-
-               bodyElement = this.createHTMLLink(URL,
-                  document.createTextNode(object.tData));
-                  }
-            else
-               bodyElement = document.createTextNode(object.tData);
-         break;
-      case "VARIABLE":
-         var idData = "";
-
-         if (object.parentObj.childObjs.hasOwnProperty("idShort"))
-            idData = object.parentObj.childObjs.idShort.tData;
-//         else
-//            idData = childObjs.idShort.tData;
-
-         bodyElement = this.createBootstrapContainerFluid();
-         bodyElement.classList.add("pl-0");
-         if (object.parentObj.parentObj.tType != "OperationVariable")
-            object.tHTMLContainer = this.createSingleElementForm(bodyElement,
-                  idData, object.tData, object, this.submitValue);
-         else
-            object.tHTMLContainer = this.createSingleElementInput(bodyElement,
-                  idData, object.tData, object);
-         if (!update &&
-             object.parentObj.parentObj.tType != "OperationVariable")
-            this.valueUpdateArray.push(object);
-
-         break;
-      case "PARAMETER":
-         bodyElement = this.createBootstrapContainerFluid();
-         bodyElement.classList.add("pl-0");
-
-         var output = document.createTextNode(object.tData);
-
-         bodyElement.appendChild(output);
-
-         object.tHTMLContainer = bodyElement;
-         object.tHTMLID = object.tHTMLContainer.id;
-         break;
-      }
+      bodyElement = document.createTextNode(value as string);
       return bodyElement;
    }
 
@@ -716,13 +823,18 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
             color, false);
    }
 
-   printString(HTMLElement: HTMLElement, object: TreeObject, valueName: string) {
-      this.printValue(HTMLElement, object, valueName);
+   printStringTyped<T = string>(HTMLElement, obj: T, parent: TreeObject,
+      type: types.metamodelType, valueName: string) {
+      if (!obj)
+         return;
+      this.printValueTyped<T>(HTMLElement, obj, valueName, type, parent);
    }
 
-   printValue(HTMLElement: HTMLElement, object: TreeObject, valueName: string) {
-      var bodyElement = this.createValueElement(object, valueName);
-      var img = this.iconByType(object);
+   printValueTyped<T = string>(HTMLElement: HTMLElement, value: T,
+         valueName: string, type: types.metamodelType, parent: TreeObject) {
+      var tree = new TreeObject(valueName, parent, type);
+      var bodyElement = this.createValueElementTyped<T>(type, value, valueName);
+      var img = this.iconByType(type);
       var content = [
          img,
          document.createTextNode(valueName),
@@ -732,91 +844,209 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
                                 new Array("col-auto","col-2", "col"),
                                 content,
                                 true);
-      object.tUpdateMethod = this.updateValue;
+
    }
 
-   printAASRegistryV3(HTMLElement: HTMLElement, object: TreeObject) {
-      if (this.treeRoot == null)
-         this.treeRoot = object;
-
-      var HTMLObject = this.printNode(HTMLElement, object, "",
+   printRegistryEnvironmentV3Typed(HTMLElement,
+         registryEnv: registryV3.RegistryEnvironment, parent: TreeObject): void {
+      if (registryEnv.getAssetAdministrationShellDescriptors().length != 0) {
+         var tree = new TreeObject("Asset Administration Shell Registry",
+            parent, types.metamodelType.AssetAdministrationShellRegistry);
+         var HTMLObjectAASReg = this.printNode(HTMLElement, tree, "",
             "Asset Administration Shell Registry", this.colors.AASColor, true);
+         this.printNamedArrayV3<
+            interfaces.AssetAdministrationShellDescriptor>(
+            HTMLObjectAASReg.container,
+            registryEnv.getAssetAdministrationShellDescriptors(),
+            this.printAssetAdministrationShellDescriptorV3Typed,
+            types.metamodelType.AssetAdministrationShellDescriptor, tree);
+      }
+      if (registryEnv.getSubmodelDescriptors().length != 0) {
+         var tree = new TreeObject("Submodel Registry", parent,
+            types.metamodelType.SubmodelRegistry);
+         var HTMLObjectSMReg = this.printNode(HTMLElement,
+            tree,"", 
+            "Submodel Registry", this.colors.AASColor,
+            true);
+         this.printNamedArrayV3<
+            interfaces.SubmodelDescriptor>(
+            HTMLObjectSMReg.container,
+            registryEnv.getSubmodelDescriptors(),
+            this.printSubmodelDescriptorV3Typed,
+            types.metamodelType.SubmodelDescriptor, tree);
+      }
+      }
 
-      this.print(HTMLObject.container, object);
-   }
-
-   printSubmodelRegistryV3(HTMLElement: HTMLElement, object: TreeObject) {
-      if (this.treeRoot == null)
-         this.treeRoot = object;
-
-      var HTMLObject = this.printNode(HTMLElement, object, "",
-            "Submodel Registry", this.colors.AASColor, true);
-
-      this.print(HTMLObject.container, object);
-   }
-
-   printAssetAdministrationShellDescriptorV3(HTMLElement, element, key) {
-      var HTMLObject = this.printNode(HTMLElement, element, key, "",
-          this.colors.submodelElementColor, false);
-
-      this.print(HTMLObject.container, element);
-   }
-
-   printSubmodelDescriptorV3(HTMLElement, element, key) {
-      var HTMLObject = this.printNode(HTMLElement, element, key, "",
-          this.colors.submodelElementColor, false);
-
-      this.print(HTMLObject.container, element);
-   }
-
-   printEndpointV3(HTMLElement: HTMLElement, element: TreeObject, key: string) {
-      var name = null;
-      if (element.getChild("interface") != null)
-         name ="[" + key + "] : " +  element.getChildValue("interface").tData;
+   printNamedArrayV3<T>(HTMLElement: any, obj: util.NamedArray<T>, 
+      callback: printNamedArrayCallback<T>, type: types.metamodelType,
+      parent: TreeObject, skipPrint = false) {
+      if (obj.length < 1)
+         return;
+      var HTMLObject: AASHTMLElement;
+      var HTMLContainer: HTMLElement;
+      var p = parent;
+      if (!skipPrint) {
+         p  = new TreeObject(obj.getName(), parent, types.metamodelType.Array);
+         HTMLObject = this.printNode(HTMLElement, p, obj.getName(), "Array",
+            this.colors.submodelColor, true);
+         HTMLContainer = HTMLObject.container;
+      }
       else
-         name = key;
-      var HTMLObject = this.printNode(HTMLElement, element, name, "",
-          this.colors.referenceColor, false);
+         HTMLContainer = HTMLElement;
 
-      this.print(HTMLObject.container, element);
+      var iter: IterableIterator<T> = obj.values();
+      var iterResult = iter.next();
+      while(!iterResult.done) {
+         var e: T = iterResult.value;
+         callback(HTMLContainer, e, p, type, "");
+         iterResult = iter.next();
+      }
    }
 
-   printProtocolInformationV3(HTMLElement: HTMLElement, element: TreeObject, 
-      key: string) {
-      var HTMLObject = this.printNode(HTMLElement, element, key, "",
-          this.colors.submodelElementColor, false);
-
-      this.print(HTMLObject.container, element);
+   printDescriptorV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.Descriptor, parent: TreeObject) {
+      this.printMultiLanguageTypeV3Typed(HTMLElement, obj.getDescription() as
+         metamodelV3.MultiLanguageType, parent);
+      this.printMultiLanguageTypeV3Typed(HTMLElement, obj.getDisplayName() as
+         metamodelV3.MultiLanguageType, parent);
+      this.printNamedArrayV3(HTMLElement, obj.getExtensions(),
+         this.printExtensionV3Typed, types.metamodelType.Extension, parent);
    }
 
-   printSecurityAttributeObjectV3(HTMLElement: HTMLElement, element: TreeObject,
-      key: string) {
-      var HTMLObject = this.printNode(HTMLElement, element, key, "",
+   printAssetAdministrationShellDescriptorV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.AssetAdministrationShellDescriptor,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getId(), parent,
+         types.metamodelType.AssetAdministrationShellDescriptor);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getId(),
+         "", this.colors.submodelElementColor, false);
+
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getId(), tree, types.metamodelType.Identifier, "id");
+      this.printStringTyped<types.NameType>(HTMLObject.container,
+         obj.getIdShort(), tree, types.metamodelType.String, "idShort");
+      this.printStringTyped<types.AssetKind>(HTMLObject.container,
+         obj.getAssetKind(), tree, types.metamodelType.AssetKind, "assetKind");
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getAssetType(), tree, types.metamodelType.Identifier, "assetType");
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getGlobalAssetId(), tree, types.metamodelType.Identifier, 
+         "globalAssetId");
+      this.printDescriptorV3Typed(HTMLObject.container, obj, tree);
+
+      this.printAdministrativeInformationV3Typed(HTMLObject.container,
+         obj.getAdministration() as metamodelV3.AdministrativeInformation,
+         tree);
+
+      this.printNamedArrayV3<metamodelV3.SpecificAssetId>(HTMLObject.container,
+         obj.getSpecificAssetIds() as
+         util.NamedArray<metamodelV3.SpecificAssetId>,
+         this.printSpecificAssetIdV3Typed, types.metamodelType.SpecificAssetId,
+         tree);
+
+      this.printNamedArrayV3<metamodelV3.Endpoint>(HTMLObject.container,
+         obj.getEndpoints() as util.NamedArray<metamodelV3.Endpoint>,
+         this.printEndpointV3Typed, types.metamodelType.Endpoint, tree);
+
+      this.printNamedArrayV3<metamodelV3.SubmodelDescriptor>(
+         HTMLObject.container, obj.getSubmodelDescriptors() as
+         util.NamedArray<metamodelV3.SubmodelDescriptor>,
+         this.printSubmodelDescriptorV3Typed,
+         types.metamodelType.SubmodelDescriptor, tree);
+
+
+   }
+
+   printSubmodelDescriptorV3Typed(HTMLElement: HTMLElement,
+      obj: metamodelV3.SubmodelDescriptor, parent: TreeObject) {
+      var tree = new TreeObject(obj.getId(), parent,
+         types.metamodelType.SubmodelDescriptor);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getId(),
+         "", this.colors.submodelElementColor, false);
+
+      this.printStringTyped<types.Identifier>(HTMLObject.container,
+         obj.getId(), tree, types.metamodelType.Identifier, "id");
+      this.printStringTyped<types.NameType>(HTMLObject.container,
+         obj.getIdShort(), tree, types.metamodelType.String, "idShort");
+      this.printReferenceV3Typed(HTMLObject.container, obj.getSemanticId() as
+         metamodelV3.Reference, tree, "semanticId");
+      this.printDescriptorV3Typed(HTMLObject.container, obj, tree);
+
+      this.printNamedArrayV3<metamodelV3.Reference>(HTMLObject.container,
+         obj.getSupplementalSematicIds() as 
+         util.NamedArray<metamodelV3.Reference>,
+         this.printReferenceV3Typed, types.metamodelType.Endpoint, tree);
+
+      this.printAdministrativeInformationV3Typed(HTMLObject.container,
+         obj.getAdministration() as metamodelV3.AdministrativeInformation,
+         tree);
+
+
+      this.printNamedArrayV3<metamodelV3.Endpoint>(HTMLObject.container,
+         obj.getEndpoints() as util.NamedArray<metamodelV3.Endpoint>,
+         this.printEndpointV3Typed, types.metamodelType.Endpoint, tree);
+   }
+
+   printEndpointV3Typed(HTMLElement: HTMLElement, obj: metamodelV3.Endpoint,
+         parent: TreeObject) {
+      var tree = new TreeObject(obj.getInterface(), parent,
+         types.metamodelType.Endpoint);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         obj.getInterface(), "", this.colors.referenceColor, false);
+
+      this.printStringTyped<types.NameType>(HTMLObject.container,
+         obj.getInterface(), tree, types.metamodelType.String, "Interface");
+
+      this.printProtocolInformationV3Typed(HTMLObject.container,
+         obj.getProtocolInformation() as metamodelV3.ProtocolInformation,
+         tree);
+   }
+
+   printProtocolInformationV3Typed(HTMLElement: HTMLElement,
+        obj: metamodelV3.ProtocolInformation, parent: TreeObject) {
+      var tree = new TreeObject(obj.getHref(), parent,
+         types.metamodelType.ProtocolInformation);
+      var HTMLObject = this.printNode(HTMLElement, tree,
+         "", "protocolInformation", this.colors.submodelElementColor, false);
+
+      this.printStringTyped<types.LocatorType>(HTMLObject.container,
+         obj.getHref(), tree, types.metamodelType.String, "href");
+      this.printStringTyped<types.SchemeType>(HTMLObject.container,
+         obj.getEndpointProtocol(), tree, types.metamodelType.String, 
+         "endpointProtocol");
+      this.printNamedArrayV3<types.LabelType>(HTMLObject.container,
+         obj.getEndpointProtocolVersions() as util.NamedArray<types.LabelType>,
+         this.printStringTyped, types.metamodelType.String, tree, true);
+      this.printStringTyped<types.ShortIdType>(HTMLObject.container,
+         obj.getSubprotocol(), tree, types.metamodelType.String, "subprotocol");
+      this.printStringTyped<types.TextType>(HTMLObject.container,
+         obj.getSubprotocolBody(), tree, types.metamodelType.String,
+         "subprotocolBodyEncoding");
+      this.printStringTyped<types.LabelType>(HTMLObject.container,
+         obj.getSubprotocolBodyEncoding(), tree, types.metamodelType.String, 
+         "subprotocolBodyEncoding");
+      this.printNamedArrayV3<metamodelV3.SecurityAttributeObject>(
+         HTMLObject.container, obj.getSecurityAttributes() as util.NamedArray<
+         metamodelV3.SecurityAttributeObject>,
+         this.printSecurityAttributeObjectV3Typed,
+         types.metamodelType.SecurityAttributeObject, tree, true);
+
+   }
+
+   printSecurityAttributeObjectV3Typed(HTMLElement: HTMLElement,
+         obj: metamodelV3.SecurityAttributeObject, parent: TreeObject) {
+      var tree = new TreeObject(obj.getKey(), parent,
+         types.metamodelType.SecurityAttributeObject);
+      var HTMLObject = this.printNode(HTMLElement, tree, obj.getKey(), "",
           this.colors.qualifierColor, false);
 
-      this.print(HTMLObject.container, element);
-}
-
-   handleLinkTypes(element: TreeObject) {
-      if (element.getChild("value")) {
-         var fURL = element.getChildValue("value").tData;
-         if (this.isNull(fURL) || fURL == "")
-            return null;
-         if (!(fURL.startsWith("http://") ||
-               fURL.startsWith("https://"))) {
-            var rootUrl = this. findPropertyElementUpward(element,
-               "tRootURL");
-            // Relative path from current element
-            if (!fURL.startsWith("/"))
-               fURL = element.tURL + "/" + fURL;
-            // Absolute path from root element
-            else
-               fURL = rootUrl + fURL;
-         }
-         return fURL;
-      }
-      return null;
-   }
+      this.printStringTyped<types.SecurityTypeEnum>(HTMLObject.container,
+         obj.getType(), tree, types.metamodelType.String,  "type");
+      this.printStringTyped<string>(HTMLObject.container, obj.getKey(),
+         tree, types.metamodelType.String, "key");
+      this.printStringTyped<string>(HTMLObject.container, obj.getValue(),
+         tree, types.metamodelType.String, "value");
+  }
 
    isLink(element) {
       if (typeof(element.tData) != "string")
@@ -831,207 +1061,4 @@ export class AASPrinterMetamodelElements extends PrinterHtmlElements {
       return true;
    }
 
-   addGenericBrowserURL(browserURL, URL) {
-      return browserURL + "?endpoint=" + encodeURIComponent(URL);
-   }
-
-   addAASBrowserURL(object, URL) {
-      return this.addGenericBrowserURL(this.tAASBrowserURL, URL);
-   }
-
-   addSubmodelBrowserURL(object, URL) {
-      return this.addGenericBrowserURL(this.tSubmodelBrowserURL, URL);
-   }
-
-   makeURLFromAASID(object, id) {
-      var baseURL = this.findPropertyElementUpward(object, "tLocalRootURL");
-      if (!this.isNull(baseURL)) {
-         return baseURL + "/" + id + "/aas";
-      }
-      return id;
-   }
-
-   makeURLFromSubmodelID(object, id) {
-      var submodel = this.getParentByType(object, "Submodel");
-      if (!this.isNull(submodel) && this.elementExists(submodel, "tURL"))
-         return submodel.tURL;
-      /* FIXME: We have to find the submodel idShort for various references to
-       * submodels.
-       */
-      return id;
-   }
-
-   // PUT on /submodelElements/$name/value
-   submitValue(val) {
-      var valueType = "string";
-      var elementID = val.target.id;
-      var value = val.target.getElementsByTagName("input")[0].value;
-      var element = this.findElementByHtmlId(elementID, this.treeRoot);
-
-      if (element.parentObj.childObjs.hasOwnProperty("valueType"))
-         valueType = element.parentObj.childObjs.valueType.tData;
-
-      var data = this.convertToJSON(value, valueType);
-
-      this.parser.AjaxHelper.putJSON(element.tURL, JSON.stringify(data),
-            null, null, null);
-   }
-
-   // POST on /submodelElements/$name/invoke
-   callOperation(val) {
-      var outputJSON = new MethodCallObject();
-      outputJSON.timeout = 10;
-      outputJSON.requestId = "";
-      outputJSON.inputArguments = new Array();
-      outputJSON.inoutputArguments = new Array();
-
-      var elementID = val.target.id;
-      var operationElement = this.findElementByHtmlId(elementID, this.treeRoot);
-
-      //console.log("Operation called with: ", operationElement.tURLInvoke,
-      //   operationElement, val);
-
-      var var_array = this.findElementsByType("OperationVariable", operationElement);
-      var i = 0;
-      // filter output only Variables
-      while (i < var_array.length) {
-         var element = var_array[i];
-         if (element.parentObj.tName == "outputVariable") {
-            var_array.splice(i, 1);
-            i--;
-         }
-         i++;
-      }
-
-      for (var valName in var_array) {
-         var varElement = var_array[valName];
-         if (this.elementExists(varElement.childObjs, "value")) {
-            var valueObj = varElement.childObjs.value;
-            switch (valueObj.tType) {
-            case "Property":
-               var value = valueObj.childObjs.value.tHTMLContainer.value;
-               var valJSON = varElement.tOriginalJSON;
-               valJSON.value.value = this.convertToJSON(value,
-                  valueObj.childObjs.valueType.childObjs.dataObjectType.tData);
-               if (varElement.parentObj.tName == "inputArguments" ||
-                   varElement.parentObj.tName == "inputVariable")
-                   outputJSON.inputArguments.push(valJSON);
-               if (varElement.parentObj.tName == "inoutputArguments" ||
-                   varElement.parentObj.tName == "inoutputVariable")
-                   outputJSON.inoutputArguments.push(valJSON);
-               break;
-            default:
-               break;
-            }
-         }
-      }
-
-      var ctxObj = new AjaxCallContext();
-      ctxObj.context = operationElement;
-      ctxObj.printer = this;
-
-      this.parser.AjaxHelper.postJSON(operationElement.tURLInvoke,
-         JSON.stringify(outputJSON),
-         this.operationResult,
-         null, ctxObj);
-   }
-
-   // unbound for this -> context
-   operationResult(ret) {
-      var context = this.context;
-      var printer = this.printer;
-
-      printer.parser.parseOperation(ret, context.tName, context);
-}
-
-   findChildElementUpward(object, name) {
-      if (this.elementExists(object.childObjs, name))
-         return object.childObjs[name];
-
-      if (this.elementExists(object, "parentObj"))
-         return this.findChildElementUpward(object["parentObj"], name);
-
-      return null;
-   }
-
-   findPropertyElementUpward(object, name) {
-      if (this.elementExists(object, name))
-         return object[name];
-
-      if (this.elementExists(object, "parentObj"))
-         return this.findPropertyElementUpward(object["parentObj"], name);
-
-      return null;
-   }
-
-   findElementByHtmlId(name, root) {
-      for(var key in root) {
-         if (key == "parentObj" ||
-             key == "tHTMLContainer" ||
-             !this.isObject(root[key]))
-            continue;
-         var child = root[key];
-         if (child.hasOwnProperty("tHTMLID") && (child.tHTMLID == name))
-            return child;
-         else {
-            if (this.isObject(child)) {
-               var element = this.findElementByHtmlId(name, child);
-               if (element != null)
-                  return element;
-            }
-         }
-      }
-      return null;
-   }
-
-   findElementsByType(type, rootElement, parentType = null, parentName = null) {
-      var result = new Array();
-      if (!this.isObject(rootElement) ||
-         !rootElement.hasOwnProperty("childObjs"))
-         return;
-      var childs = rootElement.childObjs;
-      for (var key in childs) {
-         var child = childs[key];
-         if (this.isObject(child)) {
-            if (child.hasOwnProperty("tType") && child.tType == type &&
-                (parentType == null || child.parentObj.tType == parentType))
-               result.push(child);
-            var arr_tmp = this.findElementsByType(type, child);
-            if (arr_tmp.length > 0)
-               result.push.apply(result, arr_tmp);
-         }
-      }
-      return result;
-   }
-
-   timedUpdateValues() {
-      var values = this.valueUpdateArray;
-      for (var key in values) {
-         var transObj = new AjaxCallContext();
-         transObj.context = values[key];
-         transObj.printer = this;
-         this.parser.getByURL(transObj,
-               values[key].tURL,
-               this.valueResult,
-               null);
-      }
-   }
-
-   updateValue(obj) {
-      if (!this.elementExists(obj, "tHTMLContainer"))
-         return;
-      // TODO: Save for later?
-      if (document.activeElement != obj.tHTMLContainer)
-         obj.tHTMLContainer.value = obj.tData;
-   }
-
-   // unbound for this -> context
-   valueResult(ret) {
-      var context = this.object.context;
-      var printer = this.object.printer;
-      var value = ret;
-      if (printer.isObject(value))
-         value = value.value;
-      printer.parser.parseValue(value, context.tName, context.parentObj);
-   }
 }

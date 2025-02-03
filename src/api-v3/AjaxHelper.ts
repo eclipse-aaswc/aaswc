@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/// <reference path="../node_modules/@types/jquery/dist/jquery.slim.d.ts" />
+/// <reference path="../../node_modules/@types/jquery/dist/jquery.slim.d.ts" />
 
 export module Ajax {
 
 export class AjaxHelper {
    constructor() {}
+
 
 getJSON(URL: string, callback_success, callback_error, ctx = null) {
    $.ajax({
@@ -21,6 +22,24 @@ getJSON(URL: string, callback_success, callback_error, ctx = null) {
        context: ctx
    });
    return true;
+}
+
+public getJsonPromise(URL: string, ctx = null) {
+   return new Promise((resolve, reject) => {
+      $.ajax({
+         url: URL,
+         type: 'GET',
+         dataType: 'json',
+         crossDomain: true,
+         context: ctx,
+         success: function (data) {
+           resolve(data);
+         },
+         error: function (error) {
+           reject(error);
+         },
+       });
+     })
 }
 
 putJSON(URL: string,

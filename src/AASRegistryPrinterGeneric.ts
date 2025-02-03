@@ -29,7 +29,7 @@ export class AASRegistryPrinterGeneric extends AASPrinterMetamodelElements {
       this.registryParser.run();
 
       //window.setInterval(this.timedUpdateValues, 2000);
-      
+
       // load: /api/v1/registry
    }
 
